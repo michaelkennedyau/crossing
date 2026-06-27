@@ -1,0 +1,27 @@
+{
+  "name": "crossing",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "IL VARO — The Crossing. A scroll-cinematic voyage + live instrument bridge, on the Varo engine.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build:web": "npm --prefix web run build",
+    "build": "npm run build:web && tsc --noEmit",
+    "deploy": "npm run build:web && wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:apply": "wrangler d1 execute varo-family-brain --remote --file=sql/crossing_schema.sql",
+    "db:apply:local": "wrangler d1 execute varo-family-brain --local --file=sql/crossing_schema.sql"
+  },
+  "dependencies": {
+    "hono": "^4.7.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250620.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.2.0",
+    "wrangler": "^4.90.1"
+  }
+}

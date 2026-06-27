@@ -1,0 +1,196 @@
+/* The Bridge — the instrument panel, "the film paused behind glass". Cold-instrument language:
+   amber (the ember) is rationed to the chosen path + the couple's legs; cyan marks anything live. */
+
+.bridge-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(5, 7, 11, 0.82);
+  backdrop-filter: blur(22px) saturate(1.1);
+  -webkit-backdrop-filter: blur(22px) saturate(1.1);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  animation: bridge-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes bridge-rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: none; }
+}
+.bridge-col {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: clamp(20px, 5vw, 56px) clamp(16px, 4vw, 40px) 120px;
+}
+.bridge-eyebrow {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.28em;
+  text-transform: uppercase; color: var(--live); margin: 0 0 10px;
+}
+.bridge-title {
+  font-family: var(--font-display); font-weight: 300; font-size: clamp(28px, 5vw, 48px);
+  line-height: 1.05; margin: 0; color: var(--snow);
+}
+.bridge-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 30px; }
+.bridge-close {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; color: var(--snow-dim);
+  background: rgba(233, 240, 242, 0.06); border: 1px solid rgba(124, 138, 147, 0.3);
+  border-radius: 999px; padding: 9px 16px; cursor: pointer; white-space: nowrap; transition: 0.16s;
+}
+.bridge-close:hover { background: rgba(233, 240, 242, 0.12); color: var(--snow); }
+
+.card {
+  background: rgba(9, 14, 20, 0.5); border: 1px solid rgba(124, 138, 147, 0.16);
+  border-radius: 14px; padding: clamp(16px, 2.4vw, 22px); margin-bottom: 16px;
+}
+.card-eyebrow {
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 500; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--snow-dim); margin: 0 0 12px;
+}
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+
+/* ── ship's clock + ENSO gauge ── */
+.clock-val {
+  font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: clamp(28px, 5vw, 46px);
+  color: var(--live); text-shadow: 0 0 18px rgba(116, 224, 230, 0.4); margin: 2px 0 4px;
+}
+.clock-sub, .gauge-sub { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; color: var(--snow-dim); }
+.gauge-wrap { display: flex; align-items: center; gap: 18px; }
+.gauge-read { font-family: var(--font-mono); font-size: 22px; color: var(--ember); }
+
+/* ── conditions ── */
+.cond-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.cond { background: rgba(9, 14, 20, 0.5); border: 1px solid rgba(124, 138, 147, 0.16); border-radius: 12px; padding: 14px; }
+.cond-name { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; color: var(--snow); margin-bottom: 8px; }
+.cond-row { font-family: var(--font-mono); font-size: 11px; color: var(--snow-dim); display: flex; justify-content: space-between; margin: 3px 0; }
+.cond-status { font-family: var(--font-mono); font-size: 11px; margin-top: 8px; }
+.cond-status.clear { color: var(--live); }
+.cond-status.storm { color: var(--ember); }
+
+/* ── forecast chart ── */
+.fc-reads { display: flex; gap: 24px; margin-bottom: 12px; }
+.fc-read .l { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--snow-dim); }
+.fc-read .v { font-family: var(--font-display); font-size: 26px; }
+.fc-read.base .v { color: var(--snow); }
+.fc-read.peak .v { color: var(--live); }
+.fc-slider { width: 100%; margin-top: 12px; accent-color: var(--live); }
+.fc-slider-label { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10px; color: var(--snow-dim); margin-top: 6px; }
+
+/* ── the Plotting Table ── */
+.pt-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.pt-sub { font-family: var(--font-hand); font-style: italic; font-size: 15px; color: var(--snow-dim); margin: 4px 0 0; max-width: 44ch; }
+.pt-total { text-align: right; }
+.pt-total .amt {
+  font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: clamp(28px, 4.4vw, 40px);
+  color: var(--ember); text-shadow: 0 0 16px rgba(242, 180, 94, 0.3);
+}
+.pt-total .days { font-family: var(--font-mono); font-size: 11px; color: var(--snow-dim); margin-top: 2px; }
+
+.presets { display: flex; flex-wrap: wrap; gap: 7px; margin: 16px 0; }
+.preset {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.01em;
+  background: rgba(233, 240, 242, 0.04); border: 1px solid rgba(124, 138, 147, 0.2); color: var(--snow-dim);
+  padding: 7px 11px; border-radius: 8px; cursor: pointer; transition: 0.14s;
+}
+.preset:hover { border-color: rgba(124, 138, 147, 0.4); color: var(--snow); }
+.preset.on { background: rgba(242, 180, 94, 0.13); border-color: var(--ember); color: var(--ember-hot); }
+
+.levers { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin: 8px 0 4px; }
+.lever-label { font-family: var(--font-mono); font-size: 10.5px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--snow-dim); margin: 0 0 9px; }
+.seg { display: flex; gap: 6px; flex-wrap: wrap; }
+.seg button {
+  flex: 1 1 auto; font-family: var(--font-mono); font-size: 12px; color: var(--snow-dim);
+  background: rgba(233, 240, 242, 0.04); border: 1px solid rgba(124, 138, 147, 0.2);
+  border-radius: 8px; padding: 9px 10px; cursor: pointer; transition: 0.14s; white-space: nowrap;
+}
+.seg button:hover { border-color: rgba(124, 138, 147, 0.4); color: var(--snow); }
+.seg button.on { background: rgba(116, 224, 230, 0.13); border-color: var(--live); color: var(--live); }
+.seg button.on.ember { background: rgba(242, 180, 94, 0.13); border-color: var(--ember); color: var(--ember-hot); }
+.stepper { display: inline-flex; align-items: center; border: 1px solid rgba(124, 138, 147, 0.2); border-radius: 8px; overflow: hidden; }
+.stepper button { background: rgba(233, 240, 242, 0.04); border: none; color: var(--snow); font-family: var(--font-mono); font-size: 17px; width: 40px; height: 38px; cursor: pointer; }
+.stepper button:hover { background: rgba(233, 240, 242, 0.1); }
+.stepper .v { min-width: 50px; text-align: center; font-family: var(--font-mono); font-size: 15px; font-weight: 600; color: var(--snow); }
+.subact { margin-top: 12px; padding-top: 14px; border-top: 1px dashed rgba(124, 138, 147, 0.2); }
+
+/* calendar — ember track (5 → 2) + the night-by-night strip */
+.cal { margin-top: 18px; }
+.cal-cap { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.06em; color: var(--ember); margin: 0 0 8px; }
+.ember-track { display: flex; align-items: center; gap: 5px; margin-bottom: 12px; }
+.ember-dot { width: 9px; height: 9px; border-radius: 50%; background: radial-gradient(circle, var(--ember-hot), var(--ember-deep)); box-shadow: 0 0 7px rgba(242, 180, 94, 0.6); }
+.ember-div { width: 2px; height: 16px; background: var(--ember); margin: 0 6px; opacity: 0.7; }
+.strip { display: flex; gap: 3px; overflow-x: auto; padding-bottom: 4px; }
+.seg-cell { flex: 1 0 auto; min-width: 70px; border-radius: 7px; padding: 9px 10px; border: 1px solid rgba(124, 138, 147, 0.16); }
+.seg-cell.two { border-top: 2px solid var(--ember); box-shadow: inset 0 0 18px rgba(242, 180, 94, 0.12); }
+.seg-cell .sn { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.06em; color: var(--snow-dim); }
+.seg-cell .sl { font-size: 11.5px; color: var(--snow); margin-top: 3px; line-height: 1.25; }
+.seg-cell .sw { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 5px; color: var(--snow-dim); }
+.seg-cell.two .sw { color: var(--ember); }
+.cal-legend { display: flex; gap: 18px; font-family: var(--font-mono); font-size: 10px; color: var(--snow-dim); margin-top: 10px; }
+.swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.swatch.five { background: rgba(124, 138, 147, 0.4); }
+.swatch.two { background: transparent; border: 1px solid var(--ember); border-top-width: 2px; }
+
+/* cost ledger */
+.ledger { margin-top: 18px; width: 100%; border-collapse: collapse; }
+.ledger td { font-family: var(--font-mono); font-size: 13px; padding: 7px 0; border-bottom: 1px solid rgba(124, 138, 147, 0.12); }
+.ledger td.n { text-align: right; color: var(--snow); font-variant-numeric: tabular-nums; }
+.ledger td.l { color: var(--snow-dim); }
+.ledger tr.tot td { border-bottom: none; border-top: 1px solid rgba(124, 138, 147, 0.3); padding-top: 10px; font-weight: 600; color: var(--snow); }
+.ledger tr.tot td.n { color: var(--live); }
+
+/* consequences + questions */
+.flags { margin-top: 18px; }
+.flag, .q { display: flex; gap: 10px; padding: 7px 0; font-size: 13px; line-height: 1.45; color: var(--snow); border-bottom: 1px solid rgba(124, 138, 147, 0.1); }
+.flag .mk, .q .mk { flex: 0 0 auto; font-family: var(--font-mono); margin-top: 1px; }
+.flag.warn .mk { color: var(--ember); }
+.flag.note .mk { color: var(--snow-dim); }
+.flag.ok .mk { color: var(--live); }
+.q .mk { color: var(--live); }
+.qs-title, .flags-title { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; margin: 16px 0 6px; }
+.qs-title { color: var(--live); }
+.flags-title { color: var(--ember); }
+
+/* compare */
+.cmp-toggle { margin-top: 16px; }
+.cmp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+.cmp-col { border: 1px solid rgba(124, 138, 147, 0.16); border-radius: 12px; padding: 14px; }
+.cmp-col.cur { border-color: var(--ember); }
+.cmp-col h4 { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; margin: 0 0 10px; color: var(--snow); }
+.cmp-row { font-family: var(--font-mono); font-size: 12px; display: flex; justify-content: space-between; padding: 5px 0; color: var(--snow-dim); border-bottom: 1px solid rgba(124, 138, 147, 0.1); }
+.cmp-row b { color: var(--snow); font-weight: 500; }
+.cmp-select { font-family: var(--font-mono); font-size: 12px; background: rgba(9,14,20,0.7); color: var(--snow); border: 1px solid rgba(124,138,147,0.3); border-radius: 7px; padding: 6px 8px; }
+
+/* checklist (the manifest) */
+.checklist { list-style: none; margin: 0; padding: 0; }
+.checklist li { border-bottom: 1px solid rgba(124, 138, 147, 0.1); }
+.checklist li:last-child { border-bottom: none; }
+.checklist button {
+  display: flex; align-items: flex-start; gap: 11px; width: 100%; text-align: left;
+  background: none; border: none; cursor: pointer; padding: 9px 0; font-family: var(--font-body);
+  font-size: 13px; line-height: 1.4; color: var(--snow); transition: 0.14s;
+}
+.checklist .box {
+  flex: 0 0 auto; width: 17px; height: 17px; border-radius: 5px; border: 1.5px solid rgba(124, 138, 147, 0.4);
+  display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--live);
+  font-family: var(--font-mono); margin-top: 1px; transition: 0.14s;
+}
+.checklist li.done button { color: var(--snow-dim); }
+.checklist li.done .box { border-color: var(--live); background: rgba(116, 224, 230, 0.13); }
+
+/* concierge */
+.concierge-in { display: flex; gap: 8px; }
+.concierge-in input {
+  flex: 1; font-family: var(--font-body); font-size: 14px; color: var(--snow);
+  background: rgba(9, 14, 20, 0.7); border: 1px solid rgba(124, 138, 147, 0.25);
+  border-radius: 8px; padding: 10px 12px;
+}
+.concierge-in input::placeholder { color: var(--schist); }
+.concierge-in input:focus { outline: none; border-color: var(--live); }
+.concierge-in button {
+  font-family: var(--font-mono); font-size: 13px; color: var(--live); background: rgba(116, 224, 230, 0.1);
+  border: 1px solid var(--live); border-radius: 8px; padding: 9px 18px; cursor: pointer;
+}
+.concierge-in button:disabled { opacity: 0.5; cursor: default; }
+.concierge-ans { font-size: 14px; line-height: 1.6; color: var(--snow); margin: 14px 0 0; white-space: pre-wrap; }
+.concierge-err { font-family: var(--font-mono); font-size: 12px; color: var(--snow-dim); margin: 12px 0 0; }
+
+@media (max-width: 560px) { .cmp-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .bridge-overlay { animation: none; } }

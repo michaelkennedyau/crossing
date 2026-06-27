@@ -1,0 +1,40 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "crossing",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-06-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+
+  // Provisions crossing.varo.au on deploy (zone varo.au, same Cloudflare account as brain/parish).
+  "routes": [{ "pattern": "crossing.varo.au", "custom_domain": true }],
+  "workers_dev": false,
+
+  // The Vite-built client islands (web/ → web/dist). The Worker owns "/" (SSR shell) and "/api/*";
+  // everything else falls through to env.ASSETS. No index.html is emitted by the build, so "/" is
+  // never shadowed by a static asset.
+  "assets": { "directory": "./web/dist", "binding": "ASSETS" },
+
+  // PIGGYBACK: bind the EXISTING brain D1 (varo-family-brain) rather than provisioning a new one.
+  // crossing_* tables only; created via `wrangler d1 execute ... --file=sql/crossing_schema.sql`
+  // (outside the migration system — the shared d1_migrations ledger already holds brain's 0001–0076).
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "varo-family-brain",
+      "database_id": "63328112-7cd4-45a9-9909-a73957978754"
+    }
+  ],
+
+  // New KV namespace for the live-data cache (ENSO / weather). id filled after:
+  //   wrangler kv namespace create crossing-cache
+  "kv_namespaces": [{ "binding": "KV", "id": "2334d01945f640739712f9b4ed006da6" }],
+
+  // Workers AI (optional helpers). The concierge itself calls the Anthropic Messages API
+  // via the ANTHROPIC_API_KEY secret (set with `wrangler secret put ANTHROPIC_API_KEY`).
+  "ai": { "binding": "AI" },
+
+  "vars": {
+    "DEPART_ISO": "2026-07-05T10:20:00-04:00"
+  }
+}
