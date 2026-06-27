@@ -6,7 +6,7 @@
 const TL: [string, string, boolean][] = [
   ['Sat 4 Jul', 'QF527 · Brisbane → Sydney · 12:15', false],
   ['Sat 4 Jul', 'Sydney · overnight', false],
-  ['Sun 5 Jul', 'QF27 · Sydney → Santiago · the launch', true],
+  ['Sun 5 Jul', 'QF27 · Sydney → Santiago · 10:20 · the launch', true],
   ['5–11 Jul', 'the crossing · Puerto Varas → Catedral', false],
   ['~15 Jul', 'QF28 · Buenos Aires → Sydney · home', false],
 ];

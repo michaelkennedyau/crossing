@@ -27,7 +27,7 @@ const LEGS: Leg[] = [
     eyebrow: 'A maiden voyage · winter · the Andes by water',
     head: 'il varo', headClass: 'hero',
     hand: 'The launch — a hull meeting water for the first time, and the held breath before the first note.',
-    telemetry: 'QF527 · BNE → SYD · SAT 4 JUL 12:15 · T− <span data-countdown>—</span><br><span class="syd-note">then Sydney overnight · QF27 to the launch · 5 Jul</span>',
+    telemetry: 'QF527 · BNE → SYD · SAT 4 JUL 12:15 · T− <span data-countdown>—</span><br><span class="syd-note">then Sydney overnight · QF27 · SYD → SCL · 5 Jul · 10:20 SCL</span>',
   },
   {
     n: '00', label: 'The vessel',
@@ -261,7 +261,7 @@ function renderMinimap(): string {
   const tl: [string, string, boolean][] = [
     ['4 Jul', 'QF527 · BNE→SYD', false],
     ['4 Jul', 'Sydney · overnight', false],
-    ['5 Jul', 'QF27 → the launch', true],
+    ['5 Jul', 'QF27 → SCL · 10:20', true],
   ];
   return `<aside id="minimap" aria-hidden="true">
   <svg viewBox="0 0 220 96" width="100%" height="100%">
