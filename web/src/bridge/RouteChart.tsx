@@ -14,18 +14,18 @@ interface WxNode {
   status: 'clear' | 'storm';
 }
 
-const NODES: { x: number; y: number; label: string; sub?: string; wx?: number; pass?: boolean }[] = [
+const NODES: { x: number; y: number; label: string; sub?: string; wx?: number; pass?: boolean; lpos?: 'left' }[] = [
   { x: 64, y: 300, label: 'Puerto Varas', wx: 0 },
   { x: 196, y: 246, label: 'Peulla' },
   { x: 330, y: 116, label: 'Paso Pérez Rosales', sub: '976 m', wx: 1, pass: true },
   { x: 414, y: 214, label: 'Lago Frías' },
   { x: 544, y: 244, label: 'Llao Llao' },
-  { x: 624, y: 348, label: 'Cerro Catedral', wx: 2 },
+  { x: 606, y: 348, label: 'Cerro Catedral', wx: 2, lpos: 'left' },
 ];
 
 const ROUTE =
   'M64,300 C120,292 156,272 196,246 C252,210 296,168 330,116 C360,168 392,196 414,214 ' +
-  'C470,236 506,232 544,244 C588,272 610,316 624,348';
+  'C470,236 506,232 544,244 C580,272 596,318 606,348';
 
 const LAKES = [
   { cx: 150, cy: 270, rx: 66, ry: 31, c: '31,163,126' }, // Lago Todos los Santos (emerald)
@@ -76,16 +76,20 @@ export function RouteChart({ nodes, openP }: { nodes: WxNode[]; openP: number })
 
         {NODES.map((n, i) => {
           const w = n.wx != null ? nodes[n.wx] : undefined;
+          const lx = n.lpos === 'left' ? n.x - 9 : n.x + 9;
+          const anchor = n.lpos === 'left' ? 'end' : 'start';
+          const wxText = w ? `${w.temp != null ? `${Math.round(w.temp)}°` : '—'} · FL ${w.freezing ?? '—'}` : null;
           return (
             <g key={i}>
               <circle cx={n.x} cy={n.y} r={n.pass ? 4.5 : 3.2} className={n.pass ? 'cnode pass' : 'cnode'} />
-              <text x={n.x + 9} y={n.y - 5} className="node-label">{n.label}</text>
-              {n.sub && <text x={n.x + 9} y={n.y + 9} className="node-sub">{n.sub}</text>}
-              {w && (
-                <text x={n.x + 9} y={n.sub ? n.y + 23 : n.y + 9} className="node-wx">
-                  {w.temp != null ? `${Math.round(w.temp)}°` : '—'} · FL {w.freezing ?? '—'}
-                </text>
-              )}
+              <text x={lx} y={n.y - 5} textAnchor={anchor} className="node-label">{n.label}</text>
+              {n.sub && <text x={lx} y={n.y + 9} textAnchor={anchor} className="node-sub">{n.sub}</text>}
+              {wxText &&
+                (n.pass ? (
+                  <text x={n.x} y={n.y - 14} textAnchor="middle" className="node-wx">{wxText}</text>
+                ) : (
+                  <text x={lx} y={n.sub ? n.y + 23 : n.y + 9} textAnchor={anchor} className="node-wx">{wxText}</text>
+                ))}
             </g>
           );
         })}
@@ -93,7 +97,7 @@ export function RouteChart({ nodes, openP }: { nodes: WxNode[]; openP: number })
         {ember && <circle cx={ember.x} cy={ember.y} r="5" className="chart-ember" />}
 
         <text x="226" y="304" className="margin-note">no road out</text>
-        <text x="300" y="96" className="margin-note">the divide</text>
+        <text x="248" y="150" className="margin-note">the divide</text>
         <text x="150" y="264" className="depth">337</text>
         <text x="566" y="268" className="depth">464</text>
 

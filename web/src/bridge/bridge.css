@@ -66,6 +66,7 @@
   color: var(--live); text-shadow: 0 0 18px rgba(116, 224, 230, 0.4); margin: 2px 0 4px;
 }
 .clock-sub, .gauge-sub { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; color: var(--snow-dim); }
+.clock-syd { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em; color: var(--ember); opacity: 0.82; margin-top: 9px; }
 .gauge-wrap { display: flex; align-items: center; gap: 18px; }
 .gauge-read { font-family: var(--font-mono); font-size: 22px; color: var(--ember); }
 

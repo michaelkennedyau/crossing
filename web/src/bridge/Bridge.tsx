@@ -36,6 +36,7 @@ function ShipClock(): JSX.Element {
       <p className="card-eyebrow">Ship's clock · QF27 · 05 Jul 10:20</p>
       <div className="clock-val">{txt}</div>
       <div className="clock-sub">days · hrs · min · sec to launch</div>
+      <div className="clock-syd">↗ via Sydney · overnight 4 Jul</div>
     </div>
   );
 }
@@ -117,6 +118,7 @@ function ForecastModel({ oni, setOni }: { oni: number; setOni: (n: number) => vo
 
 function Logistics(): JSX.Element {
   const rows: [string, string, string?][] = [
+    ['Sydney', 'overnight 4 Jul · before QF27'],
     ['QF27 in', 'SYD → SCL · 05 Jul 10:20'],
     ['QF28 out', 'EZE → SYD via Aeroparque'],
     ['Crossing', 'Cruce Andino', 'https://www.cruceandino.com'],

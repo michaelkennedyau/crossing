@@ -27,7 +27,7 @@ const LEGS: Leg[] = [
     eyebrow: 'A maiden voyage · winter · the Andes by water',
     head: 'il varo', headClass: 'hero',
     hand: 'The launch — a hull meeting water for the first time, and the held breath before the first note.',
-    telemetry: 'QF27 · SANTIAGO · 05 JUL 10:20 · T− <span data-countdown>—</span>',
+    telemetry: 'QF27 · SANTIAGO · 05 JUL 10:20 · T− <span data-countdown>—</span><br><span class="syd-note">Sydney overnight · 4 Jul · before the launch</span>',
   },
   {
     n: '00', label: 'The vessel',
@@ -194,6 +194,7 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
   color:var(--snow-dim);line-height:1.5;margin:20px 0 0;max-width:46ch;}
 .ember-word{color:var(--ember);font-style:italic;}
 .telemetry{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;color:var(--snow-dim);margin:22px 0 0;}
+.syd-note{display:inline-block;margin-top:7px;color:var(--ember);opacity:.62;}
 .place{display:block;width:fit-content;margin-top:24px;font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;
   color:var(--snow-dim);text-decoration:none;border-bottom:1px solid rgba(124,138,147,.3);padding-bottom:2px;transition:.16s;}
 .place:hover{color:var(--ember-hot);border-color:var(--ember);}
