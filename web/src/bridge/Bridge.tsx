@@ -4,6 +4,8 @@ import { forecast } from '../plotting/forecast';
 import { PlottingTable } from './PlottingTable';
 import { Checklist } from './Checklist';
 import { Concierge } from './Concierge';
+import { RouteChart } from './RouteChart';
+import { ChartKey } from './ChartKey';
 
 interface Enso { oni: number; season?: string; year?: string; fallback?: boolean }
 interface WxNode { node: string; temp: number | null; snow: number | null; freezing: number | null; status: 'clear' | 'storm' }
@@ -114,18 +116,31 @@ function ForecastModel({ oni, setOni }: { oni: number; setOni: (n: number) => vo
 }
 
 function Logistics(): JSX.Element {
-  const rows = [
+  const rows: [string, string, string?][] = [
     ['QF27 in', 'SYD → SCL · 05 Jul 10:20'],
     ['QF28 out', 'EZE → SYD via Aeroparque'],
-    ['Crossing', 'Cruce Andino · 2 days by water'],
-    ['Buffer', '1 weather day held'],
+    ['Crossing', 'Cruce Andino', 'https://www.cruceandino.com'],
+    ['Peulla', 'Hotel Natura', 'https://www.hotelnatura.cl'],
+    ['Bariloche', 'Llao Llao', 'https://www.llaollao.com'],
+    ['Skiing', 'Cerro Catedral', 'https://www.catedralaltapatagonia.com'],
     ['Party', '5 — two adults, sons 17 · 14 · 8'],
   ];
   return (
     <div className="card">
       <p className="card-eyebrow">Logistics · the ledger</p>
       <table className="ledger"><tbody>
-        {rows.map(([l, v]) => <tr key={l}><td className="l">{l}</td><td className="n" style={{ color: 'var(--snow-dim)' }}>{v}</td></tr>)}
+        {rows.map(([l, v, url]) => (
+          <tr key={l}>
+            <td className="l">{l}</td>
+            <td className="n" style={{ color: 'var(--snow-dim)' }}>
+              {url ? (
+                <a href={url} target="_blank" rel="noopener" style={{ color: 'var(--live)', textDecoration: 'none' }}>{v} ↗</a>
+              ) : (
+                v
+              )}
+            </td>
+          </tr>
+        ))}
       </tbody></table>
     </div>
   );
@@ -137,6 +152,7 @@ export function Bridge(): JSX.Element | null {
   const [nodes, setNodes] = useState<WxNode[]>([]);
   const [cfg, setCfg] = useState<Cfg>(CFG);
   const [oni, setOni] = useState(1.5);
+  const [openP, setOpenP] = useState(0); // scroll fraction when the Bridge was opened (for the chart ember)
 
   // live data — never blocks; the panel is usable immediately with defaults
   useEffect(() => {
@@ -147,7 +163,11 @@ export function Bridge(): JSX.Element | null {
 
   // open/close wiring — any [data-open-bridge] opens; deep-link via #bridge or #arc=
   useEffect(() => {
-    const openBridge = (): void => withTransition(() => { setOpen(true); document.body.style.overflow = 'hidden'; });
+    const openBridge = (): void => {
+      const root = getComputedStyle(document.documentElement);
+      setOpenP(parseFloat(root.getPropertyValue('--p')) || 0);
+      withTransition(() => { setOpen(true); document.body.style.overflow = 'hidden'; });
+    };
     const onClick = (e: MouseEvent): void => {
       if ((e.target as HTMLElement).closest('[data-open-bridge]')) { e.preventDefault(); openBridge(); }
     };
@@ -163,6 +183,7 @@ export function Bridge(): JSX.Element | null {
 
   return (
     <div className="bridge-overlay" role="dialog" aria-modal="true" aria-label="The Bridge — live instruments">
+      <div className="bridge-grain" aria-hidden="true" />
       <div className="bridge-col">
         <div className="bridge-head">
           <div>
@@ -181,11 +202,14 @@ export function Bridge(): JSX.Element | null {
 
         <Conditions nodes={nodes} />
         <ForecastModel oni={oni} setOni={setOni} />
+        <RouteChart nodes={nodes} openP={openP} />
         <div className="grid2">
           <Logistics />
           <Checklist />
         </div>
         <Concierge />
+        <ChartKey />
+        <p className="colophon">Imagery curated from Wikimedia Commons · a private voyage log for il varo</p>
       </div>
     </div>
   );

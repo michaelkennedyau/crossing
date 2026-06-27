@@ -3,7 +3,8 @@ import { startTicker } from '../engine/ticker';
 import { applyAtmosphere } from '../engine/dawn';
 import { prefersReducedMotion } from '../engine/reduced';
 import { initReveals } from '../world/reveals';
-import { initAmbient } from '../world/ambient';
+import { initImageStage } from '../world/image-stage';
+import { initMist } from '../world/mist-gl';
 import { initCountdown } from '../instruments/countdown';
 import { initLegReadout } from '../instruments/leg-readout';
 import { initSound } from '../sound/score';
@@ -16,9 +17,10 @@ import { initSound } from '../sound/score';
 const reduced = prefersReducedMotion();
 
 register(applyAtmosphere);
+void initImageStage(reduced);
+initMist(reduced);
 initLegReadout();
 initReveals();
-initAmbient(reduced);
 initCountdown();
 initSound();
 

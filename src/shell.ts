@@ -1,4 +1,5 @@
 import type { Env } from './env';
+import { LEG_PLACES } from './places';
 
 const esc = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -83,7 +84,7 @@ const LEGS: Leg[] = [
 
 function renderLeg(leg: Leg): string {
   const headTag = leg.headClass === 'hero' ? 'h1' : 'h2';
-  return `<section class="leg${leg.tall ? ' leg--tall' : ''}" data-leg="${esc(leg.n)}" data-screen-label="${esc(leg.label)}">
+  return `<section class="leg${leg.tall ? ' leg--tall' : ''}" data-leg="${esc(leg.n)}" data-img="${esc(LEG_IMG[leg.n] ?? '')}" data-screen-label="${esc(leg.label)}">
   <div class="leg-inner" data-reveal>
     <p class="eyebrow">${esc(leg.eyebrow)}</p>
     <${headTag} class="head ${leg.headClass ?? ''}">${esc(leg.head)}</${headTag}>
@@ -92,6 +93,7 @@ function renderLeg(leg: Leg): string {
     ${leg.live ? `<p class="live-pill"><span class="live-dot"></span>${esc(leg.live)}</p>` : ''}
     ${leg.n === '0' ? `<p class="scrollhint">scroll to sail · the dawn lifts as you go</p>` : ''}
     ${leg.cta ? `<button class="bridge-open" data-open-bridge type="button">Open the bridge →</button>` : ''}
+    ${LEG_PLACES[leg.n] ? `<a class="place" href="${esc(LEG_PLACES[leg.n].url)}" target="_blank" rel="noopener">${esc(LEG_PLACES[leg.n].kind)} · ${esc(LEG_PLACES[leg.n].name)} ↗</a>` : ''}
   </div>
 </section>`;
 }
@@ -99,29 +101,11 @@ function renderLeg(leg: Leg): string {
 // 7 ember-rail nodes from 11%→95% height; the Lago Frías node is turquoise, the last an amber berth.
 const NODES = [11, 23, 37, 50, 64, 80, 95];
 
-// Procedural starfield — ~20 faint points (no raster). Opacity rides --star-a (1 cold open → 0 by day).
-function starfield(): string {
-  const pts = [
-    [120, 90, 1.1], [300, 60, 0.7], [480, 140, 0.9], [640, 70, 1.0], [820, 120, 0.6],
-    [980, 80, 0.9], [1140, 150, 1.1], [200, 220, 0.7], [420, 260, 0.9], [700, 230, 0.6],
-    [900, 280, 1.0], [1080, 240, 0.7], [60, 330, 0.8], [360, 360, 0.6], [560, 330, 1.0],
-    [760, 380, 0.7], [1000, 350, 0.9], [1200, 320, 0.7], [260, 440, 0.8], [620, 470, 0.6],
-  ];
-  return `<svg viewBox="0 0 1280 520" preserveAspectRatio="xMidYMin slice" width="100%" height="100%">${pts
-    .map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#E9F0F2" opacity="${(0.5 + r * 0.4).toFixed(2)}"/>`)
-    .join('')}</svg>`;
-}
-
-// Two ridgelines (preserveAspectRatio none → stretch). Dark silhouettes that emerge as the sky lifts;
-// a 1px warm rim-stroke (var(--horizon) at --horizon-a) catches the dawn light at the arrival.
-function ridge(path: string, fill: string): string {
-  return `<svg viewBox="0 0 1200 200" preserveAspectRatio="none" width="100%" height="100%">
-    <path d="${path}" fill="${fill}"/>
-    <path d="${path}" fill="none" stroke="var(--horizon)" stroke-width="1" stroke-opacity="var(--horizon-a)"/>
-  </svg>`;
-}
-const RIDGE_FAR = 'M0,200 L0,120 L120,96 L240,128 L360,72 L480,116 L600,60 L720,108 L840,76 L960,120 L1080,84 L1200,112 L1200,200 Z';
-const RIDGE_MID = 'M0,200 L0,150 L150,140 L300,156 L450,120 L560,150 L600,40 L640,150 L820,132 L980,158 L1120,138 L1200,150 L1200,200 Z';
+// leg id → image slug (web/public/img/<slug>-{1280,1920}.{avif,webp}). The image stage reads data-img.
+const LEG_IMG: Record<string, string> = {
+  '0': 'coldopen', '00': 'vessel', '01': 'puertovaras', '02': 'emerald', '03': 'pass',
+  '04b': 'enginecut', '04': 'arrival', '05': 'coda', '06': 'bridge',
+};
 
 const CSS = `
 :root{
@@ -144,24 +128,35 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 /* ── persistent atmosphere (fixed, behind content) ── */
 #sky{position:fixed;inset:0;z-index:0;
   background:linear-gradient(180deg,var(--sky-top) 0%,var(--sky-mid) 52%,var(--sky-bot) 100%);}
-#starfield{position:fixed;inset:0;z-index:1;opacity:var(--star-a);pointer-events:none;
-  animation:twinkle 7s ease-in-out infinite;}
-#ridge-far{position:fixed;left:0;right:0;bottom:0;height:40vh;z-index:2;pointer-events:none;color:#0B1722;
-  transform:translateY(calc(var(--p) * 18px));}
-#ridge-far svg path:first-child{fill:#0B1722;}
-#ridge-mid{position:fixed;left:0;right:0;bottom:0;height:32vh;z-index:3;pointer-events:none;
-  transform:translateY(calc(var(--p) * 26px));}
-#ridge-mid svg path:first-child{fill:#070F18;}
-#water{position:fixed;left:0;right:0;bottom:0;height:20vh;z-index:4;pointer-events:none;opacity:var(--green-a);
-  background:linear-gradient(180deg, transparent, var(--emerald-deep) 46%, var(--turquoise-deep));}
-#fog{position:fixed;inset:0;z-index:5;pointer-events:none;opacity:var(--fog-a);filter:blur(16px);
-  background:radial-gradient(60% 50% at 28% 38%, rgba(180,200,210,.10), transparent 70%),
-             radial-gradient(52% 42% at 72% 66%, rgba(160,185,195,.08), transparent 70%);
-  animation:fogdrift 58s ease-in-out infinite;}
-#horizon{position:fixed;inset:0;z-index:6;pointer-events:none;mix-blend-mode:screen;opacity:var(--horizon-a);
-  background:radial-gradient(120% 100% at 60% 100%, var(--horizon), transparent 62%);}
-#hush{position:fixed;inset:0;z-index:7;pointer-events:none;opacity:var(--quiet);
-  background:radial-gradient(120% 90% at 50% 46%, transparent 30%, rgba(3,5,9,.62));}
+/* the cinematic image stage — real location photos, graded cold→warm by --dawn (the dawn-arc scrim
+   applied as a filter). The photos ARE the scenery; they replace v1's flat SVG ridgelines. */
+#stage{position:fixed;inset:0;z-index:1;overflow:hidden;
+  filter:saturate(calc(.4 + .66*var(--dawn))) brightness(calc(.72 + .32*var(--dawn))) contrast(1.06);}
+#stage .frame{position:absolute;inset:-5%;background-size:cover;background-position:center;
+  will-change:opacity,transform;transform:scale(1.05);}
+/* cold-blue grade at the cold open (multiply cools + darkens any warm frame to blue-black), fading
+   to the photo's own colour + warmth by the arrival */
+#scrim{position:fixed;inset:0;z-index:2;pointer-events:none;mix-blend-mode:multiply;
+  background:linear-gradient(180deg, #0b1c30 0%, #07131f 58%, #0a1624 100%);
+  opacity:calc(.52 - .48*var(--dawn));}
+/* a faint warm wash that only arrives with the dawn — the resolve into daylight */
+#warmth{position:fixed;inset:0;z-index:2;pointer-events:none;mix-blend-mode:soft-light;
+  background:radial-gradient(120% 90% at 58% 96%, #e8c486, transparent 60%);
+  opacity:calc(var(--dawn)*var(--dawn)*.5);}
+#mist{position:fixed;inset:0;z-index:3;pointer-events:none;}
+#fog{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:calc(var(--fog-a)*.6);filter:blur(22px);
+  background:radial-gradient(60% 50% at 28% 40%, rgba(190,205,214,.10), transparent 70%),
+             radial-gradient(52% 42% at 72% 64%, rgba(170,190,200,.08), transparent 70%);
+  animation:fogdrift 60s ease-in-out infinite;}
+#horizon{position:fixed;inset:0;z-index:5;pointer-events:none;mix-blend-mode:screen;opacity:var(--horizon-a);
+  background:radial-gradient(120% 100% at 60% 100%, var(--horizon), transparent 60%);}
+#grain{position:fixed;inset:0;z-index:6;pointer-events:none;opacity:.07;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:170px 170px;}
+#vignette{position:fixed;inset:0;z-index:7;pointer-events:none;
+  background:radial-gradient(125% 105% at 50% 44%, transparent 50%, rgba(2,4,8,.6));}
+#hush{position:fixed;inset:0;z-index:8;pointer-events:none;opacity:var(--quiet);
+  background:radial-gradient(120% 90% at 50% 46%, transparent 30%, rgba(3,5,9,.66));}
 
 /* ── the ember rail (the throughline) ── */
 #rail{position:fixed;left:0;top:0;bottom:0;width:clamp(48px,7vw,72px);z-index:30;pointer-events:none;}
@@ -180,8 +175,11 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 
 /* ── voyage content ── */
 #voyage{position:relative;z-index:10;}
-.leg{min-height:100vh;display:flex;align-items:center;padding:clamp(24px,7vw,96px);
+.leg{position:relative;min-height:100vh;display:flex;align-items:center;padding:clamp(24px,7vw,96px);
   padding-left:clamp(64px,10vw,128px);}
+/* legibility scrim — keeps the left-aligned text readable over any photo */
+.leg::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(90deg, rgba(4,6,10,.62), rgba(4,6,10,.16) 46%, transparent 72%);}
 .leg--tall{min-height:128vh;}
 .leg-inner{max-width:640px;}
 [data-reveal]{opacity:0;transform:translateY(36px);transition:opacity 1.2s cubic-bezier(.16,1,.3,1),transform 1.2s cubic-bezier(.16,1,.3,1);}
@@ -196,6 +194,9 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
   color:var(--snow-dim);line-height:1.5;margin:20px 0 0;max-width:46ch;}
 .ember-word{color:var(--ember);font-style:italic;}
 .telemetry{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;color:var(--snow-dim);margin:22px 0 0;}
+.place{display:block;width:fit-content;margin-top:24px;font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;
+  color:var(--snow-dim);text-decoration:none;border-bottom:1px solid rgba(124,138,147,.3);padding-bottom:2px;transition:.16s;}
+.place:hover{color:var(--ember-hot);border-color:var(--ember);}
 .live-pill{display:inline-flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:11px;
   letter-spacing:.08em;color:var(--live);border:1px solid rgba(116,224,230,.25);border-radius:999px;
   padding:7px 13px;margin:16px 0 0;}
@@ -249,17 +250,19 @@ export function renderShell(env: Env): string {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..700&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..600&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="/img/coldopen-1280.avif" type="image/avif" fetchpriority="high">
 <style>${CSS}</style>
 </head>
 <body data-depart="${esc(env.DEPART_ISO)}">
 <div id="sky"></div>
-<div id="starfield">${starfield()}</div>
-<div id="ridge-far">${ridge(RIDGE_FAR, '#0B1722')}</div>
-<div id="ridge-mid">${ridge(RIDGE_MID, '#070F18')}</div>
-<div id="water"></div>
+<div id="stage"></div>
+<div id="scrim"></div>
+<div id="warmth"></div>
+<canvas id="mist"></canvas>
 <div id="fog"></div>
 <div id="horizon"></div>
-<canvas id="ambient"></canvas>
+<div id="grain"></div>
+<div id="vignette"></div>
 <div id="hush"></div>
 
 <nav id="rail" aria-hidden="true">
