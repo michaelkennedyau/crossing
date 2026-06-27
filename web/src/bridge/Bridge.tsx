@@ -5,6 +5,7 @@ import { PlottingTable } from './PlottingTable';
 import { Checklist } from './Checklist';
 import { Concierge } from './Concierge';
 import { RouteChart } from './RouteChart';
+import { Passage } from './Passage';
 import { ChartKey } from './ChartKey';
 
 interface Enso { oni: number; season?: string; year?: string; fallback?: boolean }
@@ -205,6 +206,7 @@ export function Bridge(): JSX.Element | null {
         <Conditions nodes={nodes} />
         <ForecastModel oni={oni} setOni={setOni} />
         <RouteChart nodes={nodes} openP={openP} />
+        <Passage />
         <div className="grid2">
           <Logistics />
           <Checklist />

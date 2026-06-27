@@ -223,7 +223,7 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 .readout b{color:var(--snow);font-weight:500;}
 
 /* ── the passage minimap (fixed, bottom-right) ── */
-#minimap{position:fixed;right:clamp(14px,3vw,30px);bottom:46px;z-index:40;width:clamp(150px,17vw,205px);
+#minimap{position:fixed;right:clamp(14px,3vw,30px);bottom:46px;z-index:40;width:clamp(172px,19vw,224px);
   padding:9px 11px 7px;border-radius:12px;background:rgba(9,14,20,.42);border:1px solid rgba(124,138,147,.15);
   backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);pointer-events:none;}
 #minimap svg{display:block;width:100%;height:auto;}
@@ -233,7 +233,12 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 #minimap .mm-icon{font-size:9px;}
 #minimap-ember{fill:var(--ember-hot);filter:drop-shadow(0 0 4px var(--ember));}
 .mm-title{display:block;text-align:center;font-family:var(--font-mono);font-size:7.5px;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--schist);margin-top:3px;}
+  text-transform:uppercase;color:var(--schist);margin:3px 0 0;}
+.mm-timeline{list-style:none;margin:8px 0 0;padding:8px 1px 0;border-top:1px solid rgba(124,138,147,.14);}
+.mm-timeline li{display:flex;gap:8px;align-items:baseline;padding:2.5px 0;font-family:var(--font-mono);
+  font-size:8.5px;letter-spacing:.03em;color:var(--snow-dim);}
+.mm-timeline .t-date{flex:0 0 28px;opacity:.7;}
+.mm-timeline .t-launch .t-date,.mm-timeline .t-launch .t-leg{color:var(--ember);}
 @media (max-width:680px){#minimap{display:none;}}
 
 /* ── ambient particle canvas ── */
@@ -253,6 +258,11 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 // A persistent minimap of the whole passage — Brisbane → Sydney → Santiago → the crossing → the snow.
 // The ember rides the crossing portion as you scroll (positioned by minimap.ts).
 function renderMinimap(): string {
+  const tl: [string, string, boolean][] = [
+    ['4 Jul', 'QF527 · BNE→SYD', false],
+    ['4 Jul', 'Sydney · overnight', false],
+    ['5 Jul', 'QF27 → the launch', true],
+  ];
   return `<aside id="minimap" aria-hidden="true">
   <svg viewBox="0 0 220 96" width="100%" height="100%">
     <path id="mm-route" d="M18,72 L40,76 C74,40 116,26 150,44 C166,53 182,42 200,78" fill="none"
@@ -266,6 +276,9 @@ function renderMinimap(): string {
     <circle id="minimap-ember" cx="150" cy="44" r="3.2"/>
   </svg>
   <span class="mm-title">the passage</span>
+  <ol class="mm-timeline">${tl
+    .map(([d, l, launch]) => `<li class="${launch ? 't-launch' : ''}"><span class="t-date">${esc(d)}</span><span class="t-leg">${esc(l)}</span></li>`)
+    .join('')}</ol>
 </aside>`;
 }
 
