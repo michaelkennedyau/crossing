@@ -33,10 +33,10 @@ function ShipClock(): JSX.Element {
   const txt = ms <= 0 ? 'launched' : `${d}d ${pad(Math.floor((sTot % 86400) / 3600))}:${pad(Math.floor((sTot % 3600) / 60))}:${pad(sTot % 60)}`;
   return (
     <div className="card">
-      <p className="card-eyebrow">Ship's clock · QF27 · 05 Jul 10:20</p>
+      <p className="card-eyebrow">Ship's clock · QF527 · BNE 4 Jul 12:15</p>
       <div className="clock-val">{txt}</div>
-      <div className="clock-sub">days · hrs · min · sec to launch</div>
-      <div className="clock-syd">↗ via Sydney · overnight 4 Jul</div>
+      <div className="clock-sub">days · hrs · min · sec to wheels-up</div>
+      <div className="clock-syd">↗ Sydney overnight · then QF27, the launch · 5 Jul</div>
     </div>
   );
 }
@@ -118,7 +118,7 @@ function ForecastModel({ oni, setOni }: { oni: number; setOni: (n: number) => vo
 
 function Logistics(): JSX.Element {
   const rows: [string, string, string?][] = [
-    ['Sydney', 'overnight 4 Jul · before QF27'],
+    ['QF527 in', 'BNE → SYD · Sat 4 Jul 12:15 · overnight'],
     ['QF27 in', 'SYD → SCL · 05 Jul 10:20'],
     ['QF28 out', 'EZE → SYD via Aeroparque'],
     ['Crossing', 'Cruce Andino', 'https://www.cruceandino.com'],

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
  * and follows across devices. The canonical item list lives here; the server stores checked-state.
  */
 const ITEMS: { id: string; label: string }[] = [
-  { id: 'sydney', label: 'Sydney overnight — hotel near SYD for the 4th, before QF27' },
+  { id: 'sydney', label: 'Sydney overnight — QF527 lands SYD 4 Jul 13:50; hotel near the airport' },
   { id: 'cruce', label: 'Book the Cruce Andino — Peulla & Puerto Blest family rooms (quote-only)' },
   { id: 'qf28', label: 'Lock the QF28 return day (runs ~4× weekly, 13:10)' },
   { id: 'skis', label: 'Boots only — rent skis at Catedral (158 cm crossing limit)' },

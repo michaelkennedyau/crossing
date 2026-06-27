@@ -27,7 +27,7 @@ const LEGS: Leg[] = [
     eyebrow: 'A maiden voyage · winter · the Andes by water',
     head: 'il varo', headClass: 'hero',
     hand: 'The launch — a hull meeting water for the first time, and the held breath before the first note.',
-    telemetry: 'QF27 · SANTIAGO · 05 JUL 10:20 · T− <span data-countdown>—</span><br><span class="syd-note">Sydney overnight · 4 Jul · before the launch</span>',
+    telemetry: 'QF527 · BNE → SYD · SAT 4 JUL 12:15 · T− <span data-countdown>—</span><br><span class="syd-note">then Sydney overnight · QF27 to the launch · 5 Jul</span>',
   },
   {
     n: '00', label: 'The vessel',
@@ -222,6 +222,20 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
   font-size:11px;letter-spacing:.14em;color:var(--snow-dim);}
 .readout b{color:var(--snow);font-weight:500;}
 
+/* ── the passage minimap (fixed, bottom-right) ── */
+#minimap{position:fixed;right:clamp(14px,3vw,30px);bottom:46px;z-index:40;width:clamp(150px,17vw,205px);
+  padding:9px 11px 7px;border-radius:12px;background:rgba(9,14,20,.42);border:1px solid rgba(124,138,147,.15);
+  backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);pointer-events:none;}
+#minimap svg{display:block;width:100%;height:auto;}
+#minimap text{text-anchor:middle;font-family:var(--font-mono);font-size:7px;letter-spacing:.05em;fill:var(--snow-dim);}
+#minimap .mm-stop circle{fill:var(--schist);}
+#minimap .mm-pass circle{fill:var(--live);filter:drop-shadow(0 0 3px var(--live));}
+#minimap .mm-icon{font-size:9px;}
+#minimap-ember{fill:var(--ember-hot);filter:drop-shadow(0 0 4px var(--ember));}
+.mm-title{display:block;text-align:center;font-family:var(--font-mono);font-size:7.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--schist);margin-top:3px;}
+@media (max-width:680px){#minimap{display:none;}}
+
 /* ── ambient particle canvas ── */
 #ambient{position:fixed;inset:0;z-index:8;pointer-events:none;}
 
@@ -235,6 +249,25 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
   [data-reveal]{transition:opacity .4s linear;transform:none;}
 }
 `;
+
+// A persistent minimap of the whole passage — Brisbane → Sydney → Santiago → the crossing → the snow.
+// The ember rides the crossing portion as you scroll (positioned by minimap.ts).
+function renderMinimap(): string {
+  return `<aside id="minimap" aria-hidden="true">
+  <svg viewBox="0 0 220 96" width="100%" height="100%">
+    <path id="mm-route" d="M18,72 L40,76 C74,40 116,26 150,44 C166,53 182,42 200,78" fill="none"
+      stroke="rgba(124,138,147,.38)" stroke-width="1.2" stroke-dasharray="3 3.5" stroke-linecap="round"/>
+    <text class="mm-icon" x="92" y="30">✈</text>
+    <text class="mm-icon" x="176" y="54">⛵</text>
+    <g class="mm-stop"><circle cx="18" cy="72" r="2.3"/><text x="18" y="86">BNE</text></g>
+    <g class="mm-stop"><circle cx="40" cy="76" r="2.3"/><text x="46" y="90">SYD</text></g>
+    <g class="mm-stop mm-pass"><circle cx="150" cy="44" r="2.7"/><text x="150" y="34">SCL</text></g>
+    <g class="mm-stop"><circle cx="200" cy="78" r="2.3"/><text x="198" y="92">ski</text></g>
+    <circle id="minimap-ember" cx="150" cy="44" r="3.2"/>
+  </svg>
+  <span class="mm-title">the passage</span>
+</aside>`;
+}
 
 export function renderShell(env: Env): string {
   return `<!DOCTYPE html>
@@ -282,7 +315,8 @@ export function renderShell(env: Env): string {
 ${LEGS.map(renderLeg).join('\n')}
 </main>
 
-<p class="readout"><b data-readout-leg>Cold open</b> · QF27 T− <span data-readout-countdown>—</span></p>
+<p class="readout"><b data-readout-leg>Cold open</b> · QF527 T− <span data-readout-countdown>—</span></p>
+${renderMinimap()}
 <div id="bridge-root"></div>
 <script type="module" src="/assets/engine.js"></script>
 <script type="module" src="/assets/bridge.js"></script>

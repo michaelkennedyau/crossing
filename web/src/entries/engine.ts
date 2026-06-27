@@ -7,6 +7,7 @@ import { initImageStage } from '../world/image-stage';
 import { initMist } from '../world/mist-gl';
 import { initCountdown } from '../instruments/countdown';
 import { initLegReadout } from '../instruments/leg-readout';
+import { initMinimap } from '../world/minimap';
 import { initSound } from '../sound/score';
 
 /**
@@ -21,6 +22,7 @@ void initImageStage(reduced);
 initMist(reduced);
 initLegReadout();
 initReveals();
+initMinimap();
 initCountdown();
 initSound();
 
