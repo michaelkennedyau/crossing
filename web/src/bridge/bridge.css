@@ -1,22 +1,32 @@
 /* The Bridge — the instrument panel, "the film paused behind glass". Cold-instrument language:
    amber (the ember) is rationed to the chosen path + the couple's legs; cyan marks anything live. */
 
+/* the film paused behind glass: lighter glass + a heavy vignette so the frozen, blurred voyage
+   (carrying the dawn it was opened at) reads faintly behind the instruments */
 .bridge-overlay {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: rgba(5, 7, 11, 0.82);
-  backdrop-filter: blur(22px) saturate(1.1);
-  -webkit-backdrop-filter: blur(22px) saturate(1.1);
+  background: rgba(5, 7, 11, 0.56);
+  backdrop-filter: blur(26px) saturate(1.2);
+  -webkit-backdrop-filter: blur(26px) saturate(1.2);
+  box-shadow: inset 0 0 230px 74px rgba(2, 4, 8, 0.74);
   overflow-y: auto;
   overscroll-behavior: contain;
   animation: bridge-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bridge-grain {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.06; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 170px 170px;
 }
 @keyframes bridge-rise {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: none; }
 }
 .bridge-col {
+  position: relative;
+  z-index: 1;
   max-width: 1080px;
   margin: 0 auto;
   padding: clamp(20px, 5vw, 56px) clamp(16px, 4vw, 40px) 120px;
@@ -38,8 +48,11 @@
 .bridge-close:hover { background: rgba(233, 240, 242, 0.12); color: var(--snow); }
 
 .card {
-  background: rgba(9, 14, 20, 0.5); border: 1px solid rgba(124, 138, 147, 0.16);
+  background: rgba(9, 14, 20, 0.64); border: 1px solid rgba(124, 138, 147, 0.18);
   border-radius: 14px; padding: clamp(16px, 2.4vw, 22px); margin-bottom: 16px;
+  backdrop-filter: blur(8px) saturate(1.05);
+  -webkit-backdrop-filter: blur(8px) saturate(1.05);
+  box-shadow: inset 0 1px 0 rgba(233, 240, 242, 0.04), 0 2px 22px rgba(0, 0, 0, 0.28);
 }
 .card-eyebrow {
   font-family: var(--font-mono); font-size: 10.5px; font-weight: 500; letter-spacing: 0.2em;
@@ -191,6 +204,39 @@
 .concierge-in button:disabled { opacity: 0.5; cursor: default; }
 .concierge-ans { font-size: 14px; line-height: 1.6; color: var(--snow); margin: 14px 0 0; white-space: pre-wrap; }
 .concierge-err { font-family: var(--font-mono); font-size: 12px; color: var(--snow-dim); margin: 12px 0 0; }
+
+/* ── the bathymetric route chart ── */
+.routechart .chart-svg { width: 100%; height: auto; display: block; margin-top: 8px; }
+.route-line { stroke: var(--snow-dim); stroke-width: 1.6; stroke-dasharray: 5 4; stroke-linecap: round; opacity: 0.85; }
+.cnode { fill: var(--schist); stroke: rgba(9, 14, 20, 0.85); stroke-width: 1; }
+.cnode.pass { fill: var(--live); filter: drop-shadow(0 0 4px var(--live)); }
+.node-label { font-family: var(--font-hand); font-style: italic; font-size: 13px; fill: var(--snow); }
+.node-sub { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em; fill: var(--live); }
+.node-wx { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.06em; fill: var(--snow-dim); }
+.chart-ember { fill: var(--ember-hot);
+  filter: drop-shadow(0 0 6px var(--ember)) drop-shadow(0 0 13px rgba(242, 180, 94, 0.5));
+  animation: chartpulse 3.6s ease-in-out infinite; }
+.margin-note { font-family: var(--font-hand); font-style: italic; font-size: 11px; fill: var(--snow-dim); opacity: 0.6; }
+.depth { font-family: var(--font-mono); font-size: 8px; fill: var(--schist); opacity: 0.5; }
+.compass-n { font-family: var(--font-mono); font-size: 8px; fill: var(--snow-dim); text-anchor: middle; }
+@keyframes chartpulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.62; } }
+
+/* ── chart key · the design system ── */
+.chartkey .ck-swatches { display: flex; flex-wrap: wrap; gap: 14px; margin: 6px 0 18px; }
+.ck-sw { display: flex; align-items: center; gap: 7px; }
+.ck-sw span { width: 16px; height: 16px; border-radius: 4px; display: inline-block; border: 1px solid rgba(124, 138, 147, 0.25); }
+.ck-sw em { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; color: var(--snow-dim); font-style: normal; }
+.ck-voices { display: grid; gap: 7px; margin-bottom: 16px; }
+.ck-voice { font-family: var(--font-mono); font-size: 12px; color: var(--snow-dim); margin: 0; }
+.v-display { font-family: var(--font-display); font-weight: 300; font-size: 19px; color: var(--snow); }
+.v-hand { font-family: var(--font-hand); font-style: italic; font-size: 18px; color: var(--snow); }
+.v-mono { font-family: var(--font-mono); font-size: 14px; color: var(--live); }
+.v-body { font-family: var(--font-body); font-size: 14px; color: var(--snow); }
+.ck-rationale { font-family: var(--font-hand); font-style: italic; font-size: 15px; line-height: 1.6;
+  color: var(--snow-dim); margin: 0; max-width: 72ch; }
+
+.colophon { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; color: var(--schist);
+  text-align: center; margin: 22px 0 0; opacity: 0.7; }
 
 @media (max-width: 560px) { .cmp-grid { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .bridge-overlay { animation: none; } }

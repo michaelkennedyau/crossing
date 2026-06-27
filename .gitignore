@@ -14,3 +14,6 @@ dist/
 # misc
 *.log
 .DS_Store
+
+# curated image sources (optimised outputs in web/public/img are committed)
+web/.img-src/
