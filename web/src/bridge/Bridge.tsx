@@ -120,7 +120,7 @@ function ForecastModel({ oni, setOni }: { oni: number; setOni: (n: number) => vo
 function Logistics(): JSX.Element {
   const rows: [string, string, string?][] = [
     ['QF527 in', 'BNE → SYD · Sat 4 Jul 12:15 · overnight'],
-    ['QF27 in', 'SYD → SCL · 05 Jul 10:20'],
+    ['QF27 in', 'SYD 12:20 → SCL 10:50 · 5 Jul'],
     ['QF28 out', 'EZE → SYD via Aeroparque'],
     ['Crossing', 'Cruce Andino', 'https://www.cruceandino.com'],
     ['Peulla', 'Hotel Natura', 'https://www.hotelnatura.cl'],
