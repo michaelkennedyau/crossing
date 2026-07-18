@@ -10,8 +10,8 @@ import { CFG, PRESETS, type Scenario } from '../src/plotting/cfg';
  */
 const EXPECTED: Record<string, { cost: number; totalNights: number; sharedToSplit: number | null }> = {
   'The Launch': { cost: 12230, totalNights: 11, sharedToSplit: null },
-  'Launch + Second Act': { cost: 15960, totalNights: 15, sharedToSplit: 4 },
-  'Voyage then Vines': { cost: 17110, totalNights: 14, sharedToSplit: 4 },
+  'Launch + Second Act': { cost: 15960, totalNights: 15, sharedToSplit: 5 },
+  'Voyage then Vines': { cost: 17110, totalNights: 14, sharedToSplit: 5 },
   'Two Wonders': { cost: 13080, totalNights: 8, sharedToSplit: null },
   'Pure Ski': { cost: 9320, totalNights: 7, sharedToSplit: null },
   'The Long Way': { cost: 12680, totalNights: 8, sharedToSplit: null },

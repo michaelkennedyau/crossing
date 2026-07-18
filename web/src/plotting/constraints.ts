@@ -34,7 +34,7 @@ export function flagsFor(s: Scenario, c: ComputeResult): Flag[] {
 }
 
 export function questionsFor(s: Scenario): string[] {
-  const q = ['Lock the QF28 return day(s) — it runs ~4× weekly at 13:10; align to it.'];
+  const q = ['QF28 runs Tue/Thu/Fri/Sun at 13:10 — boys Thu 27 Aug, the two of us Sun 30 Aug.'];
   if (s.cross === 'lakes') q.push('Book the Cruce Andino plus the Peulla & Puerto Blest family rooms (quote-only).');
   if (s.cross === 'road') q.push('Engage a private cross-border operator (TCP permit) with an SUV/van for five plus gear.');
   if (s.cross === 'fly') q.push('Confirm the ~3pm SCL→BRC via Aeroparque (check for a seasonal late-August direct); self-transfer buffer.');

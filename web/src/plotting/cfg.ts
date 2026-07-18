@@ -37,7 +37,7 @@ export interface Cfg {
   split: { boysReturnDelta: number; acts: Record<SecondAct, ActOption> };
 }
 
-export const SPLIT_OFFSET = 10; // 27 Aug = 17 Aug + 10 nights
+export const SPLIT_OFFSET = 11; // Thu 27 Aug = 16 Aug + 11 nights (a QF28 operating day)
 export const SKI_MIN = 2;
 export const SKI_MAX = 8;
 
@@ -102,9 +102,9 @@ export const DEFAULT_SCENARIO: Scenario = PRESETS[0].s;
 
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-/** A calendar label N nights after 17 August 2026. */
+/** A calendar label N nights after 16 August 2026. */
 export function dateAt(off: number): string {
-  const d = new Date(2026, 7, 17);
+  const d = new Date(2026, 7, 16);
   d.setDate(d.getDate() + off);
   return `${d.getDate()} ${MON[d.getMonth()]}`;
 }

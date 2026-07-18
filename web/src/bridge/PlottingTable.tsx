@@ -95,7 +95,7 @@ export function PlottingTable({ cfg }: { cfg: Cfg }): JSX.Element {
       <div className="pt-head">
         <div>
           <p className="card-eyebrow" style={{ color: 'var(--live)' }}>The Plotting Table · steer the shape</p>
-          <p className="pt-sub">Dates are fixed — QF27 lands Santiago 10:50, 17 August. The variable is the shape. Choose, and watch the cost, the calendar and the consequences land.</p>
+          <p className="pt-sub">Dates are fixed — QF27 lands Santiago 10:50, Sunday 16 August. The variable is the shape. Choose, and watch the cost, the calendar and the consequences land.</p>
         </div>
         <div className="pt-total">
           <div className="amt">{aud(r.cost)}</div>

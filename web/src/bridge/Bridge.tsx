@@ -34,10 +34,10 @@ function ShipClock(): JSX.Element {
   const txt = ms <= 0 ? 'launched' : `${d}d ${pad(Math.floor((sTot % 86400) / 3600))}:${pad(Math.floor((sTot % 3600) / 60))}:${pad(sTot % 60)}`;
   return (
     <div className="card">
-      <p className="card-eyebrow">Ship's clock · QF527 · BNE 16 Aug 12:15</p>
+      <p className="card-eyebrow">Ship's clock · QF527 · BNE 15 Aug 12:15</p>
       <div className="clock-val">{txt}</div>
       <div className="clock-sub">days · hrs · min · sec to wheels-up</div>
-      <div className="clock-syd">↗ Sydney overnight · then QF27, the launch · 17 Aug</div>
+      <div className="clock-syd">↗ Sydney overnight · then QF27, the launch · 16 Aug</div>
     </div>
   );
 }
@@ -119,8 +119,8 @@ function ForecastModel({ oni, setOni }: { oni: number; setOni: (n: number) => vo
 
 function Logistics(): JSX.Element {
   const rows: [string, string, string?][] = [
-    ['QF527 in', 'BNE → SYD · Sun 16 Aug 12:15 · overnight'],
-    ['QF27 in', 'SYD 12:20 → SCL 10:50 · 17 Aug'],
+    ['QF527 in', 'BNE → SYD · Sat 15 Aug 12:15 · overnight'],
+    ['QF27 in', 'SYD 12:20 → SCL 10:50 · 16 Aug'],
     ['QF28 out', 'EZE → SYD via Aeroparque'],
     ['Crossing', 'Cruce Andino', 'https://www.cruceandino.com'],
     ['Peulla', 'Hotel Natura', 'https://www.hotelnatura.cl'],

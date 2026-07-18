@@ -4,7 +4,7 @@ import { CFG, SPLIT_OFFSET, type Cfg, type Scenario } from './cfg';
  * The reducer — pure, deterministic, side-effect free. Ported faithfully from compute() in
  * plotting-table.html. Same maths: crossing cost + ski base (skiDays·perDay5 + skiNights·lodge5)
  * + Iguazú (if on) + split (second-act cost + boys' return delta). Calendar phases derive from
- * 17 August forward; each is tagged 'all' (the five) or 'parents' (the for-two second act).
+ * 16 August forward; each is tagged 'all' (the five) or 'parents' (the for-two second act).
  *
  * Unit-tested against the artifact's outputs for all six presets (see plotting.compute.test.ts).
  */
