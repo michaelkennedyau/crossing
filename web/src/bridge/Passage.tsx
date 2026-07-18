@@ -4,13 +4,12 @@
  * → the crossing → home). The launch (QF27) carries the ember.
  */
 const TL: [string, string, boolean][] = [
-  ['Sat 15 Aug', 'QF527 · Brisbane → Sydney · 12:15', false],
-  ['Sat 15 Aug', 'Sydney · overnight', false],
-  ['Sun 16 Aug', 'QF27 · Sydney → Santiago · dep 12:20 · the launch', true],
-  ['16–22 Aug', 'the crossing · Puerto Varas → Catedral', false],
-  ['22–27 Aug', 'Llao Llao · Catedral · all five', false],
-  ['27–30 Aug', 'Mendoza · the second act · the two of us', false],
-  ['27 / 30 Aug', 'QF28 · home — boys Thu, the two of us Sun', false],
+  ['Sat 22 Aug', 'QF527 · Brisbane → Sydney · 12:15', false],
+  ['Sat 22 Aug', 'Sydney · overnight', false],
+  ['Sun 23 Aug', 'QF27 · Sydney → Santiago · dep 12:20 · the launch', true],
+  ['23–29 Aug', 'the crossing · Puerto Varas → Catedral', false],
+  ['29 Aug – 5 Sep', 'Llao Llao · Catedral · all five, all the way', false],
+  ['Sun 6 Sep', 'QF28 · home together · lands Mon 7 Sep', false],
 ];
 
 export function Passage(): JSX.Element {

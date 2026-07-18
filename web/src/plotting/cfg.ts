@@ -37,7 +37,7 @@ export interface Cfg {
   split: { boysReturnDelta: number; acts: Record<SecondAct, ActOption> };
 }
 
-export const SPLIT_OFFSET = 11; // Thu 27 Aug = 16 Aug + 11 nights (a QF28 operating day)
+export const SPLIT_OFFSET = 11; // Thu 3 Sep = 23 Aug + 11 nights (a QF28 operating day) — lever only; the plan is no split
 export const SKI_MIN = 2;
 export const SKI_MAX = 8;
 
@@ -90,7 +90,7 @@ export interface Preset {
 
 // The six named arcs (verbatim configs from the canonical engine).
 export const PRESETS: Preset[] = [
-  { name: 'The Launch', s: { cross: 'lakes', iguazu: false, split: false, secondAct: 'ski', skiDays: 4 } },
+  { name: 'The Launch', s: { cross: 'lakes', iguazu: false, split: false, secondAct: 'ski', skiDays: 6 } },
   { name: 'Launch + Second Act', s: { cross: 'lakes', iguazu: false, split: true, secondAct: 'ski', skiDays: 3 } },
   { name: 'Voyage then Vines', s: { cross: 'lakes', iguazu: false, split: true, secondAct: 'mendoza', skiDays: 4 } },
   { name: 'Two Wonders', s: { cross: 'fly', iguazu: true, split: false, secondAct: 'ski', skiDays: 4 } },
@@ -98,14 +98,14 @@ export const PRESETS: Preset[] = [
   { name: 'The Long Way', s: { cross: 'road', iguazu: false, split: false, secondAct: 'ski', skiDays: 4 } },
 ];
 
-// The locked plan (18 Jul 2026): the lakes, the split, Mendoza for two — 'Voyage then Vines'.
-export const DEFAULT_SCENARIO: Scenario = PRESETS[2].s;
+// The plan (18 Jul 2026, Claire's call): all five, together the whole way — 'The Launch', 22 Aug – 7 Sep.
+export const DEFAULT_SCENARIO: Scenario = PRESETS[0].s;
 
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-/** A calendar label N nights after 16 August 2026. */
+/** A calendar label N nights after 23 August 2026. */
 export function dateAt(off: number): string {
-  const d = new Date(2026, 7, 16);
+  const d = new Date(2026, 7, 23);
   d.setDate(d.getDate() + off);
   return `${d.getDate()} ${MON[d.getMonth()]}`;
 }

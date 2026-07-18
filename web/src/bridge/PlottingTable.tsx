@@ -95,7 +95,7 @@ export function PlottingTable({ cfg }: { cfg: Cfg }): JSX.Element {
       <div className="pt-head">
         <div>
           <p className="card-eyebrow" style={{ color: 'var(--live)' }}>The Plotting Table · steer the shape</p>
-          <p className="pt-sub">Dates are fixed — QF27 lands Santiago 10:50, Sunday 16 August. The variable is the shape. Choose, and watch the cost, the calendar and the consequences land.</p>
+          <p className="pt-sub">Dates are fixed — QF27 lands Santiago 10:50, Sunday 23 August. The variable is the shape. Choose, and watch the cost, the calendar and the consequences land.</p>
         </div>
         <div className="pt-total">
           <div className="amt">{aud(r.cost)}</div>
@@ -137,7 +137,7 @@ export function PlottingTable({ cfg }: { cfg: Cfg }): JSX.Element {
           </div>
         </div>
         <div>
-          <p className="lever-label">The split · boys home 27 Aug</p>
+          <p className="lever-label">The split · boys home 3 Sep</p>
           <div className="seg">
             <button type="button" className={`${s.split ? 'on ember' : ''}`} onClick={() => set({ split: true })}>Boys home · 15th</button>
             <button type="button" className={!s.split ? 'on' : ''} onClick={() => set({ split: false })}>Stay five</button>
@@ -156,7 +156,7 @@ export function PlottingTable({ cfg }: { cfg: Cfg }): JSX.Element {
       </div>
 
       <div className="cal">
-        <p className="cal-cap">{s.split ? '✦ 27 Aug · boys home · 5 → 2' : '✦ all five, all the way'}</p>
+        <p className="cal-cap">{s.split ? '✦ 3 Sep · boys home · 5 → 2' : '✦ all five, all the way'}</p>
         <div className="ember-track" aria-hidden="true">
           {Array.from({ length: 5 }).map((_, i) => <span key={`f${i}`} className="ember-dot" />)}
           {s.split && <span className="ember-div" />}

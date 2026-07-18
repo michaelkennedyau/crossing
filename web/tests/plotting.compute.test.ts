@@ -9,7 +9,7 @@ import { CFG, PRESETS, type Scenario } from '../src/plotting/cfg';
  *   nights = crossPhaseNights + (iguazu?3) + Catedral + (split? actNights)
  */
 const EXPECTED: Record<string, { cost: number; totalNights: number; sharedToSplit: number | null }> = {
-  'The Launch': { cost: 12230, totalNights: 11, sharedToSplit: null },
+  'The Launch': { cost: 14470, totalNights: 13, sharedToSplit: null },
   'Launch + Second Act': { cost: 15960, totalNights: 15, sharedToSplit: 5 },
   'Voyage then Vines': { cost: 17030, totalNights: 14, sharedToSplit: 5 },
   'Two Wonders': { cost: 13080, totalNights: 8, sharedToSplit: null },
