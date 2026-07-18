@@ -8,6 +8,8 @@ const TL: [string, string, boolean][] = [
   ['Sat 15 Aug', 'Sydney · overnight', false],
   ['Sun 16 Aug', 'QF27 · Sydney → Santiago · dep 12:20 · the launch', true],
   ['16–22 Aug', 'the crossing · Puerto Varas → Catedral', false],
+  ['22–27 Aug', 'Llao Llao · Catedral · all five', false],
+  ['27–30 Aug', 'Mendoza · the second act · the two of us', false],
   ['27 / 30 Aug', 'QF28 · home — boys Thu, the two of us Sun', false],
 ];
 

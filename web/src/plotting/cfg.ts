@@ -76,7 +76,7 @@ export const CFG: Cfg = {
     boysReturnDelta: 1200,
     acts: {
       ski: { label: 'Just ski, the two of you', short: 'Ski · 2', cost: 3650, nights: 5 },
-      mendoza: { label: 'Mendoza · wine country', short: 'Mendoza', cost: 4800, nights: 4 },
+      mendoza: { label: 'Mendoza · wine country', short: 'Mendoza', cost: 3600, nights: 3 },
       patagonia: { label: 'Stay on in Patagonia', short: 'Patagonia', cost: 3200, nights: 5 },
       iguazu: { label: 'Iguazú Falls, for two', short: 'Iguazú', cost: 4000, nights: 3 },
     },
@@ -92,13 +92,14 @@ export interface Preset {
 export const PRESETS: Preset[] = [
   { name: 'The Launch', s: { cross: 'lakes', iguazu: false, split: false, secondAct: 'ski', skiDays: 4 } },
   { name: 'Launch + Second Act', s: { cross: 'lakes', iguazu: false, split: true, secondAct: 'ski', skiDays: 3 } },
-  { name: 'Voyage then Vines', s: { cross: 'lakes', iguazu: false, split: true, secondAct: 'mendoza', skiDays: 3 } },
+  { name: 'Voyage then Vines', s: { cross: 'lakes', iguazu: false, split: true, secondAct: 'mendoza', skiDays: 4 } },
   { name: 'Two Wonders', s: { cross: 'fly', iguazu: true, split: false, secondAct: 'ski', skiDays: 4 } },
   { name: 'Pure Ski', s: { cross: 'fly', iguazu: false, split: false, secondAct: 'ski', skiDays: 6 } },
   { name: 'The Long Way', s: { cross: 'road', iguazu: false, split: false, secondAct: 'ski', skiDays: 4 } },
 ];
 
-export const DEFAULT_SCENARIO: Scenario = PRESETS[0].s;
+// The locked plan (18 Jul 2026): the lakes, the split, Mendoza for two — 'Voyage then Vines'.
+export const DEFAULT_SCENARIO: Scenario = PRESETS[2].s;
 
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 

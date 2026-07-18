@@ -7,11 +7,12 @@ import { useEffect, useState } from 'react';
 const ITEMS: { id: string; label: string }[] = [
   { id: 'sydney', label: 'Sydney overnight — QF527 lands SYD 15 Aug 13:50; hotel near the airport' },
   { id: 'cruce', label: 'Book the Cruce Andino — Peulla & Puerto Blest family rooms (quote-only)' },
-  { id: 'qf28', label: 'Lock the QF28 return day (runs ~4× weekly, 13:10)' },
+  { id: 'qf28', label: 'Book QF28 returns — boys Thu 27 Aug, adults Sun 30 Aug (dep SCL 13:10)' },
   { id: 'skis', label: 'Boots only — rent skis at Catedral (158 cm crossing limit)' },
   { id: 'buffer', label: 'Hold the weather-buffer day over Paso Pérez Rosales' },
-  { id: 'llao', label: 'Confirm Llao Llao — five, mid August' },
+  { id: 'llao', label: 'Confirm Llao Llao — five, 22–27 Aug' },
   { id: 'return', label: 'Boys’ return: BRC→Santiago via Aeroparque, overnight, QF28' },
+  { id: 'mendoza', label: 'Uco Valley lodge for two — Cavas or The Vines, 27–30 Aug; MDZ→SCL hop Sun' },
   { id: 'cover', label: 'Travel insurance + Argentine entry for five' },
 ];
 
