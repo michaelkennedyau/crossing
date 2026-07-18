@@ -4,7 +4,7 @@ import { CFG, SPLIT_OFFSET, type Cfg, type Scenario } from './cfg';
  * The reducer — pure, deterministic, side-effect free. Ported faithfully from compute() in
  * plotting-table.html. Same maths: crossing cost + ski base (skiDays·perDay5 + skiNights·lodge5)
  * + Iguazú (if on) + split (second-act cost + boys' return delta). Calendar phases derive from
- * 5 July forward; each is tagged 'all' (the five) or 'parents' (the for-two second act).
+ * 17 August forward; each is tagged 'all' (the five) or 'parents' (the for-two second act).
  *
  * Unit-tested against the artifact's outputs for all six presets (see plotting.compute.test.ts).
  */
@@ -28,8 +28,8 @@ export interface ComputeResult {
   totalNights: number;
   preSki: number;
   arrivalOff: number;
-  /** nights at the mountain before the boys leave on the 15th (null when not split). */
-  sharedToFifteen: number | null;
+  /** nights at the mountain before the boys leave on the 27th (null when not split). */
+  sharedToSplit: number | null;
   actShort: string | null;
 }
 
@@ -80,7 +80,7 @@ export function compute(s: Scenario, cfg: Cfg = CFG): ComputeResult {
     totalNights,
     preSki,
     arrivalOff: preSki,
-    sharedToFifteen: s.split ? Math.max(0, SPLIT_OFFSET - preSki) : null,
+    sharedToSplit: s.split ? Math.max(0, SPLIT_OFFSET - preSki) : null,
     actShort,
   };
 }

@@ -17,7 +17,7 @@ export function flagsFor(s: Scenario, c: ComputeResult): Flag[] {
   if (s.cross === 'lakes')
     f.push({ level: 'note', text: '8am crossing start, Peulla overnight, and skis exceed the 158 cm limit — bring boots, rent skis at Catedral.' });
   if (s.cross === 'road')
-    f.push({ level: 'note', text: 'Paso Samoré can shut in a July storm — hold a buffer day and a fly-through fallback.' });
+    f.push({ level: 'note', text: 'Paso Samoré can shut in an August storm — hold a buffer day and a fly-through fallback.' });
   if (s.cross === 'fly')
     f.push({ level: 'warn', text: 'You skip the journey you called the point. It’s the cheapest, most ski days — and not the launch.' });
   if (s.iguazu && s.cross !== 'fly')
@@ -25,11 +25,11 @@ export function flagsFor(s: Scenario, c: ComputeResult): Flag[] {
   if (s.iguazu && s.cross === 'fly')
     f.push({ level: 'note', text: 'Two wonders, minimal voyage: falls then a direct hop to ski. A different trip from the launch, but it works on days.' });
   if (s.split) {
-    f.push({ level: 'ok', text: 'Boys home from the 15th, travelling together unaccompanied — confirmed (Bryce 17 the responsible sibling). No chaperone needed.' });
-    if (c.sharedToFifteen !== null && c.sharedToFifteen < 2)
-      f.push({ level: 'warn', text: `This arc lands the boys at Llao Llao with only ~${c.sharedToFifteen} night(s) before the 15th — they’d barely ski. Drop Iguazú, shorten the crossing, or move the split date.` });
+    f.push({ level: 'ok', text: 'Boys home from the 27th, travelling together unaccompanied — confirmed (Bryce 17 the responsible sibling). No chaperone needed.' });
+    if (c.sharedToSplit !== null && c.sharedToSplit < 2)
+      f.push({ level: 'warn', text: `This arc lands the boys at Llao Llao with only ~${c.sharedToSplit} night(s) before the 27th — they’d barely ski. Drop Iguazú, shorten the crossing, or move the split date.` });
   }
-  f.push({ level: 'ok', text: 'Early July sits before the Argentine holiday crush (Buenos Aires breaks 20–31 Jul) — quiet slopes whatever you choose.' });
+  f.push({ level: 'ok', text: 'Late August sits after the Argentine winter break (Buenos Aires holidays end early August) — quiet slopes on a deep-season base, whatever you choose.' });
   return f;
 }
 
@@ -37,10 +37,10 @@ export function questionsFor(s: Scenario): string[] {
   const q = ['Lock the QF28 return day(s) — it runs ~4× weekly at 13:10; align to it.'];
   if (s.cross === 'lakes') q.push('Book the Cruce Andino plus the Peulla & Puerto Blest family rooms (quote-only).');
   if (s.cross === 'road') q.push('Engage a private cross-border operator (TCP permit) with an SUV/van for five plus gear.');
-  if (s.cross === 'fly') q.push('Confirm the ~3pm SCL→BRC via Aeroparque (no direct early July); self-transfer buffer.');
+  if (s.cross === 'fly') q.push('Confirm the ~3pm SCL→BRC via Aeroparque (check for a seasonal late-August direct); self-transfer buffer.');
   if (s.iguazu) q.push('Argentine or Brazilian side, and the Buenos Aires routing — does it fit without gutting ski days?');
   if (s.split) {
-    q.push('Boys’ return: BRC→Santiago via Aeroparque on the 15th (no nonstop), overnight, then QF28 home — confirmed solo-capable.');
+    q.push('Boys’ return: BRC→Santiago via Aeroparque on the 27th (no nonstop), overnight, then QF28 home — confirmed solo-capable.');
     if (s.secondAct === 'mendoza') q.push('Wine lodge — Cavas Wine Lodge or The Vines in the Uco Valley.');
     if (s.secondAct === 'iguazu') q.push('Couples Iguazú adds a long northern leg at the end — worth the flying for two?');
   }

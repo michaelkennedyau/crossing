@@ -8,13 +8,13 @@ import { CFG, PRESETS, type Scenario } from '../src/plotting/cfg';
  *   cost = (iguazu?6000) + crossCost + (skiDays·720 + (skiDays+1)·400) + (split? actCost + 1200)
  *   nights = crossPhaseNights + (iguazu?3) + Catedral + (split? actNights)
  */
-const EXPECTED: Record<string, { cost: number; totalNights: number; sharedToFifteen: number | null }> = {
-  'The Launch': { cost: 12230, totalNights: 11, sharedToFifteen: null },
-  'Launch + Second Act': { cost: 15960, totalNights: 15, sharedToFifteen: 4 },
-  'Voyage then Vines': { cost: 17110, totalNights: 14, sharedToFifteen: 4 },
-  'Two Wonders': { cost: 13080, totalNights: 8, sharedToFifteen: null },
-  'Pure Ski': { cost: 9320, totalNights: 7, sharedToFifteen: null },
-  'The Long Way': { cost: 12680, totalNights: 8, sharedToFifteen: null },
+const EXPECTED: Record<string, { cost: number; totalNights: number; sharedToSplit: number | null }> = {
+  'The Launch': { cost: 12230, totalNights: 11, sharedToSplit: null },
+  'Launch + Second Act': { cost: 15960, totalNights: 15, sharedToSplit: 4 },
+  'Voyage then Vines': { cost: 17110, totalNights: 14, sharedToSplit: 4 },
+  'Two Wonders': { cost: 13080, totalNights: 8, sharedToSplit: null },
+  'Pure Ski': { cost: 9320, totalNights: 7, sharedToSplit: null },
+  'The Long Way': { cost: 12680, totalNights: 8, sharedToSplit: null },
 };
 
 describe('Plotting Table reducer — parity with plotting-table.html', () => {
@@ -24,7 +24,7 @@ describe('Plotting Table reducer — parity with plotting-table.html', () => {
       const e = EXPECTED[preset.name];
       expect(r.cost).toBe(e.cost);
       expect(r.totalNights).toBe(e.totalNights);
-      expect(r.sharedToFifteen).toBe(e.sharedToFifteen);
+      expect(r.sharedToSplit).toBe(e.sharedToSplit);
       // totalNights must equal the sum of the phase nights
       expect(r.phases.reduce((a, p) => a + p.nights, 0)).toBe(r.totalNights);
     });
