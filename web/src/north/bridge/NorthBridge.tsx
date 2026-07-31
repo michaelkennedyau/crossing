@@ -46,9 +46,9 @@ function Logistics(): JSX.Element {
     ['Connect 2026', 'Sheraton Saigon · Mon 10 – Wed 12 · gala Wed night', 'https://www.marriott.com/en-us/hotels/sgnsi-sheraton-saigon-grand-opera-hotel/'],
     ['The exit', 'SGN → SIN Thu am · Raffles by evening', 'https://www.raffles.com/singapore/'],
     ['The night leg', 'QF1 · SIN → LHR · Fri 14 · lands 06:25 Sat'],
-    ['The north', 'Lofoten · Holmen, Å — the quiet week', 'https://www.holmenlofoten.no'],
-    ['The lights', 'Tromsø · window opens ~20 Aug'],
-    ['The south', 'Sat 22 · the flotilla, or a Hvar shore base', 'https://www.theyachtweek.com'],
+    ['Norway', 'Lofoten · Holmen, Å — the quiet week', 'https://www.holmenlofoten.no'],
+    ['Tromsø', 'aurora window opens ~20 Aug'],
+    ['Croatia', 'Sat 22 · the flotilla, or a Hvar shore base', 'https://www.theyachtweek.com'],
     ['QF2 home', 'LHR Mon 31 Aug → SYD → BNE 2 Sep'],
     ['Party', '2 — just us; the boys hold Brisbane'],
   ];
