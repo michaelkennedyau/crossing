@@ -14,6 +14,13 @@ import { flagsFor, questionsFor } from '../planner/constraints';
  */
 const ARC_IDS: ArcId[] = ['highlow', 'fjords', 'highlands', 'dolomiti', 'slovenia', 'sicily', 'sardinia', 'cyclades', 'portugal', 'madeira', 'gulet', 'yachtweek'];
 
+// arc → image slug (web/public/img/<slug>-1280.webp) — the debate, seen before it is read
+const ARC_IMG: Record<ArcId, string> = {
+  highlow: 'n-aurora', fjords: 'n-hjorund', highlands: 'arc-highlands', dolomiti: 'arc-dolomiti',
+  slovenia: 'arc-slovenia', sicily: 'arc-sicily', sardinia: 'arc-sardinia', cyclades: 'arc-cyclades',
+  portugal: 'arc-portugal', madeira: 'arc-madeira', gulet: 'arc-gulet', yachtweek: 'arc-yachtweek',
+};
+
 function encodeSel(s: Selection, cfg: Cfg): string {
   const arc = cfg.arcs[s.arc];
   return `${s.arc}:${s.tier}:${arc.segments.map((seg) => s.nights[seg.id] ?? seg.nights).join('.')}`;
@@ -94,12 +101,23 @@ export function Planner({ cfg }: { cfg: Cfg }): JSX.Element {
         </div>
       </div>
 
-      <div className="presets presets--wrap">
-        {ARC_IDS.map((id) => (
-          <button key={id} type="button" className={`preset${sel.arc === id ? ' on' : ''}`} onClick={() => pickArc(id)}>
-            {cfg.arcs[id].name}
-          </button>
-        ))}
+      <div className="arc-cards">
+        {ARC_IDS.map((id) => {
+          const a = cfg.arcs[id];
+          const cost = compute(defaultSelection(id, cfg, sel.tier), cfg).cost;
+          return (
+            <button key={id} type="button" className={`arc-card${sel.arc === id ? ' on' : ''}`} onClick={() => pickArc(id)}>
+              <span
+                className="ai"
+                role="img"
+                aria-label={a.name}
+                style={{ backgroundImage: `url("/img/${ARC_IMG[id]}-1280.webp")` }}
+              />
+              <span className="an">{a.name}</span>
+              <span className="ac">{aud(cost)} · 16n</span>
+            </button>
+          );
+        })}
       </div>
       <p className="pt-sub" style={{ marginTop: 8 }}>{arc.blurb}</p>
 

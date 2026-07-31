@@ -115,9 +115,9 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
   </a>
   <a class="world north" href="/north" aria-label="North — The second launch, Saigon to the fjords, for two, August 2026">
     <div class="w-inner">
-      <p class="w-eyebrow">62°N · North</p>
+      <p class="w-eyebrow">68°N → 43°N</p>
       <h1 class="w-head">The North</h1>
-      <p class="w-hand">The second launch — Saigon, Singapore, London, the fjords and the lights. The two of us, the long way round.</p>
+      <p class="w-hand">The second launch — Saigon, then the Arctic in its quiet week, then south to the warm half as the Med exhales. The crowd curve, played.</p>
       <span class="w-go">← Enter the north</span>
       <p class="w-state">Underway · departs 8 August</p>
     </div>

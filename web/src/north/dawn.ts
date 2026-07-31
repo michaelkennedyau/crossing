@@ -2,8 +2,9 @@ import type { FrameCtx } from '../engine/types';
 
 /**
  * The latitude arc — the North's answer to the Andes dawn. The Chile piece ran dark → daylight;
- * this one runs warm tropical dusk → equatorial night → North Sea grey → fjord green → a deliberate
- * DARK DIP at the aurora watch (≈0.83, Tromsø, the engine-cut analogue) → the aurora bloom → berth.
+ * this one runs warm tropical dusk → equatorial night → North Sea grey → Arctic blue → a deliberate
+ * DARK DIP at the aurora watch (≈0.64, Tromsø, the engine-cut analogue) → the aurora bloom → the
+ * Adriatic gold of the warm half → berth.
  * Same exported grammar as engine/dawn.ts; --dawn here reads as "northness" (the stage filter cools
  * with it). The quiet bell is computed locally — the shared buildCtx's bell belongs to Lago Frías.
  */
@@ -19,11 +20,11 @@ const STOPS: Stop[] = [
   { p: 0.2, top: '#201410', mid: '#191013', bot: '#12101A', hz: '#6A3E2A', hzA: 0.18, starA: 0.0, fogA: 0.6, greenA: 0.0 },
   { p: 0.34, top: '#090C16', mid: '#0A101E', bot: '#0C1424', hz: '#1E3048', hzA: 0.06, starA: 0.55, fogA: 0.4, greenA: 0.05 },
   { p: 0.46, top: '#131A24', mid: '#1A2430', bot: '#232E3A', hz: '#4A5866', hzA: 0.12, starA: 0.0, fogA: 0.7, greenA: 0.1 },
-  { p: 0.6, top: '#0C1E28', mid: '#12303A', bot: '#17424A', hz: '#2E6A66', hzA: 0.1, starA: 0.05, fogA: 0.5, greenA: 0.55 },
-  { p: 0.72, top: '#0A1826', mid: '#0E2434', bot: '#123244', hz: '#2A5668', hzA: 0.08, starA: 0.3, fogA: 0.35, greenA: 0.45 },
-  { p: 0.83, top: '#050A12', mid: '#071018', bot: '#0A1822', hz: '#123828', hzA: 0.04, starA: 0.8, fogA: 0.3, greenA: 0.8 },
-  { p: 0.92, top: '#071420', mid: '#0B2430', bot: '#123A34', hz: '#3EC08A', hzA: 0.5, starA: 0.6, fogA: 0.2, greenA: 1.0 },
-  { p: 1.0, top: '#0A1826', mid: '#142C3A', bot: '#1E4448', hz: '#F2D9A6', hzA: 0.35, starA: 0.3, fogA: 0.15, greenA: 0.7 },
+  { p: 0.56, top: '#0C1E28', mid: '#12303A', bot: '#17424A', hz: '#2E6A66', hzA: 0.1, starA: 0.05, fogA: 0.5, greenA: 0.55 },
+  { p: 0.64, top: '#050A12', mid: '#071018', bot: '#0A1822', hz: '#123828', hzA: 0.04, starA: 0.8, fogA: 0.3, greenA: 0.8 },
+  { p: 0.72, top: '#071420', mid: '#0B2430', bot: '#123A34', hz: '#3EC08A', hzA: 0.5, starA: 0.6, fogA: 0.2, greenA: 1.0 },
+  { p: 0.85, top: '#12283A', mid: '#1E4456', bot: '#2E6070', hz: '#E8B476', hzA: 0.45, starA: 0.1, fogA: 0.16, greenA: 0.5 },
+  { p: 1.0, top: '#182F42', mid: '#2A5064', bot: '#457888', hz: '#F2D9A6', hzA: 0.7, starA: 0.05, fogA: 0.1, greenA: 0.3 },
 ];
 
 const clamp01 = (v: number): number => (v < 0 ? 0 : v > 1 ? 1 : v);
@@ -55,9 +56,9 @@ function bracket(p: number): { a: Stop; b: Stop; t: number } {
   return { a: last, b: last, t: 0 };
 }
 
-/** the Tromsø hush bell: k² peaking at p≈0.825, half-width 0.1 — the lights want the dark. */
+/** the Tromsø hush bell: k² peaking at p≈0.64, half-width 0.09 — the lights want the dark. */
 export function auroraQuiet(p: number): number {
-  const k = Math.max(0, 1 - Math.abs(clamp01(p) - 0.825) / 0.1);
+  const k = Math.max(0, 1 - Math.abs(clamp01(p) - 0.64) / 0.09);
   return k * k;
 }
 

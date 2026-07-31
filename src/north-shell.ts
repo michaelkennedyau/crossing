@@ -65,31 +65,32 @@ const LEGS: Leg[] = [
     telemetry: '51.51°N 0.15°W · MAYFAIR · SAT 15 – MON 17',
   },
   {
-    n: '05', label: 'Hjørundfjord',
-    eyebrow: '05 · Hjørundfjord — the deep water',
-    head: 'The fjord narrows, and the Sunnmøre Alps come straight out of the sea.',
-    telemetry: '62.18°N 6.58°E · UNION ØYE · EST 1891',
-    hand: 'A hotel from 1891 at the head of black water. Kaisers and poets signed the book; the mountains never noticed.',
-  },
-  {
-    n: '06', label: 'Geiranger',
-    eyebrow: '06 · Storfjord · Geiranger — the balcony',
-    head: 'Waterfalls hang a kilometre above the ship lane.',
-    telemetry: 'GEIRANGERFJORD · UNESCO · SEVEN SISTERS 410 m',
-  },
-  {
-    n: '07', label: 'Lofoten',
-    eyebrow: '07 · Lofoten — the last village',
-    head: 'Å — where the road runs out and the peaks keep going.',
+    n: '05', label: 'Lofoten — the quiet week',
+    eyebrow: '05 · Lofoten — the quiet week',
+    head: 'While the Med is at its loudest, the Arctic stands empty.',
     telemetry: '67.88°N 12.98°E · HOLMEN · Å I LOFOTEN',
-    hand: 'Boats out at dawn, kitchen fires at night, and the light doing things it does nowhere else.',
+    hand: 'Norwegian schools went back on the 17th. Boats out at dawn, kitchen fires at night, and the peaks to ourselves.',
   },
   {
-    n: '08b', label: 'Tromsø — the lights',
+    n: '05b', label: 'Tromsø — the lights',
     eyebrow: 'Tromsø — the aurora watch',
     head: 'Engine cut.', headClass: 'cut',
-    hand: 'Past midnight, past the weather, the sky goes <span class="ember-word">green</span>. Stand in the dark and let it move.',
+    hand: 'The window opens on the 20th. Past midnight, past the weather, the sky goes <span class="ember-word">green</span>. Stand in the dark and let it move.',
     telemetry: '— hold —', tall: true,
+  },
+  {
+    n: '06', label: 'The exhale',
+    eyebrow: '06 · Saturday 22 August — the exhale',
+    head: 'Europe goes back to work, and we fly the length of it in a day.',
+    telemetry: 'TOS → OSL → SPU · THE CROWD CURVE, PLAYED',
+    hand: 'The Med at its warmest, the crowds going home — the logic of the fortnight, carried forward.',
+  },
+  {
+    n: '07', label: 'The warm half',
+    eyebrow: '07 · Split – Hvar – Vis — the warm half',
+    head: 'Seven nights on deck as the coast empties.',
+    telemetry: '43.17°N 16.44°E · SAT 22 – SAT 29 · THE FLOTILLA',
+    hand: 'Hvar at three in the morning, Vis by noon, and the year’s warmest water all to the late arrivers.',
   },
   {
     n: '08', label: 'The return',
@@ -124,14 +125,14 @@ function renderLeg(leg: Leg): string {
 
 // 8 ember-rail nodes from 10%→95% height; the aurora node glows, the last is the amber berth.
 const NODES = [10, 22, 34, 46, 58, 70, 82, 95];
-const AURORA_NODE = 6; // the Tromsø watch
+const AURORA_NODE = 5; // the Tromsø watch
 
 // leg id → image slug (web/public/img/<slug>-{1280,1920}.{avif,webp}). The image stage reads
 // data-img; every leg carries a slug so the stage's leg↔frame indexing stays 1:1.
 const LEG_IMG: Record<string, string> = {
   '0': 'n-coldopen', '00': 'n-vessel', '01': 'n-saigon', '02': 'n-raffles', '03': 'n-nightleg',
-  '04': 'n-london', '05': 'n-hjorund', '06': 'n-geiranger', '07': 'n-lofoten',
-  '08b': 'n-aurora', '08': 'n-return', '09': 'n-bridge',
+  '04': 'n-london', '05': 'n-lofoten', '05b': 'n-aurora', '06': 'arc-gulet',
+  '07': 'arc-yachtweek', '08': 'n-return', '09': 'n-bridge',
 };
 
 const CSS = `
@@ -155,20 +156,20 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 /* ── persistent atmosphere (fixed, behind content) ── */
 #sky{position:fixed;inset:0;z-index:0;
   background:linear-gradient(180deg,var(--sky-top) 0%,var(--sky-mid) 52%,var(--sky-bot) 100%);}
-/* the cinematic image stage — real location photos. The grade runs the OTHER way from the Andes:
-   warm tropical haze at the open, cooling and clearing as the latitude climbs. */
+/* the cinematic image stage — real location photos. The grade is keyed to the aurora hush, not
+   latitude: warm at the open, darkest at the Tromsø watch, warm again as the voyage turns south. */
 #stage{position:fixed;inset:0;z-index:1;overflow:hidden;
-  filter:saturate(calc(1.02 - .3*var(--dawn))) brightness(calc(.94 - .18*var(--dawn))) contrast(1.06);}
+  filter:saturate(calc(1.02 - .35*var(--quiet))) brightness(calc(.96 - .3*var(--quiet))) contrast(1.06);}
 #stage .frame{position:absolute;inset:-5%;background-size:cover;background-position:center;
   will-change:opacity,transform;transform:scale(1.05);}
 /* warm equatorial grade at the open (multiply warms any frame), fading as the north takes over */
 #scrim{position:fixed;inset:0;z-index:2;pointer-events:none;mix-blend-mode:multiply;
   background:linear-gradient(180deg, #2a1c14 0%, #1d1512 58%, #141019 100%);
   opacity:calc(.42 - .42*var(--dawn));}
-/* the aurora wash — only arrives with the high latitude; the north's answer to the Andes dawn */
+/* the aurora wash — rides the hush bell, peaking exactly at the Tromsø watch */
 #aurora{position:fixed;inset:0;z-index:2;pointer-events:none;mix-blend-mode:screen;
   background:radial-gradient(130% 70% at 50% 0%, rgba(111,227,176,.5), transparent 62%);
-  opacity:calc(var(--dawn)*var(--dawn)*.55);}
+  opacity:calc(var(--quiet)*.6);}
 #mist{position:fixed;inset:0;z-index:3;pointer-events:none;}
 #fog{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:calc(var(--fog-a)*.6);filter:blur(22px);
   background:radial-gradient(60% 50% at 28% 40%, rgba(190,205,214,.10), transparent 70%),
@@ -278,28 +279,29 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 }
 `;
 
-// A persistent minimap of the whole passage — Brisbane → Saigon → Singapore → London → the fjords.
-// The ember rides almost the whole route as you scroll (positioned by the north minimap island).
+// A persistent minimap of the whole passage — Brisbane → Saigon → Singapore → London → the Arctic,
+// then south to the Adriatic as the Med exhales. The ember rides nearly all of it as you scroll.
 function renderMinimap(): string {
   const tl: [string, string, boolean][] = [
-    ['8 Aug', 'QF1 · BNE→SYD→SIN', false],
-    ['10–13', 'Connect 2026 · Saigon', false],
-    ['14 Aug', 'QF1 · SIN → LHR', true],
+    ['15–20', 'Lofoten · the quiet week', false],
+    ['22 Aug', 'TOS → SPU · the exhale', true],
+    ['31 Aug', 'QF2 · home by 2 Sep', false],
   ];
   return `<aside id="minimap" aria-hidden="true">
   <svg viewBox="0 0 220 96" width="100%" height="100%">
-    <path id="mm-route" d="M16,82 C40,64 58,42 76,38 L90,26 L96,40 C120,52 142,58 168,44 C184,34 196,26 204,18" fill="none"
+    <path id="mm-route" d="M16,82 C40,64 58,42 76,38 L90,26 L96,40 C120,52 142,58 164,44 C180,34 190,24 198,14 C206,26 212,42 214,58" fill="none"
       stroke="rgba(126,142,160,.38)" stroke-width="1.2" stroke-dasharray="3 3.5" stroke-linecap="round"/>
     <text class="mm-icon" x="58" y="34">✈</text>
-    <text class="mm-icon" x="188" y="44">⛵</text>
+    <text class="mm-icon" x="206" y="76">⛵</text>
     <g class="mm-stop"><circle cx="16" cy="82" r="2.3"/><text x="18" y="94">BNE</text></g>
     <g class="mm-stop"><circle cx="90" cy="26" r="2.3"/><text x="86" y="17">SGN</text></g>
     <g class="mm-stop"><circle cx="96" cy="40" r="2.3"/><text x="104" y="52">SIN</text></g>
-    <g class="mm-stop mm-pass"><circle cx="168" cy="44" r="2.7"/><text x="168" y="60">LHR</text></g>
-    <g class="mm-stop"><circle cx="204" cy="18" r="2.3"/><text x="202" y="10">TOS</text></g>
+    <g class="mm-stop"><circle cx="164" cy="44" r="2.3"/><text x="164" y="60">LHR</text></g>
+    <g class="mm-stop mm-pass"><circle cx="198" cy="14" r="2.7"/><text x="192" y="8">TOS</text></g>
+    <g class="mm-stop"><circle cx="214" cy="58" r="2.3"/><text x="208" y="70">SPU</text></g>
     <circle id="minimap-ember" cx="16" cy="82" r="3.2"/>
   </svg>
-  <span class="mm-title">the passage north</span>
+  <span class="mm-title">north, then south</span>
   <ol class="mm-timeline">${tl
     .map(([d, l, launch]) => `<li class="${launch ? 't-launch' : ''}"><span class="t-date">${esc(d)}</span><span class="t-leg">${esc(l)}</span></li>`)
     .join('')}</ol>
@@ -313,10 +315,10 @@ export function renderNorth(env: Env): string {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>il varo — The North</title>
-<meta name="description" content="The second launch — Saigon, Singapore, London, and the fjords. The long way north, for two.">
+<meta name="description" content="The second launch — Saigon, Singapore, London, the Arctic in its quiet week, then south as the Med exhales.">
 <meta name="theme-color" content="#040810">
 <meta property="og:title" content="il varo — The North">
-<meta property="og:description" content="The winter the Andes shut their door, the ember turned north.">
+<meta property="og:description" content="The winter the Andes shut their door, the ember turned north — then rode the crowd curve south.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

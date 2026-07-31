@@ -45,3 +45,18 @@ Curated real photography of the route from Wikimedia Commons. Private personal u
   https://commons.wikimedia.org/wiki/File:Brisbane_skyline_with_Brisbane_sign.jpg
 - **n-bridge** — Tromsø Bridge and the Arctic Cathedral (8526971847).jpg · (see file page) · CC BY 2.0
   https://commons.wikimedia.org/wiki/File:Troms%C3%B8_Bridge_and_the_Arctic_Cathedral_(8526971847).jpg
+
+## Arc cards (arc-*)
+
+- **arc-highlands** — Quiraing, Isle of Skye, Scotland - Diliff.jpg · David Iliff · CC BY-SA 3.0
+- **arc-dolomiti** — Drei Zinnen Tre Cime di Lavaredo Dolomites.jpg · (see file page) · CC BY-SA 3.0
+- **arc-slovenia** — Bled Island in Lake Bled, Slovenia, 20240504.jpg · (see file page) · CC BY 4.0
+- **arc-sicily** — The city of Taormina, Sicily, and the Mediterranean sea.jpg · (see file page) · CC BY-SA 4.0
+- **arc-sardinia** — Cala Goloritze Sardegna.jpg · (see file page) · CC BY 4.0
+- **arc-cyclades** — Sarakiniko Beach on Milos Island, Greece.jpg · (see file page) · CC BY 2.0
+- **arc-portugal** — Alto Douro vineyards.jpg · (see file page) · CC BY-SA 2.0
+- **arc-madeira** — View from Miradouro do Pico do Arieiro - Madeira 01.jpg · (see file page) · CC BY-SA 3.0
+- **arc-gulet** — Adriatic Sea (164675277).jpeg · (see file page) · CC BY 3.0
+- **arc-yachtweek** — View-of-Hvar-from-Harbour.jpg · (see file page) · CC BY 4.0
+
+All via Wikimedia Commons search; full attribution on each file page.
