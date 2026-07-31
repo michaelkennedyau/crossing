@@ -13,7 +13,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "db:apply": "wrangler d1 execute varo-family-brain --remote --file=sql/crossing_schema.sql",
-    "db:apply:local": "wrangler d1 execute varo-family-brain --local --file=sql/crossing_schema.sql"
+    "db:apply:local": "wrangler d1 execute varo-family-brain --local --file=sql/crossing_schema.sql",
+    "db:apply:north": "wrangler d1 execute varo-family-brain --remote --file=sql/north_schema.sql",
+    "db:apply:north:local": "wrangler d1 execute varo-family-brain --local --file=sql/north_schema.sql"
   },
   "dependencies": {
     "hono": "^4.7.0"

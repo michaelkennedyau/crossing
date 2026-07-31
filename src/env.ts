@@ -13,4 +13,6 @@ export interface Env {
   ANTHROPIC_API_KEY?: string;
   // var — QF27 launch instant, used by the countdown.
   DEPART_ISO: string;
+  // var — the north launch instant (QF BNE→SYD, Sat 8 Aug), used by the north countdown.
+  NORTH_DEPART_ISO: string;
 }

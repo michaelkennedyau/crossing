@@ -3,13 +3,22 @@
 // stocky/bright before the runtime dawn-arc scrim warms it at the arrival. Emits AVIF + WebP at two
 // widths + a tiny inline LQIP, and a manifest (aspect ratio + LQIP) the image stage reads.
 import sharp from 'sharp';
-import { readdir, mkdir, writeFile } from 'node:fs/promises';
+import { readdir, mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const SRC = path.resolve(process.argv[2] || '.img-src');
 const OUT = path.resolve('public/img');
 const WIDTHS = [1280, 1920];
 await mkdir(OUT, { recursive: true });
+
+// Merge into any existing manifest (the Chile sources predate the machine loss and exist only as
+// committed outputs) — a partial re-run must never orphan another voyage's slugs.
+let existing = {};
+try {
+  existing = JSON.parse(await readFile(path.join(OUT, 'manifest.json'), 'utf8'));
+} catch {
+  /* first run */
+}
 
 // GENTLE base only — preserve colour (esp. the emerald/turquoise lakes). The cold mood is applied
 // at RUNTIME, per leg, via a CSS filter driven by --dawn (cold/desaturated at the cold open, full
@@ -21,7 +30,7 @@ const grade = (img) =>
     .linear(1.06, -6); // gentle contrast + slight black crush
 
 const files = (await readdir(SRC)).filter((f) => /\.(jpe?g|png)$/i.test(f));
-const manifest = {};
+const manifest = existing;
 for (const f of files) {
   const slug = f.replace(/\.[^.]+$/, '');
   const src = path.join(SRC, f);

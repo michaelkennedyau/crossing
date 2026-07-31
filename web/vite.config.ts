@@ -23,7 +23,8 @@ export default defineConfig({
       input: {
         engine: resolve(__dirname, 'src/entries/engine.ts'),
         bridge: resolve(__dirname, 'src/entries/bridge.tsx'),
-        // sound / concierge entries are added in their phases
+        'north-engine': resolve(__dirname, 'src/entries/north-engine.ts'),
+        'north-bridge': resolve(__dirname, 'src/entries/north-bridge.tsx'),
       },
       output: {
         entryFileNames: 'assets/[name].js',

@@ -10,7 +10,8 @@ import type { Env } from './env';
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
-    if (url.pathname === '/' || url.pathname === '/health' || url.pathname.startsWith('/api/')) {
+    const ssr = url.pathname === '/' || url.pathname === '/andes' || url.pathname === '/north';
+    if (ssr || url.pathname === '/health' || url.pathname.startsWith('/api/')) {
       return app.fetch(request, env, ctx);
     }
     return env.ASSETS.fetch(request);

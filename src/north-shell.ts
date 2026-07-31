@@ -1,12 +1,14 @@
 import type { Env } from './env';
-import { LEG_PLACES } from './places';
+import { NORTH_LEG_PLACES } from './north-places';
 
 const esc = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 /**
- * The Voyage legs (exact copy from the Claude Design handoff). Server-rendered so the page is
- * beautiful and complete before any JS — the reduced-motion / no-JS parity starts here.
+ * The North — the second launch. Same voyage grammar as the Andes shell (server-rendered legs,
+ * ember rail, minimap, one scroll scalar) with a cold palette under the SAME token names, so the
+ * shared engine modules and bridge.css read identically. The ember itself stays amber — the one
+ * warm light is the through-line between the two worlds.
  */
 interface Leg {
   n: string;
@@ -24,60 +26,82 @@ interface Leg {
 const LEGS: Leg[] = [
   {
     n: '0', label: 'Cold open',
-    eyebrow: 'A maiden voyage · winter · the Andes by water',
+    eyebrow: 'a second launch · winter · the long way north',
     head: 'il varo', headClass: 'hero',
-    hand: 'The launch — a hull meeting water for the first time, and the held breath before the first note.',
-    telemetry: 'QF527 · BNE → SYD · SAT 22 AUG 12:15 · T− <span data-countdown>—</span><br><span class="syd-note">then Sydney overnight · QF27 · SYD 12:20 → SCL 10:50 · 23 Aug</span>',
+    hand: 'The winter the Andes shut their door — five metres of snow across the pass. The <span class="ember-word">ember</span> slipped its mooring, and turned north.',
+    telemetry: 'QF · BNE → SYD · SAT 8 AUG · T− <span data-countdown>—</span><br><span class="syd-note">then QF1 · the A380 · SYD → SIN, and on</span>',
   },
   {
     n: '00', label: 'The vessel',
     eyebrow: '00 · The vessel',
-    head: 'A maiden voyage, at the bow of a year that is itself a launch.',
-    hand: 'Two adults, three sons — seventeen, fourteen, eight. The journey is the purpose; the skiing is the coda. And one warm light, still at its <span class="ember-word">mooring</span>.',
+    head: 'Two travellers this time, and a year that keeps launching.',
+    hand: 'Michael and Claire. The boys hold Brisbane; Emily holds the boys. The journey is the purpose — the conference is the <span class="ember-word">cover story</span>.',
   },
   {
-    n: '01', label: 'Puerto Varas',
-    eyebrow: '01 · Puerto Varas — the night before',
-    head: 'Osorno holds the dark across the water. First light has not decided yet.',
-    telemetry: '41.32°S 72.98°W · LAGO LLANQUIHUE · ELEV 65 m',
-    live: 'PUERTO VARAS · −1°C · CLEAR · FREEZING 1,600 m',
+    n: '01', label: 'Saigon',
+    eyebrow: '01 · Sài Gòn — Connect 2026',
+    head: 'Four days among four hundred planners, in a city of eight million motorbikes.',
+    telemetry: '10.78°N 106.70°E · SHERATON SAIGON GRAND OPERA · GALA WED 12',
+    live: 'SAIGON · 32°C · MONSOON HAZE · LANTERNS AT DUSK',
+    hand: 'Wednesday night, vibrant colours under a tropical sky — seen, remembered. Thursday owes nobody anything.',
   },
   {
-    n: '02', label: 'The emerald hush',
-    eyebrow: '02 · Lago Todos los Santos — the emerald hush',
-    head: 'The water turns an impossible green, and the last road falls away behind Peulla.',
-    telemetry: 'DEPTH 337 m · GLACIAL FLOUR · NO ROAD OUT',
-    hand: 'An emerald you can only reach by water.',
+    n: '02', label: 'The quiet Thursday',
+    eyebrow: '02 · SGN → SIN — the quiet exit',
+    head: 'A morning flight out while the hall empties, and Raffles by evening.',
+    telemetry: 'SGN DEP AM · FAST TRACK · SIN BY AFTERNOON',
   },
   {
-    n: '03', label: 'The pass',
-    eyebrow: '03 · Paso Pérez Rosales — the apex',
-    head: 'The divide at nine hundred and seventy-six metres — Tronador hangs its glaciers over the line between two oceans.',
-    telemetry: '976 m · CONTINENTAL DIVIDE · TRONADOR 3,491 m',
+    n: '03', label: 'The night leg',
+    eyebrow: '03 · QF1 · SIN → LHR — the night leg',
+    head: 'Fourteen hours of dark over two continents, and London before breakfast.',
+    telemetry: 'FIRST LOUNGE T1 · DEP LATE FRI 14 · LHR SAT 06:25',
+    hand: 'Wake in Singapore. Board unhurried. Nothing behind you.',
   },
   {
-    n: '04b', label: 'Lago Frías — engine cut',
-    eyebrow: 'Lago Frías — the cathedral leg',
+    n: '04', label: 'London — the pause',
+    eyebrow: '04 · London — the pause',
+    head: 'Two slow days to find the right time zone.',
+    telemetry: '51.51°N 0.15°W · MAYFAIR · SAT 15 – MON 17',
+  },
+  {
+    n: '05', label: 'Hjørundfjord',
+    eyebrow: '05 · Hjørundfjord — the deep water',
+    head: 'The fjord narrows, and the Sunnmøre Alps come straight out of the sea.',
+    telemetry: '62.18°N 6.58°E · UNION ØYE · EST 1891',
+    hand: 'A hotel from 1891 at the head of black water. Kaisers and poets signed the book; the mountains never noticed.',
+  },
+  {
+    n: '06', label: 'Geiranger',
+    eyebrow: '06 · Storfjord · Geiranger — the balcony',
+    head: 'Waterfalls hang a kilometre above the ship lane.',
+    telemetry: 'GEIRANGERFJORD · UNESCO · SEVEN SISTERS 410 m',
+  },
+  {
+    n: '07', label: 'Lofoten',
+    eyebrow: '07 · Lofoten — the last village',
+    head: 'Å — where the road runs out and the peaks keep going.',
+    telemetry: '67.88°N 12.98°E · HOLMEN · Å I LOFOTEN',
+    hand: 'Boats out at dawn, kitchen fires at night, and the light doing things it does nowhere else.',
+  },
+  {
+    n: '08b', label: 'Tromsø — the lights',
+    eyebrow: 'Tromsø — the aurora watch',
     head: 'Engine cut.', headClass: 'cut',
-    hand: 'Vertical rainforest walls, black water, a single held note — and then nothing. Sit in the silence.',
+    hand: 'Past midnight, past the weather, the sky goes <span class="ember-word">green</span>. Stand in the dark and let it move.',
     telemetry: '— hold —', tall: true,
   },
   {
-    n: '04', label: 'The arrival',
-    eyebrow: '04 · Nahuel Huapi — the arrival',
-    head: 'Nahuel Huapi opens wide, and the cold finally becomes light.',
-    telemetry: 'PUERTO PAÑUELO · 41.07°S 71.63°W · DAYBREAK',
-    hand: 'The <span class="ember-word">ember</span> reaches Llao Llao, and settles.',
+    n: '08', label: 'The return',
+    eyebrow: '08 · London → home',
+    head: 'QF2 out on the last night of August; Brisbane by the second of September.',
+    telemetry: 'LHR DEP MON 31 AUG · SYD · BNE 2 SEP',
+    hand: 'The ember comes home the long way — berth lights on.',
   },
   {
-    n: '05', label: 'The coda',
-    eyebrow: '05 · Cerro Catedral — the coda',
-    head: 'A few unhurried days on the snow. The skiing was never the point.',
-  },
-  {
-    n: '06', label: 'The bridge',
-    eyebrow: '06 · The bridge',
-    head: 'Now watch how she runs.',
+    n: '09', label: 'The bridge',
+    eyebrow: '09 · The bridge',
+    head: 'Now plot where she sails.',
     cta: true,
   },
 ];
@@ -91,34 +115,37 @@ function renderLeg(leg: Leg): string {
     ${leg.hand ? `<p class="hand">${leg.hand}</p>` : ''}
     ${leg.telemetry ? `<p class="telemetry">${leg.telemetry}</p>` : ''}
     ${leg.live ? `<p class="live-pill"><span class="live-dot"></span>${esc(leg.live)}</p>` : ''}
-    ${leg.n === '0' ? `<p class="scrollhint">scroll to sail · the dawn lifts as you go</p>` : ''}
+    ${leg.n === '0' ? `<p class="scrollhint">scroll to sail · the latitude rises as you go</p>` : ''}
     ${leg.cta ? `<button class="bridge-open" data-open-bridge type="button">Open the bridge →</button>` : ''}
-    ${LEG_PLACES[leg.n] ? `<a class="place" href="${esc(LEG_PLACES[leg.n].url)}" target="_blank" rel="noopener">${esc(LEG_PLACES[leg.n].kind)} · ${esc(LEG_PLACES[leg.n].name)} ↗</a>` : ''}
+    ${NORTH_LEG_PLACES[leg.n] ? `<a class="place" href="${esc(NORTH_LEG_PLACES[leg.n].url)}" target="_blank" rel="noopener">${esc(NORTH_LEG_PLACES[leg.n].kind)} · ${esc(NORTH_LEG_PLACES[leg.n].name)} ↗</a>` : ''}
   </div>
 </section>`;
 }
 
-// 7 ember-rail nodes from 11%→95% height; the Lago Frías node is turquoise, the last an amber berth.
-const NODES = [11, 23, 37, 50, 64, 80, 95];
+// 8 ember-rail nodes from 10%→95% height; the aurora node glows, the last is the amber berth.
+const NODES = [10, 22, 34, 46, 58, 70, 82, 95];
+const AURORA_NODE = 6; // the Tromsø watch
 
-// leg id → image slug (web/public/img/<slug>-{1280,1920}.{avif,webp}). The image stage reads data-img.
+// leg id → image slug (web/public/img/<slug>-{1280,1920}.{avif,webp}). The image stage reads
+// data-img; every leg carries a slug so the stage's leg↔frame indexing stays 1:1.
 const LEG_IMG: Record<string, string> = {
-  '0': 'coldopen', '00': 'vessel', '01': 'puertovaras', '02': 'emerald', '03': 'pass',
-  '04b': 'enginecut', '04': 'arrival', '05': 'coda', '06': 'bridge',
+  '0': 'n-coldopen', '00': 'n-vessel', '01': 'n-saigon', '02': 'n-raffles', '03': 'n-nightleg',
+  '04': 'n-london', '05': 'n-hjorund', '06': 'n-geiranger', '07': 'n-lofoten',
+  '08b': 'n-aurora', '08': 'n-return', '09': 'n-bridge',
 };
 
 const CSS = `
 :root{
-  --void:#04060A; --slate:#0B1119; --schist:#7C8A93; --snow:#E9F0F2; --snow-dim:#A9B8BE;
-  --emerald:#1FA37E; --emerald-deep:#13715A; --turquoise:#37C9C2; --turquoise-deep:#1E7E7C;
-  --ember:#F2B45E; --ember-hot:#FFD089; --ember-deep:#C98438; --live:#74E0E6; --live-deep:#41B4BE;
+  --void:#040810; --slate:#0A1322; --schist:#7E8EA0; --snow:#EDF3F8; --snow-dim:#AEBDCB;
+  --emerald:#2FA98C; --emerald-deep:#1D7361; --turquoise:#5BC8DE; --turquoise-deep:#2F7E92;
+  --ember:#F2B45E; --ember-hot:#FFD089; --ember-deep:#C98438; --live:#8BE8C0; --live-deep:#4FBE92;
   --font-display:'Fraunces',Georgia,serif;
   --font-mono:'IBM Plex Mono',ui-monospace,monospace;
   --font-hand:'Instrument Serif',Georgia,serif;
   --font-body:'Outfit',system-ui,-apple-system,sans-serif;
   --p:0; --dawn:0; --quiet:0;
-  --sky-top:#04060A; --sky-mid:#070B12; --sky-bot:#0B1018; --horizon:#16263A;
-  --horizon-a:0; --star-a:1; --fog-a:.92; --green-a:0;
+  --sky-top:#1A1410; --sky-mid:#140F12; --sky-bot:#101018; --horizon:#3A2A24;
+  --horizon-a:.12; --star-a:0; --fog-a:.5; --green-a:0;
 }
 *{box-sizing:border-box;}
 html{-webkit-text-size-adjust:100%;}
@@ -128,21 +155,20 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 /* ── persistent atmosphere (fixed, behind content) ── */
 #sky{position:fixed;inset:0;z-index:0;
   background:linear-gradient(180deg,var(--sky-top) 0%,var(--sky-mid) 52%,var(--sky-bot) 100%);}
-/* the cinematic image stage — real location photos, graded cold→warm by --dawn (the dawn-arc scrim
-   applied as a filter). The photos ARE the scenery; they replace v1's flat SVG ridgelines. */
+/* the cinematic image stage — real location photos. The grade runs the OTHER way from the Andes:
+   warm tropical haze at the open, cooling and clearing as the latitude climbs. */
 #stage{position:fixed;inset:0;z-index:1;overflow:hidden;
-  filter:saturate(calc(.4 + .66*var(--dawn))) brightness(calc(.72 + .32*var(--dawn))) contrast(1.06);}
+  filter:saturate(calc(1.02 - .3*var(--dawn))) brightness(calc(.94 - .18*var(--dawn))) contrast(1.06);}
 #stage .frame{position:absolute;inset:-5%;background-size:cover;background-position:center;
   will-change:opacity,transform;transform:scale(1.05);}
-/* cold-blue grade at the cold open (multiply cools + darkens any warm frame to blue-black), fading
-   to the photo's own colour + warmth by the arrival */
+/* warm equatorial grade at the open (multiply warms any frame), fading as the north takes over */
 #scrim{position:fixed;inset:0;z-index:2;pointer-events:none;mix-blend-mode:multiply;
-  background:linear-gradient(180deg, #0b1c30 0%, #07131f 58%, #0a1624 100%);
-  opacity:calc(.52 - .48*var(--dawn));}
-/* a faint warm wash that only arrives with the dawn — the resolve into daylight */
-#warmth{position:fixed;inset:0;z-index:2;pointer-events:none;mix-blend-mode:soft-light;
-  background:radial-gradient(120% 90% at 58% 96%, #e8c486, transparent 60%);
-  opacity:calc(var(--dawn)*var(--dawn)*.5);}
+  background:linear-gradient(180deg, #2a1c14 0%, #1d1512 58%, #141019 100%);
+  opacity:calc(.42 - .42*var(--dawn));}
+/* the aurora wash — only arrives with the high latitude; the north's answer to the Andes dawn */
+#aurora{position:fixed;inset:0;z-index:2;pointer-events:none;mix-blend-mode:screen;
+  background:radial-gradient(130% 70% at 50% 0%, rgba(111,227,176,.5), transparent 62%);
+  opacity:calc(var(--dawn)*var(--dawn)*.55);}
 #mist{position:fixed;inset:0;z-index:3;pointer-events:none;}
 #fog{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:calc(var(--fog-a)*.6);filter:blur(22px);
   background:radial-gradient(60% 50% at 28% 40%, rgba(190,205,214,.10), transparent 70%),
@@ -156,17 +182,17 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 #vignette{position:fixed;inset:0;z-index:7;pointer-events:none;
   background:radial-gradient(125% 105% at 50% 44%, transparent 50%, rgba(2,4,8,.6));}
 #hush{position:fixed;inset:0;z-index:8;pointer-events:none;opacity:var(--quiet);
-  background:radial-gradient(120% 90% at 50% 46%, transparent 30%, rgba(3,5,9,.66));}
+  background:radial-gradient(120% 90% at 50% 46%, transparent 30%, rgba(2,5,8,.7));}
 
 /* ── the ember rail (the throughline) ── */
 #rail{position:fixed;left:0;top:0;bottom:0;width:clamp(48px,7vw,72px);z-index:30;pointer-events:none;}
-#rail .line{position:absolute;left:50%;top:11%;height:84%;width:1px;transform:translateX(-.5px);
-  background:linear-gradient(180deg,transparent,rgba(124,138,147,.32) 12%,rgba(124,138,147,.32) 88%,transparent);}
+#rail .line{position:absolute;left:50%;top:10%;height:85%;width:1px;transform:translateX(-.5px);
+  background:linear-gradient(180deg,transparent,rgba(126,142,160,.32) 12%,rgba(126,142,160,.32) 88%,transparent);}
 #rail .node{position:absolute;left:50%;width:7px;height:7px;border-radius:50%;background:var(--schist);
   transform:translate(-50%,-50%);opacity:.7;}
-#rail .node.frias{background:var(--turquoise);box-shadow:0 0 8px var(--turquoise);}
+#rail .node.lights{background:var(--live);box-shadow:0 0 8px var(--live);}
 #rail .node.last{width:13px;height:13px;background:transparent;border:1.5px solid var(--ember);opacity:.5;}
-#ember{position:absolute;left:50%;top:calc(11% + var(--p) * 84%);width:7px;height:7px;border-radius:50%;
+#ember{position:absolute;left:50%;top:calc(10% + var(--p) * 85%);width:7px;height:7px;border-radius:50%;
   transform:translate(-50%,-50%);background:radial-gradient(circle,var(--ember-hot),var(--ember) 60%,var(--ember-deep));
   animation:emberbeat 3.6s ease-in-out infinite;}
 #ember-berth{position:absolute;left:50%;top:95%;width:48px;height:48px;border-radius:50%;
@@ -177,9 +203,8 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 #voyage{position:relative;z-index:10;}
 .leg{position:relative;min-height:100vh;display:flex;align-items:center;padding:clamp(24px,7vw,96px);
   padding-left:clamp(64px,10vw,128px);}
-/* legibility scrim — keeps the left-aligned text readable over any photo */
 .leg::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
-  background:linear-gradient(90deg, rgba(4,6,10,.62), rgba(4,6,10,.16) 46%, transparent 72%);}
+  background:linear-gradient(90deg, rgba(4,8,16,.62), rgba(4,8,16,.16) 46%, transparent 72%);}
 .leg--tall{min-height:128vh;}
 .leg-inner{max-width:640px;}
 [data-reveal]{opacity:0;transform:translateY(36px);transition:opacity 1.2s cubic-bezier(.16,1,.3,1),transform 1.2s cubic-bezier(.16,1,.3,1);}
@@ -196,10 +221,10 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 .telemetry{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;color:var(--snow-dim);margin:22px 0 0;}
 .syd-note{display:inline-block;margin-top:7px;color:var(--ember);opacity:.62;}
 .place{display:block;width:fit-content;margin-top:24px;font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;
-  color:var(--snow-dim);text-decoration:none;border-bottom:1px solid rgba(124,138,147,.3);padding-bottom:2px;transition:.16s;}
+  color:var(--snow-dim);text-decoration:none;border-bottom:1px solid rgba(126,142,160,.3);padding-bottom:2px;transition:.16s;}
 .place:hover{color:var(--ember-hot);border-color:var(--ember);}
 .live-pill{display:inline-flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:11px;
-  letter-spacing:.08em;color:var(--live);border:1px solid rgba(116,224,230,.25);border-radius:999px;
+  letter-spacing:.08em;color:var(--live);border:1px solid rgba(139,232,192,.25);border-radius:999px;
   padding:7px 13px;margin:16px 0 0;}
 .live-dot{width:7px;height:7px;border-radius:50%;background:var(--live);box-shadow:0 0 8px var(--live);
   animation:livepulse 2.4s ease-in-out infinite;}
@@ -214,17 +239,19 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 .chrome{position:fixed;left:0;right:0;top:0;z-index:40;display:flex;justify-content:space-between;
   align-items:center;padding:16px clamp(16px,4vw,32px);font-family:var(--font-mono);font-size:11px;
   letter-spacing:.2em;text-transform:uppercase;color:var(--snow-dim);
-  backdrop-filter:blur(8px);background:linear-gradient(180deg,rgba(4,6,10,.5),transparent);}
-.chrome-btn{font:inherit;letter-spacing:inherit;text-transform:inherit;color:var(--snow);background:rgba(233,240,242,.06);
-  border:1px solid rgba(124,138,147,.3);border-radius:7px;padding:6px 12px;cursor:pointer;transition:.16s;}
-.chrome-btn:hover{background:rgba(233,240,242,.12);}
+  backdrop-filter:blur(8px);background:linear-gradient(180deg,rgba(4,8,16,.5),transparent);}
+.chrome a{color:inherit;text-decoration:none;}
+.chrome a:hover{color:var(--snow);}
+.chrome-btn{font:inherit;letter-spacing:inherit;text-transform:inherit;color:var(--snow);background:rgba(237,243,248,.06);
+  border:1px solid rgba(126,142,160,.3);border-radius:7px;padding:6px 12px;cursor:pointer;transition:.16s;}
+.chrome-btn:hover{background:rgba(237,243,248,.12);}
 .readout{position:fixed;left:clamp(16px,4vw,32px);bottom:18px;z-index:40;font-family:var(--font-mono);
   font-size:11px;letter-spacing:.14em;color:var(--snow-dim);}
 .readout b{color:var(--snow);font-weight:500;}
 
 /* ── the passage minimap (fixed, bottom-right) ── */
 #minimap{position:fixed;right:clamp(14px,3vw,30px);bottom:46px;z-index:40;width:clamp(172px,19vw,224px);
-  padding:9px 11px 7px;border-radius:12px;background:rgba(9,14,20,.42);border:1px solid rgba(124,138,147,.15);
+  padding:9px 11px 7px;border-radius:12px;background:rgba(8,13,22,.42);border:1px solid rgba(126,142,160,.15);
   backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);pointer-events:none;}
 #minimap svg{display:block;width:100%;height:auto;}
 #minimap text{text-anchor:middle;font-family:var(--font-mono);font-size:7px;letter-spacing:.05em;fill:var(--snow-dim);}
@@ -234,77 +261,74 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 #minimap-ember{fill:var(--ember-hot);filter:drop-shadow(0 0 4px var(--ember));}
 .mm-title{display:block;text-align:center;font-family:var(--font-mono);font-size:7.5px;letter-spacing:.2em;
   text-transform:uppercase;color:var(--schist);margin:3px 0 0;}
-.mm-timeline{list-style:none;margin:8px 0 0;padding:8px 1px 0;border-top:1px solid rgba(124,138,147,.14);}
+.mm-timeline{list-style:none;margin:8px 0 0;padding:8px 1px 0;border-top:1px solid rgba(126,142,160,.14);}
 .mm-timeline li{display:flex;gap:8px;align-items:baseline;padding:2.5px 0;font-family:var(--font-mono);
   font-size:8.5px;letter-spacing:.03em;color:var(--snow-dim);}
-.mm-timeline .t-date{flex:0 0 28px;opacity:.7;}
+.mm-timeline .t-date{flex:0 0 34px;opacity:.7;}
 .mm-timeline .t-launch .t-date,.mm-timeline .t-launch .t-leg{color:var(--ember);}
 @media (max-width:680px){#minimap{display:none;}}
-
-/* ── ambient particle canvas ── */
-#ambient{position:fixed;inset:0;z-index:8;pointer-events:none;}
 
 @keyframes livepulse{0%,100%{opacity:1;}50%{opacity:.45;}}
 @keyframes emberbeat{0%,100%{box-shadow:0 0 8px var(--ember),0 0 18px rgba(242,180,94,.4);}
   50%{box-shadow:0 0 16px var(--ember-hot),0 0 34px rgba(242,180,94,.6);}}
-@keyframes twinkle{0%,100%{opacity:calc(var(--star-a) * 1);}50%{opacity:calc(var(--star-a) * .7);}}
 @keyframes fogdrift{0%,100%{transform:translate(0,0);}50%{transform:translate(3%,-2%);}}
 @media (prefers-reduced-motion: reduce){
-  .live-dot,#ember,#starfield,#fog{animation:none;}
+  .live-dot,#ember,#fog{animation:none;}
   [data-reveal]{transition:opacity .4s linear;transform:none;}
 }
 `;
 
-// A persistent minimap of the whole passage — Brisbane → Sydney → Santiago → the crossing → the snow.
-// The ember rides the crossing portion as you scroll (positioned by minimap.ts).
+// A persistent minimap of the whole passage — Brisbane → Saigon → Singapore → London → the fjords.
+// The ember rides almost the whole route as you scroll (positioned by the north minimap island).
 function renderMinimap(): string {
   const tl: [string, string, boolean][] = [
-    ['22 Aug', 'QF527 · BNE→SYD', false],
-    ['22 Aug', 'Sydney · overnight', false],
-    ['23 Aug', 'QF27 · SYD 12:20', true],
+    ['8 Aug', 'QF1 · BNE→SYD→SIN', false],
+    ['10–13', 'Connect 2026 · Saigon', false],
+    ['14 Aug', 'QF1 · SIN → LHR', true],
   ];
   return `<aside id="minimap" aria-hidden="true">
   <svg viewBox="0 0 220 96" width="100%" height="100%">
-    <path id="mm-route" d="M18,72 L40,76 C74,40 116,26 150,44 C166,53 182,42 200,78" fill="none"
-      stroke="rgba(124,138,147,.38)" stroke-width="1.2" stroke-dasharray="3 3.5" stroke-linecap="round"/>
-    <text class="mm-icon" x="92" y="30">✈</text>
-    <text class="mm-icon" x="176" y="54">⛵</text>
-    <g class="mm-stop"><circle cx="18" cy="72" r="2.3"/><text x="18" y="86">BNE</text></g>
-    <g class="mm-stop"><circle cx="40" cy="76" r="2.3"/><text x="46" y="90">SYD</text></g>
-    <g class="mm-stop mm-pass"><circle cx="150" cy="44" r="2.7"/><text x="150" y="34">SCL</text></g>
-    <g class="mm-stop"><circle cx="200" cy="78" r="2.3"/><text x="198" y="92">ski</text></g>
-    <circle id="minimap-ember" cx="150" cy="44" r="3.2"/>
+    <path id="mm-route" d="M16,82 C40,64 58,42 76,38 L90,26 L96,40 C120,52 142,58 168,44 C184,34 196,26 204,18" fill="none"
+      stroke="rgba(126,142,160,.38)" stroke-width="1.2" stroke-dasharray="3 3.5" stroke-linecap="round"/>
+    <text class="mm-icon" x="58" y="34">✈</text>
+    <text class="mm-icon" x="188" y="44">⛵</text>
+    <g class="mm-stop"><circle cx="16" cy="82" r="2.3"/><text x="18" y="94">BNE</text></g>
+    <g class="mm-stop"><circle cx="90" cy="26" r="2.3"/><text x="86" y="17">SGN</text></g>
+    <g class="mm-stop"><circle cx="96" cy="40" r="2.3"/><text x="104" y="52">SIN</text></g>
+    <g class="mm-stop mm-pass"><circle cx="168" cy="44" r="2.7"/><text x="168" y="60">LHR</text></g>
+    <g class="mm-stop"><circle cx="204" cy="18" r="2.3"/><text x="202" y="10">TOS</text></g>
+    <circle id="minimap-ember" cx="16" cy="82" r="3.2"/>
   </svg>
-  <span class="mm-title">the passage</span>
+  <span class="mm-title">the passage north</span>
   <ol class="mm-timeline">${tl
     .map(([d, l, launch]) => `<li class="${launch ? 't-launch' : ''}"><span class="t-date">${esc(d)}</span><span class="t-leg">${esc(l)}</span></li>`)
     .join('')}</ol>
 </aside>`;
 }
 
-export function renderAndes(env: Env): string {
+export function renderNorth(env: Env): string {
   return `<!DOCTYPE html>
 <html lang="en-AU">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>il varo — The Crossing</title>
-<meta name="description" content="A maiden voyage — a family's winter crossing of the Andes by water. The launch.">
-<meta name="theme-color" content="#04060A">
-<meta property="og:title" content="il varo — The Crossing">
-<meta property="og:description" content="The launch. A hull meeting water for the first time, and the held breath before the first note.">
+<title>il varo — The North</title>
+<meta name="description" content="The second launch — Saigon, Singapore, London, and the fjords. The long way north, for two.">
+<meta name="theme-color" content="#040810">
+<meta property="og:title" content="il varo — The North">
+<meta property="og:description" content="The winter the Andes shut their door, the ember turned north.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..700&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..600&display=swap" rel="stylesheet">
-<link rel="preload" as="image" href="/img/coldopen-1280.avif" type="image/avif" fetchpriority="high">
+<link rel="preload" as="image" href="/img/n-coldopen-1280.avif" type="image/avif" fetchpriority="high">
 <style>${CSS}</style>
 </head>
-<body data-depart="${esc(env.DEPART_ISO)}">
+<body data-depart="${esc(env.NORTH_DEPART_ISO)}">
 <div id="sky"></div>
-<div id="stage"></div>
+<div id="stage" aria-hidden="true"></div>
 <div id="scrim"></div>
-<div id="warmth"></div>
+<div id="aurora"></div>
 <canvas id="mist"></canvas>
 <div id="fog"></div>
 <div id="horizon"></div>
@@ -314,25 +338,25 @@ export function renderAndes(env: Env): string {
 
 <nav id="rail" aria-hidden="true">
   <span class="line"></span>
-  ${NODES.map((top, i) => `<span class="node${i === 4 ? ' frias' : ''}${i === NODES.length - 1 ? ' last' : ''}" style="top:${top}%"></span>`).join('')}
+  ${NODES.map((top, i) => `<span class="node${i === AURORA_NODE ? ' lights' : ''}${i === NODES.length - 1 ? ' last' : ''}" style="top:${top}%"></span>`).join('')}
   <span id="ember"></span>
   <span id="ember-berth"></span>
 </nav>
 
 <header class="chrome">
-  <span>Il Varo · The Crossing</span>
-  <span><button class="chrome-btn" data-toggle-sound type="button">Sound</button> <button class="chrome-btn" data-open-bridge type="button">Bridge</button></span>
+  <span>Il Varo · <a href="/">Two Worlds</a> · The North</span>
+  <span><button class="chrome-btn" data-open-bridge type="button">Bridge</button></span>
 </header>
 
 <main id="voyage">
 ${LEGS.map(renderLeg).join('\n')}
 </main>
 
-<p class="readout"><b data-readout-leg>Cold open</b> · QF527 T− <span data-readout-countdown>—</span></p>
+<p class="readout"><b data-readout-leg>Cold open</b> · QF1 T− <span data-readout-countdown>—</span></p>
 ${renderMinimap()}
 <div id="bridge-root"></div>
-<script type="module" src="/assets/engine.js"></script>
-<script type="module" src="/assets/bridge.js"></script>
+<script type="module" src="/assets/north-engine.js"></script>
+<script type="module" src="/assets/north-bridge.js"></script>
 </body>
 </html>`;
 }
