@@ -1,10 +1,19 @@
 import { useState } from 'react';
 
 /**
- * The concierge — streamed trip Q&A. Reads the SSE relay from POST /api/concierge token-by-token.
- * Degrades to a quiet "offline" line when no API key is configured (503).
+ * The concierge — streamed trip Q&A. Reads the SSE relay from the given endpoint token-by-token.
+ * Degrades to a quiet "offline" line when no API key is configured (503). Defaults preserve the
+ * Andes usage; the North mounts it with its own endpoint + copy.
  */
-export function Concierge(): JSX.Element {
+export function Concierge({
+  endpoint = '/api/concierge',
+  eyebrow = 'The concierge · ask the voyage',
+  placeholder = 'When does the Cruce Andino sail? What if Samoré shuts?',
+}: {
+  endpoint?: string;
+  eyebrow?: string;
+  placeholder?: string;
+}): JSX.Element {
   const [q, setQ] = useState('');
   const [answer, setAnswer] = useState('');
   const [busy, setBusy] = useState(false);
@@ -17,7 +26,7 @@ export function Concierge(): JSX.Element {
     setAnswer('');
     setErr('');
     try {
-      const res = await fetch('/api/concierge', {
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ q: question }),
@@ -57,12 +66,12 @@ export function Concierge(): JSX.Element {
 
   return (
     <div className="card">
-      <p className="card-eyebrow">The concierge · ask the voyage</p>
+      <p className="card-eyebrow">{eyebrow}</p>
       <div className="concierge-in">
         <input
           type="text"
           value={q}
-          placeholder="When does the Cruce Andino sail? What if Samoré shuts?"
+          placeholder={placeholder}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter') void ask(); }}
         />

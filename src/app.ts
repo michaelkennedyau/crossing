@@ -10,9 +10,12 @@ import { cfgRouter } from './routes/cfg';
 import { todosRouter } from './routes/todos';
 import { conciergeRouter } from './routes/concierge';
 import { northCfgRouter } from './routes/north-cfg';
+import { northArcsRouter } from './routes/north-arcs';
 import { northTodosRouter } from './routes/north-todos';
 import { northCountdownRouter } from './routes/north-countdown';
 import { northWeatherRouter } from './routes/north-weather';
+import { northOutlookRouter } from './routes/north-outlook';
+import { northConciergeRouter } from './routes/north-concierge';
 
 export const app = new Hono<{ Bindings: Env }>();
 
@@ -30,9 +33,12 @@ app.route('/api/concierge', conciergeRouter);
 
 // The North's persistence + the board's live weather feed.
 app.route('/api/north/cfg', northCfgRouter);
+app.route('/api/north/arcs', northArcsRouter);
 app.route('/api/north/todos', northTodosRouter);
 app.route('/api/north/countdown', northCountdownRouter);
 app.route('/api/north/weather', northWeatherRouter);
+app.route('/api/north/outlook', northOutlookRouter);
+app.route('/api/north/concierge', northConciergeRouter);
 
 // SSR shells. The Threshold is the door; both voyages are complete before any JS runs.
 app.get('/', (c) => c.html(renderThreshold()));
