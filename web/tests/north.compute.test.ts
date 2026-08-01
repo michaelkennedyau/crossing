@@ -146,6 +146,30 @@ describe('north planner · the rules', () => {
     expect(flagsFor(sel, r).some((x) => x.level === 'warn' && x.text.includes('Rebalance'))).toBe(true);
   });
 
+  it('every combo lands its warm half on or after the Sat-22 exhale by default', () => {
+    for (const arc of ['highlow', 'dolosicily', 'scotgreece', 'slovcroatia', 'norsardinia'] as ArcId[]) {
+      const sel = defaultSelection(arc);
+      const f = flagsFor(sel, compute(sel));
+      expect(f.some((x) => x.text.includes('crowd curve'))).toBe(true);
+      expect(f.some((x) => x.text.includes('before the Med empties'))).toBe(false);
+    }
+  });
+
+  it('an early warm half gets the calmer-and-cheaper note', () => {
+    const sel = defaultSelection('dolosicily');
+    sel.nights['altabadia'] = 4;
+    sel.nights['london2'] = 3;
+    const r = compute(sel);
+    expect(r.delta).toBe(0);
+    expect(flagsFor(sel, r).some((x) => x.text.includes('before the Med empties'))).toBe(true);
+  });
+
+  it('Slovenia + Croatia is the no-airport combo and says so', () => {
+    const sel = defaultSelection('slovcroatia');
+    const f = flagsFor(sel, compute(sel));
+    expect(f.some((x) => x.level === 'ok' && x.text.includes('No mid-trip flights'))).toBe(true);
+  });
+
   it('Yacht Week warns about the pace and pins the Saturday start', () => {
     const sel = defaultSelection('yachtweek');
     const f = flagsFor(sel, compute(sel));

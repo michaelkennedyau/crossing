@@ -10,7 +10,8 @@
 export type ArcId =
   | 'fjords' | 'gulet' | 'highlands'
   | 'sicily' | 'dolomiti' | 'cyclades' | 'slovenia' | 'yachtweek'
-  | 'sardinia' | 'madeira' | 'portugal' | 'highlow';
+  | 'sardinia' | 'madeira' | 'portugal' | 'highlow'
+  | 'dolosicily' | 'scotgreece' | 'slovcroatia' | 'norsardinia';
 
 export type Tier = 'special' | 'sane';
 
@@ -215,6 +216,69 @@ export const CFG: Cfg = {
         { id: 'tromso', label: 'Tromsø, Norway', short: 'Tromsø', nights: 2, min: 0, max: 4, perNight: { special: 750, sane: 450 } },
         { id: 'tyw', label: 'Yacht Week, Croatia (Sat 22–29)', short: 'Flotilla', nights: 7, min: 0, max: 7, perNight: { special: 2000, sane: 1200 }, link: 'https://www.theyachtweek.com' },
         { id: 'london2', label: 'London (QF2 buffer)', short: 'London', nights: 2, min: 0, max: 5, perNight: { special: 1450, sane: 750 } },
+      ],
+    },
+    dolosicily: {
+      id: 'dolosicily',
+      name: 'Dolomites + Sicily',
+      blurb: 'Alta Badia while Italy holidays, Taormina and the Aeolians as it empties — one country, both halves.',
+      caseFor: 'One language, two Italys — cool hiking through Ferragosto week, then the south’s beaches and tables exactly as the locals hand them back.',
+      caseAgainst: 'Two internal transfers and a Venice–Catania flight mid-trip — Italy makes you work for both of her halves.',
+      transport: 3200,
+      segments: [
+        { id: 'london1', label: 'London', short: 'London', nights: 1, min: 0, max: 3, perNight: { special: 1450, sane: 750 }, link: 'https://www.claridges.co.uk' },
+        { id: 'venice', label: 'Venice, Italy', short: 'Venice', nights: 1, min: 0, max: 3, perNight: { special: 2400, sane: 1000 } },
+        { id: 'altabadia', label: 'Alta Badia, Italy', short: 'Alta Badia', nights: 5, min: 0, max: 7, perNight: { special: 1700, sane: 900 } },
+        { id: 'taormina', label: 'Taormina, Sicily — Grand Hotel Timeo', short: 'Taormina', nights: 4, min: 0, max: 6, perNight: { special: 2600, sane: 1100 }, link: 'https://www.belmond.com/hotels/europe/italy/taormina/belmond-grand-hotel-timeo/' },
+        { id: 'aeolian', label: 'Aeolian Islands, Sicily', short: 'Aeolians', nights: 3, min: 0, max: 5, perNight: { special: 2200, sane: 900 }, link: 'https://www.therasiaresort.it' },
+        { id: 'london2', label: 'London (QF2 buffer)', short: 'London', nights: 2, min: 0, max: 4, perNight: { special: 1450, sane: 750 } },
+      ],
+    },
+    scotgreece: {
+      id: 'scotgreece',
+      name: 'Scotland + Greece',
+      blurb: 'Braemar and Skye in the cool, then Milos and Sifnos on the exhale — the widest contrast on the board.',
+      caseFor: 'Highland drama while the Med is rammed, then the Aegean precisely as it thins — no other arc swings this far.',
+      caseAgainst: 'Weather risk at both ends — Scotland can rain on week one and the meltemi can blow on week two.',
+      transport: 3400,
+      segments: [
+        { id: 'london1', label: 'London', short: 'London', nights: 2, min: 0, max: 4, perNight: { special: 1450, sane: 750 }, link: 'https://www.claridges.co.uk' },
+        { id: 'fife', label: 'Braemar, Scotland — Fife Arms', short: 'Fife Arms', nights: 3, min: 0, max: 5, perNight: { special: 2300, sane: 1100 }, link: 'https://thefifearms.com' },
+        { id: 'skye', label: 'Isle of Skye, Scotland', short: 'Skye', nights: 3, min: 0, max: 5, perNight: { special: 1350, sane: 700 } },
+        { id: 'milos', label: 'Milos, Greece', short: 'Milos', nights: 3, min: 0, max: 5, perNight: { special: 1600, sane: 800 } },
+        { id: 'sifnos', label: 'Sifnos, Greece', short: 'Sifnos', nights: 3, min: 0, max: 5, perNight: { special: 1400, sane: 700 } },
+        { id: 'london2', label: 'London (QF2 buffer)', short: 'London', nights: 2, min: 0, max: 4, perNight: { special: 1450, sane: 750 } },
+      ],
+    },
+    slovcroatia: {
+      id: 'slovcroatia',
+      name: 'Slovenia + Croatia',
+      blurb: 'Bled and the Soča, then down the road to Split for the gulet — the only combo with no mid-trip flight.',
+      caseFor: 'Alpine lakes to the Adriatic entirely by road — one hire car, zero mid-trip airports, and the boat waiting on the exhale Saturday.',
+      caseAgainst: 'Slovenia’s quiet week can feel like a warm-up act, and the Ljubljana–Split drive eats most of the hinge day.',
+      transport: 2400,
+      segments: [
+        { id: 'london1', label: 'London', short: 'London', nights: 2, min: 0, max: 4, perNight: { special: 1450, sane: 750 }, link: 'https://www.claridges.co.uk' },
+        { id: 'bled', label: 'Lake Bled & Bohinj, Slovenia', short: 'Bled', nights: 3, min: 0, max: 5, perNight: { special: 1300, sane: 700 } },
+        { id: 'soca', label: 'Soča Valley, Slovenia — Hiša Franko', short: 'Soča', nights: 2, min: 0, max: 4, perNight: { special: 1200, sane: 650 }, link: 'https://www.hisafranko.com' },
+        { id: 'gulet', label: 'Gulet charter, Croatia', short: 'Gulet', nights: 7, min: 0, max: 8, perNight: { special: 3400, sane: 1800 } },
+        { id: 'london2', label: 'London (QF2 buffer)', short: 'London', nights: 2, min: 0, max: 4, perNight: { special: 1450, sane: 750 } },
+      ],
+    },
+    norsardinia: {
+      id: 'norsardinia',
+      name: 'Norway + Sardinia',
+      blurb: 'Lofoten and the lights, then Europe’s clearest water at post-Ferragosto prices.',
+      caseFor: 'The aurora and the Mediterranean’s best swimming in one fortnight — Costa Smeralda drops by half the day Ferragosto ends.',
+      caseAgainst: 'The heaviest flying on the board — the exhale Saturday spends seven hours over Oslo to swap 68°N for 41°N.',
+      transport: 5600,
+      segments: [
+        { id: 'london1', label: 'London', short: 'London', nights: 1, min: 0, max: 3, perNight: { special: 1450, sane: 750 }, link: 'https://www.claridges.co.uk' },
+        { id: 'lofoten', label: 'Lofoten, Norway — Holmen', short: 'Lofoten', nights: 4, min: 0, max: 6, perNight: { special: 1150, sane: 650 }, link: 'https://www.holmenlofoten.no' },
+        { id: 'tromso', label: 'Tromsø, Norway', short: 'Tromsø', nights: 2, min: 0, max: 4, perNight: { special: 750, sane: 450 } },
+        { id: 'smeralda', label: 'Costa Smeralda, Sardinia', short: 'C. Smeralda', nights: 4, min: 0, max: 6, perNight: { special: 3800, sane: 1400 } },
+        { id: 'chia', label: 'Chia, Sardinia', short: 'Chia', nights: 2, min: 0, max: 4, perNight: { special: 1600, sane: 800 } },
+        { id: 'london2', label: 'London (QF2 buffer)', short: 'London', nights: 3, min: 0, max: 5, perNight: { special: 1450, sane: 750 } },
       ],
     },
     yachtweek: {

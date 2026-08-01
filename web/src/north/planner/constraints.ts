@@ -10,6 +10,15 @@ export interface Flag {
   text: string;
 }
 
+// Best-of-both combos: the arc's warm half should not begin before the Med empties (~Sat 22, night 7).
+const COMBO_WARM: Record<string, string> = {
+  highlow: 'tyw',
+  dolosicily: 'taormina',
+  scotgreece: 'milos',
+  slovcroatia: 'gulet',
+  norsardinia: 'smeralda',
+};
+
 export function flagsFor(sel: Selection, c: ComputeResult): Flag[] {
   const f: Flag[] = [];
 
@@ -90,11 +99,32 @@ export function flagsFor(sel: Selection, c: ComputeResult): Flag[] {
   }
 
   if (sel.arc === 'highlow') {
-    f.push({ level: 'ok', text: 'The crowd curve, played: Norwegian schools are back by the 17th (empty Lofoten), and the Med exhales from the 22nd — you ride both halves at their best.' });
     const tyw = c.cells.find((x) => x.id === 'tyw');
     if (tyw && tyw.startOff !== 7)
       f.push({ level: 'warn', text: `The flotilla must start Saturday 22 August (night 7) — this shape has it starting ${7 - tyw.startOff > 0 ? 'early' : 'late'}. Rebalance the north nights until the hinge lands on the Saturday.` });
     f.push({ level: 'note', text: 'Tromsø → Split is a full travel day over Oslo — Saturday the 22nd is spent in the air, and that is the price of two worlds.' });
+  }
+
+  if (sel.arc === 'slovcroatia') {
+    f.push({ level: 'ok', text: 'No mid-trip flights — Ljubljana to Split is a morning on the road. The only combo that never re-enters an airport.' });
+    f.push({ level: 'note', text: 'Charters run Saturday to Saturday — the gulet week wants Sat 22 Aug, which fixes the Slovenian nights in front of it.' });
+  }
+  if (sel.arc === 'dolosicily') {
+    f.push({ level: 'note', text: 'One booking rhythm: the Dolomites need nothing in Ferragosto week, but Taormina and the Aeolians from the 22nd must be booked now.' });
+  }
+  if (sel.arc === 'scotgreece') {
+    f.push({ level: 'note', text: 'EDI→Athens has limited direct rotations — check the Saturday schedule before anchoring the swap day.' });
+  }
+  if (sel.arc === 'norsardinia') {
+    f.push({ level: 'note', text: 'Tromsø → Olbia is the longest hinge on the board (via Oslo, ~7h door to door) — the Saturday is entirely spent.' });
+  }
+
+  const warmId = COMBO_WARM[sel.arc];
+  if (warmId) {
+    f.push({ level: 'ok', text: 'The crowd curve, played: the cool half runs while the Med is rammed, and the warm half begins as Europe goes back to work.' });
+    const warm = c.cells.find((x) => x.id === warmId);
+    if (warm && warm.startOff < 7 && sel.arc !== 'highlow')
+      f.push({ level: 'note', text: `The warm half starts ${warm.date}, before the Med empties on ~22 Aug — later is calmer and cheaper.` });
   }
 
   f.push({ level: 'ok', text: 'The spine is fixed and kind: QF1 lands LHR 06:25 Saturday 15 August; QF2 departs Monday 31 August. The middle is yours.' });

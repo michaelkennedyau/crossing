@@ -12,13 +12,18 @@ import { flagsFor, questionsFor } from '../planner/constraints';
  * calendar and the consequences land live. The chosen shape rides the URL hash, so a picked arc
  * is linkable — send Claire the link, get a verdict.
  */
-const ARC_IDS: ArcId[] = ['highlow', 'fjords', 'highlands', 'dolomiti', 'slovenia', 'sicily', 'sardinia', 'cyclades', 'portugal', 'madeira', 'gulet', 'yachtweek'];
+const ARC_IDS: ArcId[] = [
+  'highlow', 'slovcroatia', 'dolosicily', 'scotgreece', 'norsardinia',
+  'fjords', 'highlands', 'dolomiti', 'slovenia', 'sicily', 'sardinia',
+  'cyclades', 'portugal', 'madeira', 'gulet', 'yachtweek',
+];
 
 // arc → image slug (web/public/img/<slug>-1280.webp) — the debate, seen before it is read
 const ARC_IMG: Record<ArcId, string> = {
   highlow: 'n-aurora', fjords: 'n-hjorund', highlands: 'arc-highlands', dolomiti: 'arc-dolomiti',
   slovenia: 'arc-slovenia', sicily: 'arc-sicily', sardinia: 'arc-sardinia', cyclades: 'arc-cyclades',
   portugal: 'arc-portugal', madeira: 'arc-madeira', gulet: 'arc-gulet', yachtweek: 'arc-yachtweek',
+  dolosicily: 'combo-italia', scotgreece: 'combo-scotgreece', slovcroatia: 'arc-slovenia', norsardinia: 'combo-norsard',
 };
 
 function encodeSel(s: Selection, cfg: Cfg): string {
