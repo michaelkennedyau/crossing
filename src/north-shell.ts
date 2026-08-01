@@ -5,10 +5,15 @@ const esc = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 /**
- * The North — the second launch. Same voyage grammar as the Andes shell (server-rendered legs,
- * ember rail, minimap, one scroll scalar) with a cold palette under the SAME token names, so the
- * shared engine modules and bridge.css read identically. The ember itself stays amber — the one
- * warm light is the through-line between the two worlds.
+ * The North — the second launch, recomposed to explain the WHY. Same voyage grammar as the Andes
+ * shell (server-rendered legs, ember rail, minimap, one scroll scalar) with a cold palette under
+ * the SAME token names, so the shared engine modules and bridge.css read identically.
+ *
+ * Narrative structure:
+ *   Act I   — the pivot (Portillo buried; the ember turns north)
+ *   Act II  — the fixed spine (Saigon / Singapore / QF1; the two immovable dates)
+ *   Act III — the logic (the crowd curve: loud south, empty north, the Sat-22 exhale)
+ *   Act IV  — the options as consequences (both worlds / cool / warm → the bridge)
  */
 interface Leg {
   n: string;
@@ -20,92 +25,136 @@ interface Leg {
   telemetry?: string;
   live?: string;
   tall?: boolean;
+  chart?: boolean;
   cta?: boolean;
+  ctaLabel?: string;
 }
 
 const LEGS: Leg[] = [
+  // ── Act I — the pivot ──
   {
     n: '0', label: 'Cold open',
     eyebrow: 'a second launch · winter · the long way north',
     head: 'il varo', headClass: 'hero',
-    hand: 'The winter the Andes shut their door — five metres of snow across the pass. The <span class="ember-word">ember</span> slipped its mooring, and turned north.',
+    hand: 'Every voyage has a reason. This one begins with five metres of snow — and ends with a choice. This page is the <span class="ember-word">why</span>; the bridge is the chooser.',
     telemetry: 'QF · BNE → SYD · SAT 8 AUG · T− <span data-countdown>—</span><br><span class="syd-note">then QF1 · the A380 · SYD → SIN, and on</span>',
   },
   {
-    n: '00', label: 'The vessel',
-    eyebrow: '00 · The vessel',
-    head: 'Two travellers this time, and a year that keeps launching.',
-    hand: 'Michael and Claire. The boys hold Brisbane; Emily holds the boys. The journey is the purpose — the conference is the <span class="ember-word">cover story</span>.',
+    n: '01', label: 'Portillo, Chile',
+    eyebrow: '01 · Portillo, Chile — the door that closed',
+    head: 'One storm put five metres on the pass, and the winter said no.',
+    hand: 'The original crossing was Chilean — Portillo, the wine country, the Lakes. Then a single storm buried the pass, and the road over the Andes has been shut since the 14th of July. The trip died where it stood. The <span class="ember-word">ember</span> slipped its mooring, and turned north.',
+    telemetry: '32.84°S 70.13°W · 5 M IN ONE STORM · ROAD CLOSED SINCE 14 JUL',
   },
+  // ── Act II — the fixed spine ──
   {
-    n: '01', label: 'Saigon',
-    eyebrow: '01 · Sài Gòn — Connect 2026',
-    head: 'Four days among four hundred planners, in a city of eight million motorbikes.',
-    telemetry: '10.78°N 106.70°E · SHERATON SAIGON GRAND OPERA · GALA WED 12',
+    n: '02', label: 'Saigon, Vietnam',
+    eyebrow: '02 · the spine, part one — Sài Gòn',
+    head: 'The spine is fixed, and it starts with a conference.',
+    telemetry: '10.78°N 106.70°E · CONNECT 2026 · MON 10 – WED 12 AUG · GALA WED NIGHT',
     live: 'SAIGON · 32°C · MONSOON HAZE · LANTERNS AT DUSK',
-    hand: 'Wednesday night, vibrant colours under a tropical sky — seen, remembered. Thursday owes nobody anything.',
+    hand: 'Three days at the Sheraton among four hundred planners, gala on the Wednesday night. The conference is the cover story; after it, the voyage owes nobody anything.',
   },
   {
-    n: '02', label: 'Singapore',
-    eyebrow: '02 · SGN → SIN — the quiet exit',
-    head: 'A morning flight out while the hall empties, and Raffles by evening.',
-    telemetry: 'SGN DEP AM · FAST TRACK · SIN BY AFTERNOON',
+    n: '03', label: 'Singapore',
+    eyebrow: '03 · the spine, part two — the quiet exit',
+    head: 'Thursday morning out while the hall empties, and Raffles by evening.',
+    telemetry: 'THU 13 AUG · SGN → SIN · ONE NIGHT AT RAFFLES',
   },
   {
-    n: '03', label: 'QF1 · SIN → LHR',
-    eyebrow: '03 · QF1 · SIN → LHR — the night leg',
+    n: '04', label: 'QF1 · SIN → LHR',
+    eyebrow: '04 · the spine, part three — the night leg',
     head: 'Fourteen hours of dark over two continents, and London before breakfast.',
-    telemetry: 'FIRST LOUNGE T1 · DEP LATE FRI 14 · LHR SAT 06:25',
+    telemetry: 'FIRST LOUNGE T1 · DEP LATE FRI 14 · LHR SAT 15 AUG 06:25',
     hand: 'Wake in Singapore. Board unhurried. Nothing behind you.',
   },
   {
-    n: '04', label: 'London',
-    eyebrow: '04 · London — the pause',
-    head: 'Two slow days to find the right time zone.',
-    telemetry: '51.51°N 0.15°W · MAYFAIR · SAT 15 – MON 17',
+    n: '05', label: 'London',
+    eyebrow: '05 · the frame — two immovable dates',
+    head: 'Saturday the 15th in, Monday the 31st out. Sixteen nights. The middle entirely open.',
+    hand: 'QF1 lands at dawn on the 15th of August; QF2 leaves on the 31st. Those two dates are the whole contract — kind, non-negotiable, and silent on everything between. Sixteen nights in Europe, and the only question is how to spend them.',
+    telemetry: 'LHR IN · SAT 15 AUG 06:25 — LHR OUT · MON 31 AUG · 16 NIGHTS BETWEEN',
+  },
+  // ── Act III — the logic ──
+  {
+    n: '06', label: 'The Med · 15–22 Aug',
+    eyebrow: '06 · the logic, part one — where Europe is',
+    head: 'Week one is the loudest week of the European year in the warm south.',
+    hand: 'Ferragosto falls on the 15th — the day we land. Italy, France, Croatia and Greece hit their annual maximum: every beach club full, every table booked, every price at its peak. The south in week one is glorious, and it knows it.',
+    telemetry: 'FERRAGOSTO FRI 15 AUG · ITALY FRANCE CROATIA GREECE AT MAX',
   },
   {
-    n: '05', label: 'Lofoten, Norway',
-    eyebrow: '05 · Lofoten — the quiet week',
-    head: 'While the Med is at its loudest, the Arctic stands empty.',
-    telemetry: '67.88°N 12.98°E · HOLMEN · Å I LOFOTEN',
-    hand: 'Norwegian schools went back on the 17th. Boats out at dawn, kitchen fires at night, and the peaks to ourselves.',
+    n: '07', label: 'Arctic Norway',
+    eyebrow: '07 · the logic, part two — where Europe isn’t',
+    head: 'The north, meanwhile, stands empty.', headClass: 'cut',
+    hand: 'Norwegian schools go back around the 17th, and the fjords fall quiet — same week, same continent, harbours and mountain tables to ourselves. And past midnight, past the weather, the sky goes <span class="ember-word">green</span>.',
+    telemetry: '— SCHOOLS BACK ~MON 17 AUG · THE QUIET WEEK · AURORA WINDOW OPENS —',
+    tall: true,
   },
   {
-    n: '05b', label: 'Tromsø, Norway',
-    eyebrow: 'Tromsø — the aurora watch',
-    head: 'Engine cut.', headClass: 'cut',
-    hand: 'The window opens on the 20th. Past midnight, past the weather, the sky goes <span class="ember-word">green</span>. Stand in the dark and let it move.',
-    telemetry: '— hold —', tall: true,
+    n: '08', label: 'Saturday 22 August',
+    eyebrow: '08 · the logic, resolved — the crowd curve',
+    head: 'On Saturday the 22nd, Europe goes back to work — and the Med exhales.',
+    chart: true,
+    hand: 'Two lines cross the fortnight. The south holds its peak through the 22nd, then falls away — crowds gone home, prices down 20 to 40 per cent. The north sits quiet from the 17th. So the shape of a smart sixteen nights writes itself: the cool half first, the warm half after the <span class="ember-word">exhale</span> — or a single world, chosen knowing the tradeoff.',
+    telemetry: 'SOUTH −20–40% AFTER SAT 22 · NORTH QUIET FROM MON 17',
+  },
+  // ── Act IV — the options as consequences ──
+  {
+    n: '09', label: 'Both worlds · 5 routes',
+    eyebrow: '09 · the consequence — both worlds',
+    head: 'Five routes play the curve straight: cool first, then south on the exhale.',
+    hand: 'Norway then Sardinia, Scotland then Greece, the fjords then the Adriatic. A cool, empty week while the Med is at maximum — then the warm water as it empties and the prices drop. The logic’s first choice.',
+    cta: true, ctaLabel: 'Compare the five →',
   },
   {
-    n: '06', label: 'Tromsø → Split',
-    eyebrow: '06 · Saturday 22 August — the exhale',
-    head: 'Europe goes back to work, and we fly the length of it in a day.',
-    telemetry: 'TOS → OSL → SPU · THE CROWD CURVE, PLAYED',
-    hand: 'The Med at its warmest, the crowds going home — the logic of the fortnight, carried forward.',
+    n: '10', label: 'The cool north · 4 routes',
+    eyebrow: '10 · the consequence — all-cool',
+    head: 'Four routes stay north for the whole sixteen nights.',
+    hand: 'Norway, the Highlands, the long fjords. Empty from the first morning to the last, with weather the only gamble — they give up the warm water entirely, and dodge the crowds entirely in return.',
+    cta: true, ctaLabel: 'Compare the four →',
   },
   {
-    n: '07', label: 'Hvar & Vis, Croatia',
-    eyebrow: '07 · Split – Hvar – Vis — the warm half',
-    head: 'Seven nights on deck as the coast empties.',
-    telemetry: '43.17°N 16.44°E · SAT 22 – SAT 29 · THE FLOTILLA',
-    hand: 'Hvar at three in the morning, Vis by noon, and the year’s warmest water all to the late arrivers.',
+    n: '11', label: 'The warm south · 7 routes',
+    eyebrow: '11 · the consequence — all-warm',
+    head: 'Seven routes go straight to the warm water — eyes open.',
+    hand: 'Sicily, the Cyclades, Sardinia, the gulets, the yacht weeks. Week one lands in the loudest days of the European year; the second week is the reward. The curve doesn’t forbid it — it just names the price.',
+    cta: true, ctaLabel: 'Compare the seven →',
   },
   {
-    n: '08', label: 'Home · 2 Sep',
-    eyebrow: '08 · London → home',
-    head: 'QF2 out on the last night of August; Brisbane by the second of September.',
-    telemetry: 'LHR DEP MON 31 AUG · SYD · BNE 2 SEP',
-    hand: 'The ember comes home the long way — berth lights on.',
-  },
-  {
-    n: '09', label: 'The bridge',
-    eyebrow: '09 · The bridge',
-    head: 'Now plot where she sails.',
+    n: '12', label: 'The bridge',
+    eyebrow: '12 · the bridge',
+    head: 'Sixteen routes, two price tiers, a case and a counter for each.',
+    hand: 'The why is behind you. Now plot where she sails.',
     cta: true,
   },
 ];
+
+// The crowd curve — hand-authored inline SVG, same idiom as the minimap. Decorative (aria-hidden);
+// the leg copy carries the same argument in text. x: 15→31 Aug (x = 40 + (day−15) × 31.25).
+const CROWD_CURVE = `<figure class="curve" aria-hidden="true">
+  <svg viewBox="0 0 560 240">
+    <rect x="40" y="26" width="500" height="182" fill="rgba(237,243,248,.03)"/>
+    <text x="540" y="18" text-anchor="end" class="c-faint">THE 16 NIGHTS · SAT 15 → MON 31</text>
+    <line x1="40" y1="208" x2="540" y2="208" stroke="rgba(174,189,203,.35)" stroke-width="1"/>
+    <line x1="102" y1="208" x2="102" y2="212" stroke="rgba(174,189,203,.35)" stroke-width="1"/>
+    <line x1="259" y1="208" x2="259" y2="212" stroke="rgba(174,189,203,.35)" stroke-width="1"/>
+    <path d="M40,58 L120,55 L200,57 L259,60 C282,80 316,140 356,166 C398,186 470,192 540,194"
+      fill="none" stroke="var(--snow-dim)" stroke-width="1.8" stroke-linecap="round" opacity=".85"/>
+    <path d="M40,148 L84,152 L102,172 C122,192 158,199 200,201 L540,204"
+      fill="none" stroke="var(--live)" stroke-width="1.8" stroke-linecap="round"/>
+    <line x1="259" y1="30" x2="259" y2="208" stroke="var(--ember)" stroke-width="1.2" stroke-dasharray="2 3"/>
+    <text x="56" y="44">THE SOUTH · CROWDS &amp; PRICES</text>
+    <text x="330" y="126">−20–40%</text>
+    <text x="330" y="192" class="c-live">THE NORTH · QUIET FROM THE 17TH</text>
+    <text x="266" y="40" class="c-ember">SAT 22 · THE EXHALE</text>
+    <text x="40" y="226">15 AUG</text>
+    <text x="102" y="226" text-anchor="middle">17</text>
+    <text x="259" y="226" text-anchor="middle" class="c-ember">SAT 22</text>
+    <text x="540" y="226" text-anchor="end">31 AUG</text>
+  </svg>
+  <figcaption>the crowd curve · europe, 15–31 aug</figcaption>
+</figure>`;
 
 function renderLeg(leg: Leg): string {
   const headTag = leg.headClass === 'hero' ? 'h1' : 'h2';
@@ -114,25 +163,28 @@ function renderLeg(leg: Leg): string {
     <p class="eyebrow">${esc(leg.eyebrow)}</p>
     <${headTag} class="head ${leg.headClass ?? ''}">${esc(leg.head)}</${headTag}>
     ${leg.hand ? `<p class="hand">${leg.hand}</p>` : ''}
+    ${leg.chart ? CROWD_CURVE : ''}
     ${leg.telemetry ? `<p class="telemetry">${leg.telemetry}</p>` : ''}
     ${leg.live ? `<p class="live-pill"><span class="live-dot"></span>${esc(leg.live)}</p>` : ''}
-    ${leg.n === '0' ? `<p class="scrollhint">scroll to sail · the latitude rises as you go</p>` : ''}
-    ${leg.cta ? `<button class="bridge-open" data-open-bridge type="button">Open the bridge →</button>` : ''}
+    ${leg.n === '0' ? `<p class="scrollhint">scroll to sail · the why unfolds as you go</p>` : ''}
+    ${leg.cta ? `<button class="bridge-open" data-open-bridge type="button">${esc(leg.ctaLabel ?? 'Open the bridge →')}</button>` : ''}
     ${NORTH_LEG_PLACES[leg.n] ? `<a class="place" href="${esc(NORTH_LEG_PLACES[leg.n].url)}" target="_blank" rel="noopener">${esc(NORTH_LEG_PLACES[leg.n].kind)} · ${esc(NORTH_LEG_PLACES[leg.n].name)} ↗</a>` : ''}
   </div>
 </section>`;
 }
 
-// 8 ember-rail nodes from 10%→95% height; the aurora node glows, the last is the amber berth.
+// 8 ember-rail nodes from 10%→95% height; the glowing node sits at the empty-north watch (p≈0.58),
+// the last is the amber berth.
 const NODES = [10, 22, 34, 46, 58, 70, 82, 95];
-const AURORA_NODE = 5; // the Tromsø watch
+const AURORA_NODE = 4; // the Arctic quiet-week leg (~58% of the scroll)
 
 // leg id → image slug (web/public/img/<slug>-{1280,1920}.{avif,webp}). The image stage reads
 // data-img; every leg carries a slug so the stage's leg↔frame indexing stays 1:1.
+// 'pass' is the buried Andes pass from the Chile set — deliberately reused for the pivot leg.
 const LEG_IMG: Record<string, string> = {
-  '0': 'n-coldopen', '00': 'n-vessel', '01': 'n-saigon', '02': 'n-raffles', '03': 'n-nightleg',
-  '04': 'n-london', '05': 'n-lofoten', '05b': 'n-aurora', '06': 'arc-gulet',
-  '07': 'arc-yachtweek', '08': 'n-return', '09': 'n-bridge',
+  '0': 'n-coldopen', '01': 'pass', '02': 'n-saigon', '03': 'n-raffles', '04': 'n-nightleg',
+  '05': 'n-london', '06': 'arc-cyclades', '07': 'n-aurora', '08': 'arc-sardinia',
+  '09': 'combo-norsard', '10': 'n-geiranger', '11': 'arc-sicily', '12': 'n-bridge',
 };
 
 const CSS = `
@@ -156,8 +208,8 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 /* ── persistent atmosphere (fixed, behind content) ── */
 #sky{position:fixed;inset:0;z-index:0;
   background:linear-gradient(180deg,var(--sky-top) 0%,var(--sky-mid) 52%,var(--sky-bot) 100%);}
-/* the cinematic image stage — real location photos. The grade is keyed to the aurora hush, not
-   latitude: warm at the open, darkest at the Tromsø watch, warm again as the voyage turns south. */
+/* the cinematic image stage — real location photos. The grade is keyed to the Arctic hush, not
+   latitude: warm at the open, darkest at the empty-north watch, warm again as the voyage turns south. */
 #stage{position:fixed;inset:0;z-index:1;overflow:hidden;
   filter:saturate(calc(1.02 - .35*var(--quiet))) brightness(calc(.96 - .3*var(--quiet))) contrast(1.06);}
 #stage .frame{position:absolute;inset:-5%;background-size:cover;background-position:center;
@@ -166,7 +218,7 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 #scrim{position:fixed;inset:0;z-index:2;pointer-events:none;mix-blend-mode:multiply;
   background:linear-gradient(180deg, #2a1c14 0%, #1d1512 58%, #141019 100%);
   opacity:calc(.42 - .42*var(--dawn));}
-/* the aurora wash — rides the hush bell, peaking exactly at the Tromsø watch */
+/* the aurora wash — rides the hush bell, peaking exactly at the Arctic watch */
 #aurora{position:fixed;inset:0;z-index:2;pointer-events:none;mix-blend-mode:screen;
   background:radial-gradient(130% 70% at 50% 0%, rgba(111,227,176,.5), transparent 62%);
   opacity:calc(var(--quiet)*.6);}
@@ -235,6 +287,17 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
   color:var(--ember-hot);background:rgba(242,180,94,.10);border:1px solid var(--ember);border-radius:8px;
   padding:11px 18px;cursor:pointer;transition:background .18s;}
 .bridge-open:hover{background:rgba(242,180,94,.18);}
+
+/* ── the crowd curve (hand-authored SVG, minimap idiom) ── */
+.curve{margin:30px 0 0;max-width:560px;padding:16px 14px 8px;border:1px solid rgba(126,142,160,.18);
+  border-radius:12px;background:rgba(8,13,22,.44);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+.curve svg{display:block;width:100%;height:auto;}
+.curve text{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;fill:var(--snow-dim);}
+.curve .c-ember{fill:var(--ember);}
+.curve .c-live{fill:var(--live);}
+.curve .c-faint{fill:var(--schist);}
+.curve figcaption{font-family:var(--font-mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--schist);text-align:center;margin:8px 0 4px;}
 
 /* ── chrome + readout ── */
 .chrome{position:fixed;left:0;right:0;top:0;z-index:40;display:flex;justify-content:space-between;
@@ -315,10 +378,10 @@ export function renderNorth(env: Env): string {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>il varo — The North</title>
-<meta name="description" content="The second launch — Saigon, Singapore, London, the Arctic in its quiet week, then south as the Med exhales.">
+<meta name="description" content="Why the ember turned north — the buried Andes pass, the fixed QF spine, the crowd curve of late August, and sixteen rival routes on the bridge.">
 <meta name="theme-color" content="#040810">
 <meta property="og:title" content="il varo — The North">
-<meta property="og:description" content="The winter the Andes shut their door, the ember turned north — then rode the crowd curve south.">
+<meta property="og:description" content="The winter the Andes shut their door, the ember turned north. This is the why — the crowd curve, the exhale, and the sixteen routes it leaves open.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
