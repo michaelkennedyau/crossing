@@ -12,16 +12,27 @@ import bridgeCss from '../bridge/bridge.css?inline';
 const LIGHT_CSS = `
 .presets--wrap{flex-wrap:wrap;}
 .presets--wrap .preset{flex:0 0 auto;}
-.arc-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;margin:16px 0 4px;}
+.chooser-bar{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:16px 0 2px;}
+.seg--chips{flex-wrap:wrap;}
+.seg--chips button{flex:0 0 auto;font-size:11px;padding:7px 11px;border-radius:999px;}
+.arc-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:11px;margin:12px 0 6px;}
 .arc-card{display:flex;flex-direction:column;padding:0;overflow:hidden;text-align:left;cursor:pointer;
-  background:rgba(233,240,242,.04);border:1px solid rgba(124,138,147,.2);border-radius:11px;transition:.16s;}
+  background:rgba(233,240,242,.04);border:1px solid rgba(124,138,147,.2);border-radius:12px;transition:.16s;}
 .arc-card:hover{border-color:rgba(124,138,147,.45);transform:translateY(-2px);}
 .arc-card.on{border-color:var(--ember);box-shadow:0 0 0 1px var(--ember),0 6px 22px rgba(0,0,0,.25);}
-.arc-card .ai{display:block;height:74px;background-size:cover;background-position:center;
+.arc-card .ai{position:relative;display:block;height:108px;background-size:cover;background-position:center;
   filter:saturate(.92);border-bottom:1px solid rgba(124,138,147,.14);}
 .arc-card.on .ai{filter:none;}
-.arc-card .an{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.02em;color:var(--snow);padding:8px 10px 2px;}
-.arc-card .ac{font-family:var(--font-mono);font-size:10px;color:var(--snow-dim);padding:0 10px 9px;}
+.arc-card .am{position:absolute;left:8px;bottom:7px;font-style:normal;font-family:var(--font-mono);font-size:8.5px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--snow);background:rgba(4,8,16,.55);
+  border:1px solid rgba(233,240,242,.18);border-radius:999px;padding:3px 8px;backdrop-filter:blur(4px);}
+.arc-card .ax{position:absolute;right:8px;top:7px;font-style:normal;font-family:var(--font-mono);font-size:9px;
+  letter-spacing:.08em;color:#1A1205;background:var(--ember);border-radius:999px;padding:3px 8px;font-weight:600;}
+.arc-card .an{font-family:var(--font-mono);font-size:12px;letter-spacing:.02em;color:var(--snow);padding:9px 11px 3px;}
+.arc-card .aw{font-family:var(--font-hand);font-style:italic;font-size:12.5px;line-height:1.45;color:var(--snow-dim);
+  padding:0 11px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.arc-card .ac{font-family:var(--font-mono);font-size:10px;color:var(--snow-dim);padding:7px 11px 10px;margin-top:auto;}
+.plan-anchor{scroll-margin-top:18px;}
 @media (prefers-reduced-motion: reduce){.arc-card:hover{transform:none;}}
 [data-theme="light"] .bridge-overlay{
   --snow:#14212C; --snow-dim:#46586A; --schist:#5E7086;

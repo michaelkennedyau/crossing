@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   CFG, DEFAULT_SELECTION, defaultSelection, dateAt, aud,
   type ArcId, type Cfg, type Selection, type Tier,
@@ -64,8 +64,16 @@ function tint(id: string): string {
   return map[id] ?? 'rgba(126,142,160,0.12)';
 }
 
+type Mood = 'all' | 'both' | 'cool' | 'warm';
+type SortBy = 'curve' | 'price';
+
+const MOOD_LABEL: Record<string, string> = { both: 'both worlds', cool: 'the cool half', warm: 'the warm half' };
+
 export function Planner({ cfg }: { cfg: Cfg }): JSX.Element {
   const [sel, setSel] = useState<Selection>(() => decodeSel(location.hash, CFG) ?? DEFAULT_SELECTION);
+  const [mood, setMood] = useState<Mood>('all');
+  const [sortBy, setSortBy] = useState<SortBy>('curve');
+  const planRef = useRef<HTMLDivElement>(null);
 
   const r = useMemo(() => compute(sel, cfg), [sel, cfg]);
   const flags = useMemo(() => flagsFor(sel, r), [sel, r]);
@@ -78,8 +86,21 @@ export function Planner({ cfg }: { cfg: Cfg }): JSX.Element {
     if (location.hash !== next) history.replaceState(null, '', next);
   }, [sel, cfg]);
 
-  const pickArc = (id: ArcId): void => setSel((prev) => defaultSelection(id, cfg, prev.tier));
+  const pickArc = (id: ArcId): void => {
+    setSel((prev) => defaultSelection(id, cfg, prev.tier));
+    // the chooser chose — carry them to the plan it composed
+    requestAnimationFrame(() => planRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  };
   const setTier = (tier: Tier): void => setSel((prev) => ({ ...prev, tier }));
+
+  const visibleArcs = useMemo(() => {
+    const ids = ARC_IDS.filter((id) => mood === 'all' || cfg.arcs[id].mood === mood);
+    if (sortBy === 'price') {
+      const costOf = (id: ArcId): number => compute(defaultSelection(id, cfg, sel.tier), cfg).cost;
+      return [...ids].sort((a, b) => costOf(a) - costOf(b));
+    }
+    return ids;
+  }, [mood, sortBy, cfg, sel.tier]);
   const step = (segId: string, d: number): void =>
     setSel((prev) => {
       const seg = arc.segments.find((x) => x.id === segId);
@@ -106,36 +127,52 @@ export function Planner({ cfg }: { cfg: Cfg }): JSX.Element {
         </div>
       </div>
 
+      <div className="chooser-bar">
+        <div className="seg seg--chips" role="group" aria-label="Filter destinations">
+          {(['all', 'both', 'cool', 'warm'] as Mood[]).map((m) => (
+            <button key={m} type="button" className={mood === m ? 'on' : ''} onClick={() => setMood(m)}>
+              {m === 'all' ? `all ${ARC_IDS.length}` : MOOD_LABEL[m]}
+            </button>
+          ))}
+        </div>
+        <div className="seg seg--chips" role="group" aria-label="Sort and price destinations">
+          <button type="button" className={sortBy === 'curve' ? 'on' : ''} onClick={() => setSortBy('curve')}>our order</button>
+          <button type="button" className={sortBy === 'price' ? 'on' : ''} onClick={() => setSortBy('price')}>by price</button>
+          <button type="button" className={sel.tier === 'special' ? 'on ember' : ''} onClick={() => setTier('special')}>good rooms</button>
+          <button type="button" className={sel.tier === 'sane' ? 'on' : ''} onClick={() => setTier('sane')}>sane rooms</button>
+        </div>
+      </div>
+
       <div className="arc-cards">
-        {ARC_IDS.map((id) => {
+        {visibleArcs.map((id) => {
           const a = cfg.arcs[id];
           const cost = compute(defaultSelection(id, cfg, sel.tier), cfg).cost;
+          const on = sel.arc === id;
           return (
-            <button key={id} type="button" className={`arc-card${sel.arc === id ? ' on' : ''}`} onClick={() => pickArc(id)}>
+            <button key={id} type="button" className={`arc-card${on ? ' on' : ''}`} onClick={() => pickArc(id)} aria-pressed={on}>
               <span
                 className="ai"
                 role="img"
                 aria-label={a.name}
                 style={{ backgroundImage: `url("/img/${ARC_IMG[id]}-1280.webp")` }}
-              />
+              >
+                <em className="am">{MOOD_LABEL[a.mood]}</em>
+                {on && <em className="ax">✓ chosen</em>}
+              </span>
               <span className="an">{a.name}</span>
-              <span className="ac">{aud(cost)} · 16n</span>
+              <span className="aw">{a.caseFor}</span>
+              <span className="ac">{aud(cost)} · 16 nights · {sel.tier === 'special' ? 'good rooms' : 'sane rooms'}</span>
             </button>
           );
         })}
       </div>
-      <p className="pt-sub" style={{ marginTop: 8 }}>{arc.blurb}</p>
 
-      <div className="flags" style={{ marginTop: 10 }}>
-        <div className="flag ok"><span className="mk">◆</span><span><b>The case.</b> {arc.caseFor}</span></div>
-        <div className="flag warn"><span className="mk">△</span><span><b>The counter.</b> {arc.caseAgainst}</span></div>
-      </div>
+      <div ref={planRef} className="plan-anchor">
+        <p className="pt-sub" style={{ marginTop: 8 }}>{arc.blurb}</p>
 
-      <div style={{ marginTop: 14 }}>
-        <p className="lever-label">The rooms · both priced honestly</p>
-        <div className="seg">
-          <button type="button" className={sel.tier === 'special' ? 'on ember' : ''} onClick={() => setTier('special')}>The good rooms</button>
-          <button type="button" className={sel.tier === 'sane' ? 'on' : ''} onClick={() => setTier('sane')}>The sane rooms</button>
+        <div className="flags" style={{ marginTop: 10 }}>
+          <div className="flag ok"><span className="mk">◆</span><span><b>The case.</b> {arc.caseFor}</span></div>
+          <div className="flag warn"><span className="mk">△</span><span><b>The counter.</b> {arc.caseAgainst}</span></div>
         </div>
       </div>
 

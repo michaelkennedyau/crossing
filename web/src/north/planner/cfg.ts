@@ -32,6 +32,7 @@ export interface Arc {
   blurb: string;
   caseFor: string;
   caseAgainst: string;
+  mood: 'cool' | 'warm' | 'both'; // which half of the crowd curve the arc lives in
   transport: number; // AUD lump — every flight/car/boat/ferry inside the arc
   segments: Segment[];
 }
@@ -51,6 +52,7 @@ export const CFG: Cfg = {
   arcs: {
     fjords: {
       id: 'fjords',
+      mood: 'cool',
       name: 'Norway',
       blurb: 'Sunnmøre, Lofoten, and the aurora watch — water through mountains, working properly this time.',
       caseFor: 'Water through mountains at its absolute best, in the fortnight Europe empties out — the trip Chile was trying to be.',
@@ -67,6 +69,7 @@ export const CFG: Cfg = {
     },
     gulet: {
       id: 'gulet',
+      mood: 'warm',
       name: 'Croatia — private gulet',
       blurb: 'A private boat out of Split — the warm-sea answer, deck dinners and islands on demand.',
       caseFor: 'A private deck, a crew of three, and islands on demand — nobody else’s schedule touches yours.',
@@ -82,6 +85,7 @@ export const CFG: Cfg = {
     },
     highlands: {
       id: 'highlands',
+      mood: 'cool',
       name: 'Scotland',
       blurb: 'No more aeroplanes — Braemar, Skye and the Fringe, all reachable on wheels.',
       caseFor: 'Zero flights after Saigon-and-back, and The Fife Arms is the best hotel argument in Britain.',
@@ -97,6 +101,7 @@ export const CFG: Cfg = {
     },
     sicily: {
       id: 'sicily',
+      mood: 'warm',
       name: 'Sicily',
       blurb: 'Taormina, the Aeolians by hydrofoil, and baroque Noto — the food arc.',
       caseFor: 'The best eating of any arc, Ferragosto energy, and the Aeolians at golden hour justify the whole pivot south.',
@@ -112,6 +117,7 @@ export const CFG: Cfg = {
     },
     dolomiti: {
       id: 'dolomiti',
+      mood: 'cool',
       name: 'Dolomites + Venice',
       blurb: 'Rifugio lunches under pale towers, with Venice as a two-night flourish.',
       caseFor: 'Alpine mornings, rifugio lunches and real hiking — warmth without the melt, and Venice thrown in.',
@@ -127,6 +133,7 @@ export const CFG: Cfg = {
     },
     cyclades: {
       id: 'cyclades',
+      mood: 'warm',
       name: 'Greece',
       blurb: 'Milos and Sifnos — the Cyclades with taste, no caldera coach parties.',
       caseFor: 'Milos and Sifnos are what Santorini pretends to be — the warm-sea answer, done quietly.',
@@ -143,6 +150,7 @@ export const CFG: Cfg = {
     },
     slovenia: {
       id: 'slovenia',
+      mood: 'cool',
       name: 'Slovenia',
       blurb: 'Bled, the Soča, Hiša Franko and karst wine — the quiet genius nobody debates for.',
       caseFor: 'Alpine lakes, a world-top-fifty table at Hiša Franko, and no crowds because nobody thinks to argue for it.',
@@ -159,6 +167,7 @@ export const CFG: Cfg = {
     },
     sardinia: {
       id: 'sardinia',
+      mood: 'warm',
       name: 'Sardinia',
       blurb: 'The Costa Smeralda, inland Barbagia, and the clearest swimming water in Europe.',
       caseFor: 'The best swimming water in Europe, full stop — and inland Barbagia is another century entirely.',
@@ -174,6 +183,7 @@ export const CFG: Cfg = {
     },
     madeira: {
       id: 'madeira',
+      mood: 'warm',
       name: 'Madeira',
       blurb: 'Reid’s on the cliff, levadas in the laurel forest — the island August cannot crowd.',
       caseFor: 'The crowd-proof answer — 26° every day, levada walks in world-heritage forest, and Reid’s Palace on its cliff; August barely registers there.',
@@ -189,6 +199,7 @@ export const CFG: Cfg = {
     },
     portugal: {
       id: 'portugal',
+      mood: 'warm',
       name: 'Portugal',
       blurb: 'Lisbon light, Comporta pines, and the Douro on the eve of harvest.',
       caseFor: 'Lisbon light, Comporta’s pines-and-rice-fields cool, and the Douro in late August is harvest-eve gold.',
@@ -205,6 +216,7 @@ export const CFG: Cfg = {
     },
     highlow: {
       id: 'highlow',
+      mood: 'both',
       name: 'Norway + Croatia',
       blurb: 'Lofoten and the lights in the quiet week, then south to the party as Europe empties.',
       caseFor: 'The crowd curve played perfectly — Arctic scenery while the Med is rammed, the flotilla the very Saturday everyone else goes back to work.',
@@ -220,6 +232,7 @@ export const CFG: Cfg = {
     },
     dolosicily: {
       id: 'dolosicily',
+      mood: 'both',
       name: 'Dolomites + Sicily',
       blurb: 'Alta Badia while Italy holidays, Taormina and the Aeolians as it empties — one country, both halves.',
       caseFor: 'One language, two Italys — cool hiking through Ferragosto week, then the south’s beaches and tables exactly as the locals hand them back.',
@@ -236,6 +249,7 @@ export const CFG: Cfg = {
     },
     scotgreece: {
       id: 'scotgreece',
+      mood: 'both',
       name: 'Scotland + Greece',
       blurb: 'Braemar and Skye in the cool, then Milos and Sifnos on the exhale — the widest contrast on the board.',
       caseFor: 'Highland drama while the Med is rammed, then the Aegean precisely as it thins — no other arc swings this far.',
@@ -252,6 +266,7 @@ export const CFG: Cfg = {
     },
     slovcroatia: {
       id: 'slovcroatia',
+      mood: 'both',
       name: 'Slovenia + Croatia',
       blurb: 'Bled and the Soča, then down the road to Split for the gulet — the only combo with no mid-trip flight.',
       caseFor: 'Alpine lakes to the Adriatic entirely by road — one hire car, zero mid-trip airports, and the boat waiting on the exhale Saturday.',
@@ -267,6 +282,7 @@ export const CFG: Cfg = {
     },
     norsardinia: {
       id: 'norsardinia',
+      mood: 'both',
       name: 'Norway + Sardinia',
       blurb: 'Lofoten and the lights, then Europe’s clearest water at post-Ferragosto prices.',
       caseFor: 'The aurora and the Mediterranean’s best swimming in one fortnight — Costa Smeralda drops by half the day Ferragosto ends.',
@@ -283,6 +299,7 @@ export const CFG: Cfg = {
     },
     yachtweek: {
       id: 'yachtweek',
+      mood: 'warm',
       name: 'Croatia — Yacht Week',
       blurb: 'The Croatia flotilla — Split to Hvar to Vis, raft-ups, and Hvar to recover.',
       caseFor: 'The story you will tell for a decade — a flotilla, Hvar at 3am, and a fortnight nobody at Coastal will believe.',
