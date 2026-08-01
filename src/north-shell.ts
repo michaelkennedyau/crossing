@@ -326,7 +326,7 @@ export function renderNorth(env: Env): string {
 <link rel="preload" as="image" href="/img/n-coldopen-1280.avif" type="image/avif" fetchpriority="high">
 <style>${CSS}</style>
 </head>
-<body data-depart="${esc(env.NORTH_DEPART_ISO)}">
+<body data-depart="${esc(env.NORTH_DEPART_ISO ?? '')}">
 <div id="sky"></div>
 <div id="stage" aria-hidden="true"></div>
 <div id="scrim"></div>

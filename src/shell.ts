@@ -300,7 +300,7 @@ export function renderAndes(env: Env): string {
 <link rel="preload" as="image" href="/img/coldopen-1280.avif" type="image/avif" fetchpriority="high">
 <style>${CSS}</style>
 </head>
-<body data-depart="${esc(env.DEPART_ISO)}">
+<body data-depart="${esc(env.DEPART_ISO ?? '')}">
 <div id="sky"></div>
 <div id="stage"></div>
 <div id="scrim"></div>
