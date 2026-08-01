@@ -7,7 +7,12 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "img:optimise": "node scripts/optimise-images.mjs",
+    "img:push": "node scripts/img-r2.mjs push",
+    "img:pull": "node scripts/img-r2.mjs pull",
+    "img:check": "node scripts/img-r2.mjs check",
+    "img:build": "node scripts/img-r2.mjs pull && node scripts/optimise-images.mjs && node scripts/img-r2.mjs push"
   },
   "dependencies": {
     "react": "^18.3.1",

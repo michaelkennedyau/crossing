@@ -8,6 +8,9 @@ export interface Env {
   ASSETS: Fetcher;
   DB: D1Database;
   KV: KVNamespace;
+  // Durable home for image ORIGINALS (web/.img-src). Written via the wrangler CLI
+  // (web/scripts/img-r2.mjs), not through the Worker — the Worker never serves from it.
+  R2_IMAGES: R2Bucket;
   AI?: Ai;
   // Secret (wrangler secret put ANTHROPIC_API_KEY) — only needed for the concierge.
   ANTHROPIC_API_KEY?: string;

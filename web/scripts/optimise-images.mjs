@@ -46,3 +46,9 @@ for (const f of files) {
 }
 await writeFile(path.join(OUT, 'manifest.json'), JSON.stringify(manifest));
 console.log('manifest:', Object.keys(manifest).length, 'images →', OUT);
+
+// Originals must never exist only on this machine again (the machine loss). Remind, don't
+// auto-upload — network + wrangler auth don't belong inside an image-grade run.
+if (files.length) {
+  console.log('\n→ now archive the sources:  npm run img:push   (R2 crossing-images/originals/)');
+}
