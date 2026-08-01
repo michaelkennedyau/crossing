@@ -26,6 +26,7 @@ interface Leg {
   live?: string;
   tall?: boolean;
   chart?: boolean;
+  extra?: string;
   cta?: boolean;
   ctaLabel?: string;
 }
@@ -36,97 +37,50 @@ const LEGS: Leg[] = [
     n: '0', label: 'Cold open',
     eyebrow: 'a second launch · winter · the long way north',
     head: 'il varo', headClass: 'hero',
-    hand: 'Every voyage has a reason. This one begins with five metres of snow — and ends with a choice. This page is the <span class="ember-word">why</span>; the bridge is the chooser.',
+    hand: 'Every voyage has a reason. This one begins with five metres of snow — and ends with a <span class="ember-word">choice</span>.',
     telemetry: 'QF · BNE → SYD · SAT 8 AUG · T− <span data-countdown>—</span><br><span class="syd-note">then QF1 · the A380 · SYD → SIN, and on</span>',
   },
   {
     n: '01', label: 'Portillo, Chile',
     eyebrow: '01 · Portillo, Chile — the door that closed',
     head: 'One storm put five metres on the pass, and the winter said no.',
-    hand: 'The original crossing was Chilean — Portillo, the wine country, the Lakes. Then a single storm buried the pass, and the road over the Andes has been shut since the 14th of July. The trip died where it stood. The <span class="ember-word">ember</span> slipped its mooring, and turned north.',
+    hand: 'The original crossing was Chilean. A single storm buried it, and the road over the Andes has been shut since the 14th of July. The <span class="ember-word">ember</span> slipped its mooring, and turned north.',
     telemetry: '32.84°S 70.13°W · 5 M IN ONE STORM · ROAD CLOSED SINCE 14 JUL',
   },
   // ── Act II — the fixed spine ──
   {
     n: '02', label: 'Saigon, Vietnam',
-    eyebrow: '02 · the spine, part one — Sài Gòn',
+    eyebrow: '02 · the spine — Sài Gòn',
     head: 'The spine is fixed, and it starts with a conference.',
     telemetry: '10.78°N 106.70°E · CONNECT 2026 · MON 10 – WED 12 AUG · GALA WED NIGHT',
     live: 'SAIGON · 32°C · MONSOON HAZE · LANTERNS AT DUSK',
-    hand: 'Three days at the Sheraton among four hundred planners, gala on the Wednesday night. The conference is the cover story; after it, the voyage owes nobody anything.',
   },
   {
     n: '03', label: 'Singapore',
-    eyebrow: '03 · the spine, part two — the quiet exit',
+    eyebrow: '03 · the spine — the quiet exit',
     head: 'Thursday morning out while the hall empties, and Raffles by evening.',
     telemetry: 'THU 13 AUG · SGN → SIN · ONE NIGHT AT RAFFLES',
   },
   {
     n: '04', label: 'QF1 · SIN → LHR',
-    eyebrow: '04 · the spine, part three — the night leg',
-    head: 'Fourteen hours of dark over two continents, and London before breakfast.',
+    eyebrow: '04 · the spine — the night leg',
+    head: 'Fourteen hours of dark, and London before breakfast.',
     telemetry: 'FIRST LOUNGE T1 · DEP LATE FRI 14 · LHR SAT 15 AUG 06:25',
-    hand: 'Wake in Singapore. Board unhurried. Nothing behind you.',
   },
   {
     n: '05', label: 'London',
     eyebrow: '05 · the frame — two immovable dates',
-    head: 'Saturday the 15th in, Monday the 31st out. Sixteen nights. The middle entirely open.',
-    hand: 'QF1 lands at dawn on the 15th of August; QF2 leaves on the 31st. Those two dates are the whole contract — kind, non-negotiable, and silent on everything between. Sixteen nights in Europe, and the only question is how to spend them.',
+    head: 'Saturday the 15th in, Monday the 31st out. Sixteen nights, the middle entirely open.',
     telemetry: 'LHR IN · SAT 15 AUG 06:25 — LHR OUT · MON 31 AUG · 16 NIGHTS BETWEEN',
   },
-  // ── Act III — the logic ──
+  // ── The branch — the why in one chart, then choose ──
   {
-    n: '06', label: 'The Med · 15–22 Aug',
-    eyebrow: '06 · the logic, part one — where Europe is',
-    head: 'Week one is the loudest week of the European year in the warm south.',
-    hand: 'Ferragosto falls on the 15th — the day we land. Italy, France, Croatia and Greece hit their annual maximum: every beach club full, every table booked, every price at its peak. The south in week one is glorious, and it knows it.',
-    telemetry: 'FERRAGOSTO FRI 15 AUG · ITALY FRANCE CROATIA GREECE AT MAX',
-  },
-  {
-    n: '07', label: 'Arctic Norway',
-    eyebrow: '07 · the logic, part two — where Europe isn’t',
-    head: 'The north, meanwhile, stands empty.', headClass: 'cut',
-    hand: 'Norwegian schools go back around the 17th, and the fjords fall quiet — same week, same continent, harbours and mountain tables to ourselves. And past midnight, past the weather, the sky goes <span class="ember-word">green</span>.',
-    telemetry: '— SCHOOLS BACK ~MON 17 AUG · THE QUIET WEEK · AURORA WINDOW OPENS —',
-    tall: true,
-  },
-  {
-    n: '08', label: 'Saturday 22 August',
-    eyebrow: '08 · the logic, resolved — the crowd curve',
-    head: 'On Saturday the 22nd, Europe goes back to work — and the Med exhales.',
-    chart: true,
-    hand: 'Two lines cross the fortnight. The south holds its peak through the 22nd, then falls away — crowds gone home, prices down 20 to 40 per cent. The north sits quiet from the 17th. So the shape of a smart sixteen nights writes itself: the cool half first, the warm half after the <span class="ember-word">exhale</span> — or a single world, chosen knowing the tradeoff.',
-    telemetry: 'SOUTH −20–40% AFTER SAT 22 · NORTH QUIET FROM MON 17',
-  },
-  // ── Act IV — the options as consequences ──
-  {
-    n: '09', label: 'Both worlds · 5 routes',
-    eyebrow: '09 · the consequence — both worlds',
-    head: 'Five routes play the curve straight: cool first, then south on the exhale.',
-    hand: 'Norway then Sardinia, Scotland then Greece, the fjords then the Adriatic. A cool, empty week while the Med is at maximum — then the warm water as it empties and the prices drop. The logic’s first choice.',
-    cta: true, ctaLabel: 'Compare the five →',
-  },
-  {
-    n: '10', label: 'The cool north · 4 routes',
-    eyebrow: '10 · the consequence — all-cool',
-    head: 'Four routes stay north for the whole sixteen nights.',
-    hand: 'Norway, the Highlands, the long fjords. Empty from the first morning to the last, with weather the only gamble — they give up the warm water entirely, and dodge the crowds entirely in return.',
-    cta: true, ctaLabel: 'Compare the four →',
-  },
-  {
-    n: '11', label: 'The warm south · 7 routes',
-    eyebrow: '11 · the consequence — all-warm',
-    head: 'Seven routes go straight to the warm water — eyes open.',
-    hand: 'Sicily, the Cyclades, Sardinia, the gulets, the yacht weeks. Week one lands in the loudest days of the European year; the second week is the reward. The curve doesn’t forbid it — it just names the price.',
-    cta: true, ctaLabel: 'Compare the seven →',
-  },
-  {
-    n: '12', label: 'The bridge',
-    eyebrow: '12 · the bridge',
-    head: 'Sixteen routes, two price tiers, a case and a counter for each.',
-    hand: 'The why is behind you. Now plot where she sails.',
-    cta: true,
+    n: '06', label: 'The branch',
+    eyebrow: '06 · the branch — the crowd curve, then choose',
+    head: 'Week one the south is rammed and the north is empty; on Saturday the 22nd the Med exhales.',
+    chart: true, tall: true,
+    hand: 'That single curve writes the smart shape — cool half first, warm half on the exhale. Pick a route, or open the full board.',
+    extra: 'BRANCH', // replaced at render with the branch cards
   },
 ];
 
@@ -156,6 +110,57 @@ const CROWD_CURVE = `<figure class="curve" aria-hidden="true">
   <figcaption>the crowd curve · europe, 15–31 aug</figcaption>
 </figure>`;
 
+
+// ── The branch — two named routes with mini route-maps, plus the full board. Static SSR links
+// (the bridge opens and decodes #arc=…); the tier chips are a light progressive enhancement. ──
+function renderBranch(): string {
+  return `<div class="branch">
+  <div class="tier-chips" role="group" aria-label="Room tier">
+    <button type="button" class="chip on" data-tier="special">the good rooms</button>
+    <button type="button" class="chip" data-tier="sane">the sane rooms</button>
+  </div>
+
+  <a class="bcard rec" data-open-bridge data-arc-link href="#arc=slovcroatia:special:2.3.2.7.2">
+    <svg class="bmap" viewBox="0 0 140 84" aria-hidden="true">
+      <path d="M14,22 C36,20 54,26 64,32 L56,48 C66,56 76,60 86,64 L112,72" fill="none"
+        stroke="rgba(174,189,203,.45)" stroke-width="1.2" stroke-dasharray="3 3" stroke-linecap="round"/>
+      <circle cx="14" cy="22" r="2.4" fill="var(--schist)"/><text x="14" y="14">LHR</text>
+      <circle cx="64" cy="32" r="2.4" fill="var(--live)"/><text x="66" y="24">BLED</text>
+      <circle cx="56" cy="48" r="2.4" fill="var(--live)"/><text x="40" y="52">SOČA</text>
+      <circle cx="86" cy="64" r="2.4" fill="var(--ember)"/><text x="86" y="78">SPLIT</text>
+      <circle cx="112" cy="72" r="2.4" fill="var(--ember)"/><text x="120" y="64">HVAR</text>
+    </svg>
+    <span class="bt">
+      <em class="btag">◆ recommended</em>
+      <b>Slovenia + Croatia</b>
+      <i>Lakes and Hiša Franko in the quiet week, one road south, the gulet on the exhale — no mid-trip flights.</i>
+      <u><span data-price-special>$38,300</span><span data-price-sane hidden>$21,400</span> · 16 nights · for two</u>
+    </span>
+  </a>
+
+  <a class="bcard" data-open-bridge data-arc-link href="#arc=highlow:special:1.4.2.7.2">
+    <svg class="bmap" viewBox="0 0 140 84" aria-hidden="true">
+      <path d="M14,66 C34,46 48,24 66,14 L92,10 C104,28 112,48 118,68" fill="none"
+        stroke="rgba(174,189,203,.45)" stroke-width="1.2" stroke-dasharray="3 3" stroke-linecap="round"/>
+      <circle cx="14" cy="66" r="2.4" fill="var(--schist)"/><text x="14" y="80">LHR</text>
+      <circle cx="66" cy="14" r="2.4" fill="var(--live)"/><text x="54" y="10">LOFOTEN</text>
+      <circle cx="92" cy="10" r="2.4" fill="var(--live)"/><text x="104" y="10">TROMSØ</text>
+      <circle cx="118" cy="68" r="2.4" fill="var(--ember)"/><text x="118" y="80">SPLIT</text>
+    </svg>
+    <span class="bt">
+      <em class="btag btag--rival">the rival</em>
+      <b>Norway + Croatia</b>
+      <i>Lofoten and the aurora watch, then the flotilla south — the story arc, with a coin-flip sky.</i>
+      <u><span data-price-special>$29,650</span><span data-price-sane hidden>$19,350</span> · 16 nights · for two</u>
+    </span>
+  </a>
+
+  <button class="bcard ball" data-open-bridge type="button">
+    <span class="bt"><b>All sixteen routes →</b><i>Two price tiers, a case and a counter for each — the full board.</i></span>
+  </button>
+</div>`;
+}
+
 function renderLeg(leg: Leg): string {
   const headTag = leg.headClass === 'hero' ? 'h1' : 'h2';
   return `<section class="leg${leg.tall ? ' leg--tall' : ''}" data-leg="${esc(leg.n)}" data-img="${esc(LEG_IMG[leg.n] ?? '')}" data-screen-label="${esc(leg.label)}">
@@ -164,6 +169,7 @@ function renderLeg(leg: Leg): string {
     <${headTag} class="head ${leg.headClass ?? ''}">${esc(leg.head)}</${headTag}>
     ${leg.hand ? `<p class="hand">${leg.hand}</p>` : ''}
     ${leg.chart ? CROWD_CURVE : ''}
+    ${leg.extra === 'BRANCH' ? renderBranch() : ''}
     ${leg.telemetry ? `<p class="telemetry">${leg.telemetry}</p>` : ''}
     ${leg.live ? `<p class="live-pill"><span class="live-dot"></span>${esc(leg.live)}</p>` : ''}
     ${leg.n === '0' ? `<p class="scrollhint">scroll to sail · the why unfolds as you go</p>` : ''}
@@ -173,18 +179,17 @@ function renderLeg(leg: Leg): string {
 </section>`;
 }
 
-// 8 ember-rail nodes from 10%→95% height; the glowing node sits at the empty-north watch (p≈0.58),
+// 7 ember-rail nodes from 10%→95% height; the glowing node sits at the buried-pass pivot (~17%),
 // the last is the amber berth.
-const NODES = [10, 22, 34, 46, 58, 70, 82, 95];
-const AURORA_NODE = 4; // the Arctic quiet-week leg (~58% of the scroll)
+const NODES = [10, 24, 38, 52, 66, 80, 95];
+const AURORA_NODE = 1; // the Portillo hush
 
 // leg id → image slug (web/public/img/<slug>-{1280,1920}.{avif,webp}). The image stage reads
 // data-img; every leg carries a slug so the stage's leg↔frame indexing stays 1:1.
 // 'pass' is the buried Andes pass from the Chile set — deliberately reused for the pivot leg.
 const LEG_IMG: Record<string, string> = {
   '0': 'n-coldopen', '01': 'pass', '02': 'n-saigon', '03': 'n-raffles', '04': 'n-nightleg',
-  '05': 'n-london', '06': 'arc-cyclades', '07': 'n-aurora', '08': 'arc-sardinia',
-  '09': 'combo-norsard', '10': 'n-geiranger', '11': 'arc-sicily', '12': 'n-bridge',
+  '05': 'n-london', '06': 'n-bridge',
 };
 
 const CSS = `
@@ -220,8 +225,8 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
   opacity:calc(.42 - .42*var(--dawn));}
 /* the aurora wash — rides the hush bell, peaking exactly at the Arctic watch */
 #aurora{position:fixed;inset:0;z-index:2;pointer-events:none;mix-blend-mode:screen;
-  background:radial-gradient(130% 70% at 50% 0%, rgba(111,227,176,.5), transparent 62%);
-  opacity:calc(var(--quiet)*.6);}
+  background:radial-gradient(130% 70% at 50% 0%, rgba(140,180,220,.45), transparent 62%);
+  opacity:calc(var(--quiet)*.4);}
 #mist{position:fixed;inset:0;z-index:3;pointer-events:none;}
 #fog{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:calc(var(--fog-a)*.6);filter:blur(22px);
   background:radial-gradient(60% 50% at 28% 40%, rgba(190,205,214,.10), transparent 70%),
@@ -287,6 +292,31 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
   color:var(--ember-hot);background:rgba(242,180,94,.10);border:1px solid var(--ember);border-radius:8px;
   padding:11px 18px;cursor:pointer;transition:background .18s;}
 .bridge-open:hover{background:rgba(242,180,94,.18);}
+
+/* ── the branch ── */
+.branch{margin-top:26px;display:grid;gap:11px;max-width:560px;}
+.tier-chips{display:flex;gap:7px;margin-bottom:2px;}
+.chip{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;color:var(--snow-dim);
+  background:rgba(237,243,248,.05);border:1px solid rgba(126,142,160,.25);border-radius:999px;
+  padding:7px 13px;cursor:pointer;transition:.14s;}
+.chip.on{color:var(--ember-hot);border-color:var(--ember);background:rgba(242,180,94,.12);}
+.bcard{display:flex;gap:15px;align-items:center;text-align:left;text-decoration:none;color:var(--snow);
+  background:rgba(8,13,22,.52);border:1px solid rgba(126,142,160,.22);border-radius:14px;
+  padding:13px 16px;cursor:pointer;transition:.16s;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+.bcard:hover{border-color:rgba(126,142,160,.5);transform:translateY(-2px);}
+.bcard.rec{border-color:var(--ember);box-shadow:0 0 0 1px var(--ember),0 8px 26px rgba(0,0,0,.3);}
+.bcard .bmap{flex:0 0 128px;height:auto;}
+.bcard .bmap text{font-family:var(--font-mono);font-size:7px;letter-spacing:.05em;fill:var(--snow-dim);}
+.bcard .bt{display:grid;gap:3px;font-weight:300;}
+.bcard .bt b{font-family:var(--font-mono);font-size:13px;font-weight:600;letter-spacing:.02em;}
+.bcard .bt i{font-family:var(--font-hand);font-style:italic;font-size:13.5px;line-height:1.45;color:var(--snow-dim);}
+.bcard .bt u{text-decoration:none;font-family:var(--font-mono);font-size:10.5px;color:var(--snow-dim);letter-spacing:.06em;}
+.btag{font-style:normal;width:fit-content;font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;color:#1A1205;background:var(--ember);border-radius:999px;padding:2.5px 8px;font-weight:600;}
+.btag--rival{background:transparent;color:var(--live);border:1px solid rgba(139,232,192,.4);}
+.bcard.ball{border-style:dashed;background:rgba(8,13,22,.3);font:inherit;}
+@media (max-width:560px){.bcard{flex-direction:column;align-items:flex-start;}.bcard .bmap{flex-basis:auto;width:150px;}}
+@media (prefers-reduced-motion: reduce){.bcard:hover{transform:none;}}
 
 /* ── the crowd curve (hand-authored SVG, minimap idiom) ── */
 .curve{margin:30px 0 0;max-width:560px;padding:16px 14px 8px;border:1px solid rgba(126,142,160,.18);
@@ -420,6 +450,21 @@ ${LEGS.map(renderLeg).join('\n')}
 <p class="readout"><b data-readout-leg>Cold open</b> · QF1 T− <span data-readout-countdown>—</span></p>
 ${renderMinimap()}
 <div id="bridge-root"></div>
+<script>
+// branch tier chips — swap :special:/:sane: in the route links and the shown price. No framework;
+// the links work without this script (they default to the good rooms).
+document.addEventListener('click', function (e) {
+  var chip = e.target && e.target.closest ? e.target.closest('.chip[data-tier]') : null;
+  if (!chip) return;
+  var tier = chip.getAttribute('data-tier');
+  document.querySelectorAll('.chip[data-tier]').forEach(function (c) { c.classList.toggle('on', c === chip); });
+  document.querySelectorAll('a[data-arc-link]').forEach(function (a) {
+    a.setAttribute('href', a.getAttribute('href').replace(/:(special|sane):/, ':' + tier + ':'));
+  });
+  document.querySelectorAll('[data-price-special]').forEach(function (el) { el.hidden = tier !== 'special'; });
+  document.querySelectorAll('[data-price-sane]').forEach(function (el) { el.hidden = tier !== 'sane'; });
+});
+</script>
 <script type="module" src="/assets/north-engine.js"></script>
 <script type="module" src="/assets/north-bridge.js"></script>
 </body>

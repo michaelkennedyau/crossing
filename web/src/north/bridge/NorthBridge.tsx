@@ -92,7 +92,13 @@ export function NorthBridge(): JSX.Element | null {
       withTransition(() => { setOpen(true); document.body.style.overflow = 'hidden'; });
     };
     const onClick = (e: MouseEvent): void => {
-      if ((e.target as HTMLElement).closest('[data-open-bridge]')) { e.preventDefault(); openBridge(); }
+      const opener = (e.target as HTMLElement).closest('[data-open-bridge]');
+      if (!opener) return;
+      e.preventDefault();
+      // branch cards carry an #arc=… href — adopt it so the Planner mounts on that route
+      const href = opener.getAttribute('href');
+      if (href && href.startsWith('#arc=')) history.replaceState(null, '', href);
+      openBridge();
     };
     const onKey = (e: KeyboardEvent): void => { if (e.key === 'Escape') withTransition(() => { setOpen(false); document.body.style.overflow = ''; }); };
     document.addEventListener('click', onClick);

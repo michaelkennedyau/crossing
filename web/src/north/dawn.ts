@@ -2,10 +2,9 @@ import type { FrameCtx } from '../engine/types';
 
 /**
  * The latitude arc — the North's answer to the Andes dawn. The Chile piece ran dark → daylight;
- * this one runs warm Brisbane dusk → the cold buried pass (the pivot) → Saigon warmth → equatorial
- * night → North Sea grey → a deliberate DARK DIP at the empty-north watch (≈0.58, leg 07 of the
- * 13-leg "why" page, the engine-cut analogue) → the aurora bloom → the Adriatic gold of the
- * options → berth.
+ * this one runs warm Brisbane dusk → a deliberate COLD DIP at the buried pass (≈0.17, the pivot,
+ * the engine-cut analogue of the branch page) → Saigon warmth → equatorial night → North Sea grey
+ * → the options gold at the branch.
  * Same exported grammar as engine/dawn.ts; --dawn here reads as "northness" (the stage filter cools
  * with it). The quiet bell is computed locally — the shared buildCtx's bell belongs to Lago Frías.
  */
@@ -16,17 +15,14 @@ interface Stop {
 }
 
 const STOPS: Stop[] = [
-  // p values track the 13-leg centres (leg 07, the tall empty-north watch, centres at ≈0.58)
+  // p values track the 7-leg branch page (leg 01, the buried pass, centres at ≈0.17)
   { p: 0.0, top: '#1A1410', mid: '#140F12', bot: '#101018', hz: '#58362A', hzA: 0.14, starA: 0.0, fogA: 0.55, greenA: 0.0 }, // Brisbane winter dusk
-  { p: 0.08, top: '#0B1220', mid: '#0D1626', bot: '#101B2E', hz: '#46586C', hzA: 0.1, starA: 0.3, fogA: 0.65, greenA: 0.0 }, // the buried pass — cold blue
-  { p: 0.16, top: '#201410', mid: '#191013', bot: '#12101A', hz: '#6A3E2A', hzA: 0.18, starA: 0.0, fogA: 0.6, greenA: 0.0 }, // Saigon warmth
-  { p: 0.3, top: '#090C16', mid: '#0A101E', bot: '#0C1424', hz: '#1E3048', hzA: 0.06, starA: 0.55, fogA: 0.4, greenA: 0.05 }, // QF1 night leg
-  { p: 0.41, top: '#131A24', mid: '#1A2430', bot: '#232E3A', hz: '#4A5866', hzA: 0.12, starA: 0.0, fogA: 0.7, greenA: 0.1 }, // London grey
-  { p: 0.5, top: '#0C1E28', mid: '#12303A', bot: '#17424A', hz: '#2E6A66', hzA: 0.1, starA: 0.05, fogA: 0.5, greenA: 0.55 }, // the logic turns north
-  { p: 0.58, top: '#050A12', mid: '#071018', bot: '#0A1822', hz: '#123828', hzA: 0.04, starA: 0.8, fogA: 0.3, greenA: 0.8 }, // the empty north — dark dip
-  { p: 0.66, top: '#071420', mid: '#0B2430', bot: '#123A34', hz: '#3EC08A', hzA: 0.5, starA: 0.6, fogA: 0.2, greenA: 1.0 }, // aurora bloom → the exhale
-  { p: 0.85, top: '#12283A', mid: '#1E4456', bot: '#2E6070', hz: '#E8B476', hzA: 0.45, starA: 0.1, fogA: 0.16, greenA: 0.5 }, // the warm options
-  { p: 1.0, top: '#182F42', mid: '#2A5064', bot: '#457888', hz: '#F2D9A6', hzA: 0.7, starA: 0.05, fogA: 0.1, greenA: 0.3 }, // the bridge, berth gold
+  { p: 0.17, top: '#0B1220', mid: '#0D1626', bot: '#101B2E', hz: '#46586C', hzA: 0.1, starA: 0.4, fogA: 0.7, greenA: 0.0 }, // the buried pass — the hush
+  { p: 0.33, top: '#201410', mid: '#191013', bot: '#12101A', hz: '#6A3E2A', hzA: 0.18, starA: 0.0, fogA: 0.6, greenA: 0.0 }, // Saigon warmth
+  { p: 0.5, top: '#0E0F1A', mid: '#0E1220', bot: '#101828', hz: '#2A3A50', hzA: 0.08, starA: 0.35, fogA: 0.45, greenA: 0.05 }, // Raffles evening
+  { p: 0.67, top: '#090C16', mid: '#0A101E', bot: '#0C1424', hz: '#1E3048', hzA: 0.06, starA: 0.6, fogA: 0.35, greenA: 0.05 }, // QF1 night leg
+  { p: 0.83, top: '#131A24', mid: '#1A2430', bot: '#232E3A', hz: '#4A5866', hzA: 0.12, starA: 0.0, fogA: 0.6, greenA: 0.15 }, // London grey, the frame
+  { p: 1.0, top: '#14283A', mid: '#224458', bot: '#3A6478', hz: '#F2D9A6', hzA: 0.6, starA: 0.05, fogA: 0.14, greenA: 0.5 }, // the branch — options gold
 ];
 
 const clamp01 = (v: number): number => (v < 0 ? 0 : v > 1 ? 1 : v);
@@ -58,9 +54,9 @@ function bracket(p: number): { a: Stop; b: Stop; t: number } {
   return { a: last, b: last, t: 0 };
 }
 
-/** the Arctic hush bell: k² peaking at p≈0.58 (the empty-north watch), half-width 0.09 — the lights want the dark. */
+/** the buried-pass hush bell: k² peaking at p≈0.17 (the door that closed), half-width 0.08. */
 export function auroraQuiet(p: number): number {
-  const k = Math.max(0, 1 - Math.abs(clamp01(p) - 0.58) / 0.09);
+  const k = Math.max(0, 1 - Math.abs(clamp01(p) - 0.17) / 0.08);
   return k * k;
 }
 

@@ -4,13 +4,10 @@
  */
 import type { Place } from './places';
 
-// keyed by data-leg — a single quiet link per relevant leg (ids match the redesigned "why" page:
-// 02 Saigon · 03 Singapore · 10 the all-cool family · 11 the all-warm family)
+// keyed by data-leg — a single quiet link per relevant leg (branch-page ids: 02 Saigon · 03 Singapore)
 export const NORTH_LEG_PLACES: Record<string, Place> = {
   '02': { kind: 'stay', name: 'Sheraton Saigon Grand Opera', url: 'https://www.marriott.com/en-us/hotels/sgnsi-sheraton-saigon-grand-opera-hotel/' },
   '03': { kind: 'stay', name: 'Raffles Singapore', url: 'https://www.raffles.com/singapore/' },
-  '10': { kind: 'stay', name: 'Holmen Lofoten', url: 'https://www.holmenlofoten.no' },
-  '11': { kind: 'sail with', name: 'The Yacht Week', url: 'https://www.theyachtweek.com' },
 };
 
 // all links (Bridge ledger + rival arcs)
