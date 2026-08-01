@@ -35,6 +35,7 @@ export interface Arc {
   mood: 'cool' | 'warm' | 'both'; // which half of the crowd curve the arc lives in
   transport: number; // AUD lump — every flight/car/boat/ferry inside the arc
   segments: Segment[];
+  img?: string; // image slug (web/public/img/<slug>-1280.webp) — lets a D1-added arc name its picture
 }
 
 export interface Cfg {
@@ -344,12 +345,43 @@ export function aud(n: number): string {
   return `$${Math.round(n).toLocaleString('en-AU')}`;
 }
 
-/** Deep-merge an override (from /api/north/cfg) over the canonical CFG. Arcs replace by id. */
-export function mergeCfg(base: Cfg, override: Partial<Cfg> | null | undefined): Cfg {
+/**
+ * Minimal shape guard for an Arc arriving from outside the type system (a D1 row, a cfg
+ * override). Shared by the client merge and the Worker's PUT validation.
+ */
+export function isArcLike(x: unknown): x is Arc {
+  if (!x || typeof x !== 'object') return false;
+  const a = x as { name?: unknown; segments?: unknown };
+  if (typeof a.name !== 'string' || !Array.isArray(a.segments) || a.segments.length === 0) return false;
+  return a.segments.every((s: unknown) => {
+    if (!s || typeof s !== 'object') return false;
+    const seg = s as { id?: unknown; perNight?: { special?: unknown; sane?: unknown } };
+    return typeof seg.id === 'string'
+      && Number.isFinite(seg.perNight?.special)
+      && Number.isFinite(seg.perNight?.sane);
+  });
+}
+
+/** An override merged over CFG: nightsTotal, and arcs replaced by id (null hides an arc). */
+export interface CfgOverride {
+  nightsTotal?: number;
+  arcs?: Record<string, Arc | null | undefined>;
+}
+
+/**
+ * Deep-merge an override (from /api/north/cfg and /api/north/arcs) over the canonical CFG.
+ * Arcs replace WHOLLY by id; a null/disabled arc is dropped; malformed rows are ignored.
+ */
+export function mergeCfg(base: Cfg, override: CfgOverride | null | undefined): Cfg {
   if (!override) return base;
+  const arcs: Record<string, Arc> = { ...base.arcs };
+  for (const [id, arc] of Object.entries(override.arcs ?? {})) {
+    if (arc == null) delete arcs[id];
+    else if (isArcLike(arc)) arcs[id] = { ...arc, id: id as ArcId };
+  }
   return {
     ...base,
-    ...override,
-    arcs: { ...base.arcs, ...(override.arcs ?? {}) },
+    nightsTotal: override.nightsTotal ?? base.nightsTotal,
+    arcs: arcs as Record<ArcId, Arc>,
   };
 }
