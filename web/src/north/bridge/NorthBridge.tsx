@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { CFG, mergeCfg, type Cfg } from '../planner/cfg';
 import { toggleTheme } from '../theme';
+import { WeatherBoard } from './WeatherBoard';
 import { Planner } from './Planner';
 import { NorthChecklist } from './NorthChecklist';
 
@@ -35,7 +36,7 @@ function ShipClock(): JSX.Element {
       <p className="card-eyebrow">Ship's clock · QF · BNE Sat 8 Aug</p>
       <div className="clock-val">{txt}</div>
       <div className="clock-sub">days · hrs · min · sec to wheels-up</div>
-      <div className="clock-syd">↗ then QF1 — Saigon, Singapore, London, the fjords</div>
+      <div className="clock-syd">↗ then QF1 — Saigon, and nineteen open nights from London</div>
     </div>
   );
 }
@@ -44,12 +45,12 @@ function Logistics(): JSX.Element {
   const rows: [string, string, string?][] = [
     ['QF1 out', 'BNE → SYD → SIN · Sat 8 Aug · the A380'],
     ['Connect 2026', 'Sheraton Saigon · Mon 10 – Wed 12 · gala Wed night', 'https://www.marriott.com/en-us/hotels/sgnsi-sheraton-saigon-grand-opera-hotel/'],
-    ['The exit', 'SGN → SIN Thu am · Raffles by evening', 'https://www.raffles.com/singapore/'],
-    ['The night leg', 'QF1 · SIN → LHR · Fri 14 · lands 06:25 Sat'],
+    ['The exit', 'SGN → SIN Thu 13 am · QF1 south of midnight'],
+    ['The night leg', 'QF1 · SIN → LHR · dep Thu 23:20 · lands Fri 14, 06:35'],
     ['Norway', 'Lofoten · Holmen, Å — the quiet week', 'https://www.holmenlofoten.no'],
     ['Tromsø', 'aurora window opens ~20 Aug'],
     ['Croatia', 'Sat 22 · the flotilla, or a Hvar shore base', 'https://www.theyachtweek.com'],
-    ['QF2 home', 'LHR Mon 31 Aug → SYD → BNE 2 Sep'],
+    ['QF2 home', 'LHR Wed 2 Sep → SYD → BNE Fri 4 Sep'],
     ['Party', '2 — just us; the boys hold Brisbane'],
   ];
   return (
@@ -127,6 +128,7 @@ export function NorthBridge(): JSX.Element | null {
           </span>
         </div>
 
+        <WeatherBoard />
         <ShipClock />
         <Planner cfg={cfg} />
         <div className="grid2">

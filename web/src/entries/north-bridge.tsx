@@ -33,6 +33,28 @@ const LIGHT_CSS = `
   padding:0 11px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
 .arc-card .ac{font-family:var(--font-mono);font-size:10px;color:var(--snow-dim);padding:7px 11px 10px;margin-top:auto;}
 .plan-anchor{scroll-margin-top:18px;}
+/* the board */
+.wb-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+.wb-head .lever-label{margin:0;}
+.wb-select{font-family:var(--font-mono);font-size:12px;color:var(--snow);background:rgba(9,14,20,.7);
+  border:1px solid rgba(124,138,147,.3);border-radius:8px;padding:8px 10px;}
+.wb-now{font-family:var(--font-mono);font-size:11px;color:var(--live);letter-spacing:.04em;}
+.wb-rows{display:grid;gap:2px;}
+.wb-row{display:grid;grid-template-columns:minmax(110px,1.2fr) minmax(90px,1fr) 74px minmax(84px,.9fr) minmax(140px,1.4fr);
+  gap:10px;align-items:baseline;padding:8px 6px;border-bottom:1px solid rgba(124,138,147,.1);border-radius:6px;}
+.wb-row.go{background:rgba(139,232,192,.05);}
+.wb-place b{font-family:var(--font-mono);font-size:12.5px;font-weight:600;color:var(--snow);}
+.wb-place i{display:block;font-style:normal;font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--schist);}
+.wb-temp,.wb-hop{font-family:var(--font-mono);font-size:11px;color:var(--snow-dim);}
+.wb-sun{font-family:var(--font-mono);font-size:11px;letter-spacing:2px;color:var(--ember);}
+.wb-verdict{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.04em;}
+.wb-verdict.go{color:var(--live);}
+.wb-verdict.maybe{color:var(--ember);}
+.wb-verdict.skip{color:var(--schist);}
+@media (max-width:640px){.wb-row{grid-template-columns:1fr 1fr;} .wb-sun,.wb-hop{display:none;}}
+[data-theme="light"] .bridge-overlay .wb-select{background:rgba(255,255,255,.9);}
+[data-theme="light"] .bridge-overlay .wb-row.go{background:rgba(14,124,107,.06);}
 @media (prefers-reduced-motion: reduce){.arc-card:hover{transform:none;}}
 [data-theme="light"] .bridge-overlay{
   --snow:#14212C; --snow-dim:#46586A; --schist:#5E7086;

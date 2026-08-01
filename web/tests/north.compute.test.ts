@@ -4,26 +4,26 @@ import { compute } from '../src/north/planner/compute';
 import { flagsFor } from '../src/north/planner/constraints';
 
 /**
- * The North Planner reducer, held to the fixed spine: sixteen nights, 15 → 31 August 2026.
+ * The North Planner reducer, held to the fixed spine: nineteen nights, 14 August → 2 September 2026, as ticketed.
  */
 describe('north planner · the spine', () => {
-  it('dates anchor to the QF1 arrival', () => {
-    expect(dateAt(0)).toBe('15 Aug');
-    expect(dateAt(16)).toBe('31 Aug');
-    expect(dateAt(18)).toBe('2 Sep');
+  it('dates anchor to the QF1 arrival as ticketed', () => {
+    expect(dateAt(0)).toBe('14 Aug');
+    expect(dateAt(19)).toBe('2 Sep');
+    expect(dateAt(21)).toBe('4 Sep');
   });
 
-  it.each(Object.keys(CFG.arcs) as ArcId[])('%s defaults close the 16-night calendar', (arc) => {
+  it.each(Object.keys(CFG.arcs) as ArcId[])('%s defaults close the 19-night calendar', (arc) => {
     const r = compute(defaultSelection(arc));
-    expect(r.totalNights).toBe(16);
+    expect(r.totalNights).toBe(19);
     expect(r.delta).toBe(0);
     expect(r.lastCell?.id).toBe('london2');
   });
 
   it('costs roll up — stay plus the arc transport lump', () => {
-    expect(compute(defaultSelection('fjords')).cost).toBe(27550);
-    expect(compute(defaultSelection('gulet')).cost).toBe(37300);
-    expect(compute(defaultSelection('highlands')).cost).toBe(26400);
+    expect(compute(defaultSelection('fjords')).cost).toBe(30900);
+    expect(compute(defaultSelection('gulet')).cost).toBe(40500);
+    expect(compute(defaultSelection('highlands')).cost).toBe(31500);
   });
 
   it('the sane tier is honest — cheaper than special on every arc', () => {
@@ -32,7 +32,7 @@ describe('north planner · the spine', () => {
       const sane = compute(defaultSelection(arc, CFG, 'sane')).cost;
       expect(sane).toBeLessThan(special);
     }
-    expect(compute(defaultSelection('fjords', CFG, 'sane')).cost).toBe(16350);
+    expect(compute(defaultSelection('fjords', CFG, 'sane')).cost).toBe(18200);
   });
 
   it('every arc ships with its case and its counter', () => {
@@ -45,11 +45,11 @@ describe('north planner · the spine', () => {
   it('the calendar carries running start dates', () => {
     const r = compute(defaultSelection('fjords'));
     const byId = Object.fromEntries(r.cells.map((c) => [c.id, c]));
-    expect(byId['london1'].date).toBe('15 Aug');
-    expect(byId['oye'].date).toBe('17 Aug');
-    expect(byId['lofoten'].date).toBe('22 Aug');
+    expect(byId['london1'].date).toBe('14 Aug');
+    expect(byId['oye'].date).toBe('16 Aug');
+    expect(byId['lofoten'].date).toBe('21 Aug');
     expect(byId['tromso'].date).toBe('26 Aug');
-    expect(byId['london2'].date).toBe('28 Aug');
+    expect(byId['london2'].date).toBe('29 Aug');
   });
 
   it('zero-night segments drop out of the calendar', () => {
@@ -80,6 +80,8 @@ describe('north planner · the rules', () => {
     const sel = defaultSelection('fjords');
     sel.nights['london2'] = 1;
     sel.nights['tromso'] = 4;
+    sel.nights['lofoten'] = 6;
+    sel.nights['storfjord'] = 3;
     const r = compute(sel);
     expect(r.delta).toBe(0);
     const f = flagsFor(sel, r);
@@ -139,8 +141,8 @@ describe('north planner · the rules', () => {
 
   it('North → South: moving the north nights breaks the hinge and says so', () => {
     const sel = defaultSelection('highlow');
-    sel.nights['lofoten'] = 3;
-    sel.nights['london2'] = 3;
+    sel.nights['lofoten'] = 4;
+    sel.nights['london2'] = 5;
     const r = compute(sel);
     expect(r.delta).toBe(0);
     expect(flagsFor(sel, r).some((x) => x.level === 'warn' && x.text.includes('Rebalance'))).toBe(true);
@@ -158,7 +160,7 @@ describe('north planner · the rules', () => {
   it('an early warm half gets the calmer-and-cheaper note', () => {
     const sel = defaultSelection('dolosicily');
     sel.nights['altabadia'] = 4;
-    sel.nights['london2'] = 3;
+    sel.nights['london2'] = 4;
     const r = compute(sel);
     expect(r.delta).toBe(0);
     expect(flagsFor(sel, r).some((x) => x.text.includes('before the Med empties'))).toBe(true);

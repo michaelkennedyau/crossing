@@ -12,6 +12,7 @@ import { conciergeRouter } from './routes/concierge';
 import { northCfgRouter } from './routes/north-cfg';
 import { northTodosRouter } from './routes/north-todos';
 import { northCountdownRouter } from './routes/north-countdown';
+import { northWeatherRouter } from './routes/north-weather';
 
 export const app = new Hono<{ Bindings: Env }>();
 
@@ -27,10 +28,11 @@ app.route('/api/cfg', cfgRouter);
 app.route('/api/todos', todosRouter);
 app.route('/api/concierge', conciergeRouter);
 
-// The North's persistence (lean v1 — no live feeds, no concierge).
+// The North's persistence + the board's live weather feed.
 app.route('/api/north/cfg', northCfgRouter);
 app.route('/api/north/todos', northTodosRouter);
 app.route('/api/north/countdown', northCountdownRouter);
+app.route('/api/north/weather', northWeatherRouter);
 
 // SSR shells. The Threshold is the door; both voyages are complete before any JS runs.
 app.get('/', (c) => c.html(renderThreshold()));

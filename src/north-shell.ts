@@ -37,7 +37,7 @@ const LEGS: Leg[] = [
     n: '0', label: 'Cold open',
     eyebrow: 'a second launch · winter · the long way north',
     head: 'il varo', headClass: 'hero',
-    hand: 'Every voyage has a reason. This one begins with five metres of snow — and ends with a <span class="ember-word">choice</span>.',
+    hand: 'Every voyage has a reason. This one begins with five metres of snow — and stays a <span class="ember-word">choice</span>, remade each morning by the weather. A refresh, not a pilgrimage.',
     telemetry: 'QF · BNE → SYD · SAT 8 AUG · T− <span data-countdown>—</span><br><span class="syd-note">then QF1 · the A380 · SYD → SIN, and on</span>',
   },
   {
@@ -58,20 +58,20 @@ const LEGS: Leg[] = [
   {
     n: '03', label: 'Singapore',
     eyebrow: '03 · the spine — the quiet exit',
-    head: 'Thursday morning out while the hall empties, and Raffles by evening.',
-    telemetry: 'THU 13 AUG · SGN → SIN · ONE NIGHT AT RAFFLES',
+    head: 'Thursday morning out while the hall empties — and the London flight that same night.',
+    telemetry: 'THU 13 AUG · SGN → SIN · QF1 DEP 23:20',
   },
   {
     n: '04', label: 'QF1 · SIN → LHR',
     eyebrow: '04 · the spine — the night leg',
     head: 'Fourteen hours of dark, and London before breakfast.',
-    telemetry: 'FIRST LOUNGE T1 · DEP LATE FRI 14 · LHR SAT 15 AUG 06:25',
+    telemetry: 'FIRST LOUNGE T1 · DEP THU 13 · 23:20 · LHR FRI 14 AUG 06:35',
   },
   {
     n: '05', label: 'London',
     eyebrow: '05 · the frame — two immovable dates',
-    head: 'Saturday the 15th in, Monday the 31st out. Sixteen nights, the middle entirely open.',
-    telemetry: 'LHR IN · SAT 15 AUG 06:25 — LHR OUT · MON 31 AUG · 16 NIGHTS BETWEEN',
+    head: 'Friday the 14th in, Wednesday the 2nd out. Nineteen nights, the middle entirely open.',
+    telemetry: 'LHR IN · FRI 14 AUG 06:35 — LHR OUT · WED 2 SEP · 19 NIGHTS BETWEEN',
   },
   // ── The branch — the why in one chart, then choose ──
   {
@@ -79,7 +79,7 @@ const LEGS: Leg[] = [
     eyebrow: '06 · the branch — the crowd curve, then choose',
     head: 'Week one the south is rammed and the north is empty; on Saturday the 22nd the Med exhales.',
     chart: true, tall: true,
-    hand: 'That single curve writes the smart shape — cool half first, warm half on the exhale. Pick a route, or open the full board.',
+    hand: 'That curve is the only strategy this trip needs — nothing is booked, nothing has to be. Ten years of Platinum and an Australian passport open every door below on a same-week booking. Check the sky, then choose.',
     extra: 'BRANCH', // replaced at render with the branch cards
   },
 ];
@@ -89,7 +89,7 @@ const LEGS: Leg[] = [
 const CROWD_CURVE = `<figure class="curve" aria-hidden="true">
   <svg viewBox="0 0 560 240">
     <rect x="40" y="26" width="500" height="182" fill="rgba(237,243,248,.03)"/>
-    <text x="540" y="18" text-anchor="end" class="c-faint">THE 16 NIGHTS · SAT 15 → MON 31</text>
+    <text x="540" y="18" text-anchor="end" class="c-faint">THE 19 NIGHTS · FRI 14 → WED 2 SEP</text>
     <line x1="40" y1="208" x2="540" y2="208" stroke="rgba(174,189,203,.35)" stroke-width="1"/>
     <line x1="102" y1="208" x2="102" y2="212" stroke="rgba(174,189,203,.35)" stroke-width="1"/>
     <line x1="259" y1="208" x2="259" y2="212" stroke="rgba(174,189,203,.35)" stroke-width="1"/>
@@ -102,10 +102,10 @@ const CROWD_CURVE = `<figure class="curve" aria-hidden="true">
     <text x="330" y="126">−20–40%</text>
     <text x="330" y="192" class="c-live">THE NORTH · QUIET FROM THE 17TH</text>
     <text x="266" y="40" class="c-ember">SAT 22 · THE EXHALE</text>
-    <text x="40" y="226">15 AUG</text>
+    <text x="40" y="226">14 AUG</text>
     <text x="102" y="226" text-anchor="middle">17</text>
     <text x="259" y="226" text-anchor="middle" class="c-ember">SAT 22</text>
-    <text x="540" y="226" text-anchor="end">31 AUG</text>
+    <text x="540" y="226" text-anchor="end">2 SEP</text>
   </svg>
   <figcaption>the crowd curve · europe, 15–31 aug</figcaption>
 </figure>`;
@@ -120,7 +120,7 @@ function renderBranch(): string {
     <button type="button" class="chip" data-tier="sane">the sane rooms</button>
   </div>
 
-  <a class="bcard rec" data-open-bridge data-arc-link href="#arc=slovcroatia:special:2.3.2.7.2">
+  <a class="bcard rec" data-open-bridge data-arc-link href="#arc=slovcroatia:special:2.4.2.7.4">
     <svg class="bmap" viewBox="0 0 140 84" aria-hidden="true">
       <path d="M14,22 C36,20 54,26 64,32 L56,48 C66,56 76,60 86,64 L112,72" fill="none"
         stroke="rgba(174,189,203,.45)" stroke-width="1.2" stroke-dasharray="3 3" stroke-linecap="round"/>
@@ -134,11 +134,11 @@ function renderBranch(): string {
       <em class="btag">◆ recommended</em>
       <b>Slovenia + Croatia</b>
       <i>Lakes and Hiša Franko in the quiet week, one road south, the gulet on the exhale — no mid-trip flights.</i>
-      <u><span data-price-special>$38,300</span><span data-price-sane hidden>$21,400</span> · 16 nights · for two</u>
+      <u><span data-price-special>$42,500</span><span data-price-sane hidden>$23,600</span> · 19 nights · for two</u>
     </span>
   </a>
 
-  <a class="bcard" data-open-bridge data-arc-link href="#arc=highlow:special:1.4.2.7.2">
+  <a class="bcard" data-open-bridge data-arc-link href="#arc=highlow:special:2.4.2.7.4">
     <svg class="bmap" viewBox="0 0 140 84" aria-hidden="true">
       <path d="M14,66 C34,46 48,24 66,14 L92,10 C104,28 112,48 118,68" fill="none"
         stroke="rgba(174,189,203,.45)" stroke-width="1.2" stroke-dasharray="3 3" stroke-linecap="round"/>
@@ -151,7 +151,7 @@ function renderBranch(): string {
       <em class="btag btag--rival">the rival</em>
       <b>Norway + Croatia</b>
       <i>Lofoten and the aurora watch, then the flotilla south — the story arc, with a coin-flip sky.</i>
-      <u><span data-price-special>$29,650</span><span data-price-sane hidden>$19,350</span> · 16 nights · for two</u>
+      <u><span data-price-special>$34,000</span><span data-price-sane hidden>$21,600</span> · 19 nights · for two</u>
     </span>
   </a>
 
@@ -376,9 +376,9 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 // then south to the Adriatic as the Med exhales. The ember rides nearly all of it as you scroll.
 function renderMinimap(): string {
   const tl: [string, string, boolean][] = [
-    ['15–20', 'Lofoten · the quiet week', false],
-    ['22 Aug', 'TOS → SPU · the exhale', true],
-    ['31 Aug', 'QF2 · home by 2 Sep', false],
+    ['14 Aug', 'LHR · 19 open nights', false],
+    ['22 Aug', 'the exhale · go south', true],
+    ['2 Sep', 'QF2 · home 4 Sep', false],
   ];
   return `<aside id="minimap" aria-hidden="true">
   <svg viewBox="0 0 220 96" width="100%" height="100%">

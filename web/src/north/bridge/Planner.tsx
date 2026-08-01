@@ -117,12 +117,12 @@ export function Planner({ cfg }: { cfg: Cfg }): JSX.Element {
       <div className="pt-head">
         <div>
           <p className="card-eyebrow" style={{ color: 'var(--live)' }}>The Planner · compose the middle</p>
-          <p className="pt-sub">The spine is fixed — QF1 lands London 06:25 Sat 15 Aug, QF2 leaves Mon 31 Aug. Sixteen nights between. Pick an arc, push the nights around, and watch the cost, the calendar and the consequences land.</p>
+          <p className="pt-sub">Landed — London, Friday 14 August. QF2 leaves Wednesday 2 September. Nineteen open nights, decided as late as you like: check the board, pick a shape, bend it.</p>
         </div>
         <div className="pt-total">
           <div className="amt">{aud(r.cost)}</div>
           <div className="days" style={sailable ? undefined : { color: 'var(--ember-hot)' }}>
-            {r.totalNights}/16 nights{sailable ? ' · sails' : ` · ${r.delta > 0 ? `${r.delta} over` : `${-r.delta} short`}`} · 15 – 31 Aug
+            {r.totalNights}/19 nights{sailable ? ' · sails' : ` · ${r.delta > 0 ? `${r.delta} over` : `${-r.delta} short`}`} · 14 Aug – 2 Sep
           </div>
         </div>
       </div>
@@ -161,7 +161,7 @@ export function Planner({ cfg }: { cfg: Cfg }): JSX.Element {
               </span>
               <span className="an">{a.name}</span>
               <span className="aw">{a.caseFor}</span>
-              <span className="ac">{aud(cost)} · 16 nights · {sel.tier === 'special' ? 'good rooms' : 'sane rooms'}</span>
+              <span className="ac">{aud(cost)} · 19 nights · {sel.tier === 'special' ? 'good rooms' : 'sane rooms'}</span>
             </button>
           );
         })}
@@ -199,7 +199,7 @@ export function Planner({ cfg }: { cfg: Cfg }): JSX.Element {
       </div>
 
       <div className="cal">
-        <p className="cal-cap">{sailable ? '✦ sixteen nights, berth to berth' : '△ the calendar doesn’t close — QF2 won’t wait'}</p>
+        <p className="cal-cap">{sailable ? '✦ nineteen nights, berth to berth' : '△ the calendar doesn’t close — QF2 won’t wait'}</p>
         <div className="strip">
           {r.cells.map((c) => (
             <div key={c.id} className="seg-cell" style={{ flexGrow: c.nights, background: tint(c.id) }}>
@@ -210,7 +210,7 @@ export function Planner({ cfg }: { cfg: Cfg }): JSX.Element {
           ))}
         </div>
         <div className="cal-legend">
-          <span>home berth · BNE {dateAt(18)}</span>
+          <span>QF2 · LHR {dateAt(19)} · BNE {dateAt(21)}</span>
         </div>
       </div>
 

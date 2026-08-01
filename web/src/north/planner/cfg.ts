@@ -1,6 +1,6 @@
 /**
  * The North Planner's decision space — data, not UI. The spine is fixed: QF1 lands LHR on
- * Saturday 15 August 2026, QF2 leaves LHR on Monday 31 August = SIXTEEN nights. Everything
+ * Friday 14 August 2026 (as ticketed), QF2 leaves LHR on Wednesday 2 September = NINETEEN nights. Everything
  * between is selectable: EIGHT rival arcs across the whole of Europe, each a chain of segments
  * with steppable nights and per-night costs at two tiers (AUD, for two, ±15%) — 'special' is the
  * memorable hotel, 'sane' is very good without the flourish. Every arc carries its honest case
@@ -42,10 +42,10 @@ export interface Cfg {
   arcs: Record<ArcId, Arc>;
 }
 
-export const NIGHTS_TOTAL = 16;
+export const NIGHTS_TOTAL = 19;
 
 const LONDON_IN: Segment = { id: 'london1', label: 'London', short: 'London', nights: 2, min: 0, max: 5, perNight: { special: 1450, sane: 750 }, link: 'https://www.claridges.co.uk' };
-const LONDON_OUT: Segment = { id: 'london2', label: 'London (QF2 buffer)', short: 'London', nights: 3, min: 0, max: 5, perNight: { special: 1450, sane: 750 } };
+const LONDON_OUT: Segment = { id: 'london2', label: 'London (QF2 buffer)', short: 'London', nights: 4, min: 0, max: 5, perNight: { special: 1450, sane: 750 } };
 
 export const CFG: Cfg = {
   nightsTotal: NIGHTS_TOTAL,
@@ -62,8 +62,8 @@ export const CFG: Cfg = {
         { ...LONDON_IN },
         { id: 'oye', label: 'Union Øye, Norway', short: 'Union Øye', nights: 3, min: 0, max: 5, perNight: { special: 2100, sane: 900 }, link: 'https://www.unionoye.no' },
         { id: 'storfjord', label: 'Geiranger, Norway', short: 'Storfjord', nights: 2, min: 0, max: 4, perNight: { special: 1550, sane: 800 }, link: 'https://www.storfjordhotel.com' },
-        { id: 'lofoten', label: 'Lofoten, Norway — Holmen', short: 'Lofoten', nights: 4, min: 0, max: 6, perNight: { special: 1150, sane: 650 }, link: 'https://www.holmenlofoten.no' },
-        { id: 'tromso', label: 'Tromsø, Norway', short: 'Tromsø', nights: 2, min: 0, max: 4, perNight: { special: 750, sane: 450 } },
+        { id: 'lofoten', label: 'Lofoten, Norway — Holmen', short: 'Lofoten', nights: 5, min: 0, max: 6, perNight: { special: 1150, sane: 650 }, link: 'https://www.holmenlofoten.no' },
+        { id: 'tromso', label: 'Tromsø, Norway', short: 'Tromsø', nights: 3, min: 0, max: 4, perNight: { special: 750, sane: 450 } },
         { ...LONDON_OUT },
       ],
     },
@@ -77,9 +77,9 @@ export const CFG: Cfg = {
       transport: 2600,
       segments: [
         { ...LONDON_IN },
-        { id: 'split', label: 'Split, Croatia', short: 'Split', nights: 1, min: 0, max: 3, perNight: { special: 800, sane: 450 } },
+        { id: 'split', label: 'Split, Croatia', short: 'Split', nights: 2, min: 0, max: 3, perNight: { special: 800, sane: 450 } },
         { id: 'gulet', label: 'Gulet charter, Croatia', short: 'Gulet', nights: 7, min: 0, max: 10, perNight: { special: 3400, sane: 1800 } },
-        { id: 'dubrovnik', label: 'Dubrovnik, Croatia', short: 'Dubrovnik', nights: 3, min: 0, max: 4, perNight: { special: 950, sane: 550 } },
+        { id: 'dubrovnik', label: 'Dubrovnik, Croatia', short: 'Dubrovnik', nights: 4, min: 0, max: 4, perNight: { special: 950, sane: 550 } },
         { ...LONDON_OUT },
       ],
     },
@@ -93,8 +93,8 @@ export const CFG: Cfg = {
       transport: 1400,
       segments: [
         { ...LONDON_IN },
-        { id: 'fife', label: 'Braemar, Scotland — Fife Arms', short: 'Fife Arms', nights: 4, min: 0, max: 6, perNight: { special: 2300, sane: 1100 }, link: 'https://thefifearms.com' },
-        { id: 'skye', label: 'Isle of Skye, Scotland', short: 'Skye', nights: 4, min: 0, max: 6, perNight: { special: 1350, sane: 700 } },
+        { id: 'fife', label: 'Braemar, Scotland — Fife Arms', short: 'Fife Arms', nights: 5, min: 0, max: 6, perNight: { special: 2300, sane: 1100 }, link: 'https://thefifearms.com' },
+        { id: 'skye', label: 'Isle of Skye, Scotland', short: 'Skye', nights: 5, min: 0, max: 6, perNight: { special: 1350, sane: 700 } },
         { id: 'edinburgh', label: 'Edinburgh, Scotland', short: 'Edinburgh', nights: 3, min: 0, max: 4, perNight: { special: 1050, sane: 600 } },
         { ...LONDON_OUT },
       ],
@@ -109,8 +109,8 @@ export const CFG: Cfg = {
       transport: 2800,
       segments: [
         { ...LONDON_IN },
-        { id: 'taormina', label: 'Taormina, Sicily — Grand Hotel Timeo', short: 'Taormina', nights: 4, min: 0, max: 6, perNight: { special: 2600, sane: 1100 }, link: 'https://www.belmond.com/hotels/europe/italy/taormina/belmond-grand-hotel-timeo/' },
-        { id: 'aeolian', label: 'Aeolian Islands, Sicily', short: 'Aeolians', nights: 4, min: 0, max: 6, perNight: { special: 2200, sane: 900 }, link: 'https://www.therasiaresort.it' },
+        { id: 'taormina', label: 'Taormina, Sicily — Grand Hotel Timeo', short: 'Taormina', nights: 5, min: 0, max: 6, perNight: { special: 2600, sane: 1100 }, link: 'https://www.belmond.com/hotels/europe/italy/taormina/belmond-grand-hotel-timeo/' },
+        { id: 'aeolian', label: 'Aeolian Islands, Sicily', short: 'Aeolians', nights: 5, min: 0, max: 6, perNight: { special: 2200, sane: 900 }, link: 'https://www.therasiaresort.it' },
         { id: 'noto', label: 'Noto & Syracuse, Sicily', short: 'Noto', nights: 3, min: 0, max: 5, perNight: { special: 1500, sane: 700 } },
         { ...LONDON_OUT },
       ],
@@ -126,8 +126,8 @@ export const CFG: Cfg = {
       segments: [
         { ...LONDON_IN },
         { id: 'venice', label: 'Venice, Italy', short: 'Venice', nights: 2, min: 0, max: 4, perNight: { special: 2400, sane: 1000 } },
-        { id: 'altabadia', label: 'Alta Badia, Italy', short: 'Alta Badia', nights: 5, min: 0, max: 7, perNight: { special: 1700, sane: 900 } },
-        { id: 'cortina', label: 'Cortina, Italy', short: 'Cortina', nights: 4, min: 0, max: 6, perNight: { special: 1600, sane: 850 } },
+        { id: 'altabadia', label: 'Alta Badia, Italy', short: 'Alta Badia', nights: 6, min: 0, max: 7, perNight: { special: 1700, sane: 900 } },
+        { id: 'cortina', label: 'Cortina, Italy', short: 'Cortina', nights: 5, min: 0, max: 6, perNight: { special: 1600, sane: 850 } },
         { ...LONDON_OUT },
       ],
     },
@@ -142,8 +142,8 @@ export const CFG: Cfg = {
       segments: [
         { ...LONDON_IN },
         { id: 'athens1', label: 'Athens, Greece', short: 'Athens', nights: 1, min: 0, max: 3, perNight: { special: 900, sane: 500 } },
-        { id: 'milos', label: 'Milos, Greece', short: 'Milos', nights: 4, min: 0, max: 6, perNight: { special: 1600, sane: 800 } },
-        { id: 'sifnos', label: 'Sifnos, Greece', short: 'Sifnos', nights: 4, min: 0, max: 6, perNight: { special: 1400, sane: 700 } },
+        { id: 'milos', label: 'Milos, Greece', short: 'Milos', nights: 5, min: 0, max: 6, perNight: { special: 1600, sane: 800 } },
+        { id: 'sifnos', label: 'Sifnos, Greece', short: 'Sifnos', nights: 5, min: 0, max: 6, perNight: { special: 1400, sane: 700 } },
         { id: 'athens2', label: 'Athens, Greece', short: 'Athens', nights: 2, min: 0, max: 3, perNight: { special: 900, sane: 500 } },
         { ...LONDON_OUT },
       ],
@@ -158,8 +158,8 @@ export const CFG: Cfg = {
       transport: 1800,
       segments: [
         { ...LONDON_IN },
-        { id: 'bled', label: 'Lake Bled & Bohinj, Slovenia', short: 'Bled', nights: 4, min: 0, max: 6, perNight: { special: 1300, sane: 700 } },
-        { id: 'soca', label: 'Soča Valley, Slovenia — Hiša Franko', short: 'Soča', nights: 3, min: 0, max: 5, perNight: { special: 1200, sane: 650 }, link: 'https://www.hisafranko.com' },
+        { id: 'bled', label: 'Lake Bled & Bohinj, Slovenia', short: 'Bled', nights: 5, min: 0, max: 6, perNight: { special: 1300, sane: 700 } },
+        { id: 'soca', label: 'Soča Valley, Slovenia — Hiša Franko', short: 'Soča', nights: 4, min: 0, max: 5, perNight: { special: 1200, sane: 650 }, link: 'https://www.hisafranko.com' },
         { id: 'vipava', label: 'Vipava Valley, Slovenia', short: 'Vipava', nights: 2, min: 0, max: 4, perNight: { special: 900, sane: 500 } },
         { id: 'ljubljana', label: 'Ljubljana, Slovenia', short: 'Ljubljana', nights: 2, min: 0, max: 3, perNight: { special: 800, sane: 450 } },
         { ...LONDON_OUT },
@@ -175,8 +175,8 @@ export const CFG: Cfg = {
       transport: 2600,
       segments: [
         { ...LONDON_IN },
-        { id: 'smeralda', label: 'Costa Smeralda, Sardinia', short: 'C. Smeralda', nights: 4, min: 0, max: 6, perNight: { special: 3800, sane: 1400 } },
-        { id: 'barbagia', label: 'Barbagia, Sardinia — Su Gologone', short: 'Barbagia', nights: 3, min: 0, max: 5, perNight: { special: 1100, sane: 700 }, link: 'https://www.sugologone.it' },
+        { id: 'smeralda', label: 'Costa Smeralda, Sardinia', short: 'C. Smeralda', nights: 5, min: 0, max: 6, perNight: { special: 3800, sane: 1400 } },
+        { id: 'barbagia', label: 'Barbagia, Sardinia — Su Gologone', short: 'Barbagia', nights: 4, min: 0, max: 5, perNight: { special: 1100, sane: 700 }, link: 'https://www.sugologone.it' },
         { id: 'chia', label: 'Chia, Sardinia', short: 'Chia', nights: 4, min: 0, max: 6, perNight: { special: 1600, sane: 800 } },
         { ...LONDON_OUT },
       ],
@@ -191,8 +191,8 @@ export const CFG: Cfg = {
       transport: 2000,
       segments: [
         { ...LONDON_IN },
-        { id: 'funchal', label: 'Funchal, Madeira — Reid’s Palace', short: 'Funchal', nights: 5, min: 0, max: 7, perNight: { special: 1900, sane: 900 }, link: 'https://www.belmond.com/hotels/europe/portugal/madeira/belmond-reids-palace/' },
-        { id: 'pontasol', label: 'Ponta do Sol, Madeira', short: 'West coast', nights: 4, min: 0, max: 6, perNight: { special: 1100, sane: 600 } },
+        { id: 'funchal', label: 'Funchal, Madeira — Reid’s Palace', short: 'Funchal', nights: 6, min: 0, max: 7, perNight: { special: 1900, sane: 900 }, link: 'https://www.belmond.com/hotels/europe/portugal/madeira/belmond-reids-palace/' },
+        { id: 'pontasol', label: 'Ponta do Sol, Madeira', short: 'West coast', nights: 5, min: 0, max: 6, perNight: { special: 1100, sane: 600 } },
         { id: 'santana', label: 'Santana, Madeira', short: 'Santana', nights: 2, min: 0, max: 4, perNight: { special: 800, sane: 500 } },
         { ...LONDON_OUT },
       ],
@@ -208,8 +208,8 @@ export const CFG: Cfg = {
       segments: [
         { ...LONDON_IN },
         { id: 'lisbon', label: 'Lisbon, Portugal', short: 'Lisbon', nights: 3, min: 0, max: 5, perNight: { special: 1300, sane: 700 } },
-        { id: 'comporta', label: 'Comporta, Portugal', short: 'Comporta', nights: 4, min: 0, max: 6, perNight: { special: 2200, sane: 1000 }, link: 'https://www.sublimecomporta.pt' },
-        { id: 'douro', label: 'Douro Valley, Portugal — Six Senses', short: 'Douro', nights: 3, min: 0, max: 5, perNight: { special: 2400, sane: 1100 }, link: 'https://www.sixsenses.com/en/resorts/douro-valley/' },
+        { id: 'comporta', label: 'Comporta, Portugal', short: 'Comporta', nights: 5, min: 0, max: 6, perNight: { special: 2200, sane: 1000 }, link: 'https://www.sublimecomporta.pt' },
+        { id: 'douro', label: 'Douro Valley, Portugal — Six Senses', short: 'Douro', nights: 4, min: 0, max: 5, perNight: { special: 2400, sane: 1100 }, link: 'https://www.sixsenses.com/en/resorts/douro-valley/' },
         { id: 'porto', label: 'Porto, Portugal', short: 'Porto', nights: 1, min: 0, max: 3, perNight: { special: 900, sane: 550 } },
         { ...LONDON_OUT },
       ],
@@ -224,10 +224,10 @@ export const CFG: Cfg = {
       transport: 5200,
       segments: [
         { id: 'london1', label: 'London', short: 'London', nights: 1, min: 0, max: 3, perNight: { special: 1450, sane: 750 }, link: 'https://www.claridges.co.uk' },
-        { id: 'lofoten', label: 'Lofoten, Norway — Holmen', short: 'Lofoten', nights: 4, min: 0, max: 6, perNight: { special: 1150, sane: 650 }, link: 'https://www.holmenlofoten.no' },
+        { id: 'lofoten', label: 'Lofoten, Norway — Holmen', short: 'Lofoten', nights: 5, min: 0, max: 6, perNight: { special: 1150, sane: 650 }, link: 'https://www.holmenlofoten.no' },
         { id: 'tromso', label: 'Tromsø, Norway', short: 'Tromsø', nights: 2, min: 0, max: 4, perNight: { special: 750, sane: 450 } },
         { id: 'tyw', label: 'Yacht Week, Croatia (Sat 22–29)', short: 'Flotilla', nights: 7, min: 0, max: 7, perNight: { special: 2000, sane: 1200 }, link: 'https://www.theyachtweek.com' },
-        { id: 'london2', label: 'London (QF2 buffer)', short: 'London', nights: 2, min: 0, max: 5, perNight: { special: 1450, sane: 750 } },
+        { id: 'london2', label: 'London (QF2 buffer)', short: 'London', nights: 4, min: 0, max: 5, perNight: { special: 1450, sane: 750 } },
       ],
     },
     dolosicily: {
@@ -239,12 +239,12 @@ export const CFG: Cfg = {
       caseAgainst: 'Two internal transfers and a Venice–Catania flight mid-trip — Italy makes you work for both of her halves.',
       transport: 3200,
       segments: [
-        { id: 'london1', label: 'London', short: 'London', nights: 1, min: 0, max: 3, perNight: { special: 1450, sane: 750 }, link: 'https://www.claridges.co.uk' },
+        { id: 'london1', label: 'London', short: 'London', nights: 2, min: 0, max: 3, perNight: { special: 1450, sane: 750 }, link: 'https://www.claridges.co.uk' },
         { id: 'venice', label: 'Venice, Italy', short: 'Venice', nights: 1, min: 0, max: 3, perNight: { special: 2400, sane: 1000 } },
         { id: 'altabadia', label: 'Alta Badia, Italy', short: 'Alta Badia', nights: 5, min: 0, max: 7, perNight: { special: 1700, sane: 900 } },
-        { id: 'taormina', label: 'Taormina, Sicily — Grand Hotel Timeo', short: 'Taormina', nights: 4, min: 0, max: 6, perNight: { special: 2600, sane: 1100 }, link: 'https://www.belmond.com/hotels/europe/italy/taormina/belmond-grand-hotel-timeo/' },
+        { id: 'taormina', label: 'Taormina, Sicily — Grand Hotel Timeo', short: 'Taormina', nights: 5, min: 0, max: 6, perNight: { special: 2600, sane: 1100 }, link: 'https://www.belmond.com/hotels/europe/italy/taormina/belmond-grand-hotel-timeo/' },
         { id: 'aeolian', label: 'Aeolian Islands, Sicily', short: 'Aeolians', nights: 3, min: 0, max: 5, perNight: { special: 2200, sane: 900 }, link: 'https://www.therasiaresort.it' },
-        { id: 'london2', label: 'London (QF2 buffer)', short: 'London', nights: 2, min: 0, max: 4, perNight: { special: 1450, sane: 750 } },
+        { id: 'london2', label: 'London (QF2 buffer)', short: 'London', nights: 3, min: 0, max: 4, perNight: { special: 1450, sane: 750 } },
       ],
     },
     scotgreece: {
@@ -259,9 +259,9 @@ export const CFG: Cfg = {
         { id: 'london1', label: 'London', short: 'London', nights: 2, min: 0, max: 4, perNight: { special: 1450, sane: 750 }, link: 'https://www.claridges.co.uk' },
         { id: 'fife', label: 'Braemar, Scotland — Fife Arms', short: 'Fife Arms', nights: 3, min: 0, max: 5, perNight: { special: 2300, sane: 1100 }, link: 'https://thefifearms.com' },
         { id: 'skye', label: 'Isle of Skye, Scotland', short: 'Skye', nights: 3, min: 0, max: 5, perNight: { special: 1350, sane: 700 } },
-        { id: 'milos', label: 'Milos, Greece', short: 'Milos', nights: 3, min: 0, max: 5, perNight: { special: 1600, sane: 800 } },
-        { id: 'sifnos', label: 'Sifnos, Greece', short: 'Sifnos', nights: 3, min: 0, max: 5, perNight: { special: 1400, sane: 700 } },
-        { id: 'london2', label: 'London (QF2 buffer)', short: 'London', nights: 2, min: 0, max: 4, perNight: { special: 1450, sane: 750 } },
+        { id: 'milos', label: 'Milos, Greece', short: 'Milos', nights: 4, min: 0, max: 5, perNight: { special: 1600, sane: 800 } },
+        { id: 'sifnos', label: 'Sifnos, Greece', short: 'Sifnos', nights: 4, min: 0, max: 5, perNight: { special: 1400, sane: 700 } },
+        { id: 'london2', label: 'London (QF2 buffer)', short: 'London', nights: 3, min: 0, max: 4, perNight: { special: 1450, sane: 750 } },
       ],
     },
     slovcroatia: {
@@ -274,10 +274,10 @@ export const CFG: Cfg = {
       transport: 2400,
       segments: [
         { id: 'london1', label: 'London', short: 'London', nights: 2, min: 0, max: 4, perNight: { special: 1450, sane: 750 }, link: 'https://www.claridges.co.uk' },
-        { id: 'bled', label: 'Lake Bled & Bohinj, Slovenia', short: 'Bled', nights: 3, min: 0, max: 5, perNight: { special: 1300, sane: 700 } },
+        { id: 'bled', label: 'Lake Bled & Bohinj, Slovenia', short: 'Bled', nights: 4, min: 0, max: 5, perNight: { special: 1300, sane: 700 } },
         { id: 'soca', label: 'Soča Valley, Slovenia — Hiša Franko', short: 'Soča', nights: 2, min: 0, max: 4, perNight: { special: 1200, sane: 650 }, link: 'https://www.hisafranko.com' },
         { id: 'gulet', label: 'Gulet charter, Croatia', short: 'Gulet', nights: 7, min: 0, max: 8, perNight: { special: 3400, sane: 1800 } },
-        { id: 'london2', label: 'London (QF2 buffer)', short: 'London', nights: 2, min: 0, max: 4, perNight: { special: 1450, sane: 750 } },
+        { id: 'london2', label: 'London (QF2 buffer)', short: 'London', nights: 4, min: 0, max: 4, perNight: { special: 1450, sane: 750 } },
       ],
     },
     norsardinia: {
@@ -290,14 +290,14 @@ export const CFG: Cfg = {
       transport: 5600,
       segments: [
         { id: 'london1', label: 'London', short: 'London', nights: 1, min: 0, max: 3, perNight: { special: 1450, sane: 750 }, link: 'https://www.claridges.co.uk' },
-        { id: 'lofoten', label: 'Lofoten, Norway — Holmen', short: 'Lofoten', nights: 4, min: 0, max: 6, perNight: { special: 1150, sane: 650 }, link: 'https://www.holmenlofoten.no' },
+        { id: 'lofoten', label: 'Lofoten, Norway — Holmen', short: 'Lofoten', nights: 5, min: 0, max: 6, perNight: { special: 1150, sane: 650 }, link: 'https://www.holmenlofoten.no' },
         { id: 'tromso', label: 'Tromsø, Norway', short: 'Tromsø', nights: 2, min: 0, max: 4, perNight: { special: 750, sane: 450 } },
-        { id: 'smeralda', label: 'Costa Smeralda, Sardinia', short: 'C. Smeralda', nights: 4, min: 0, max: 6, perNight: { special: 3800, sane: 1400 } },
-        { id: 'chia', label: 'Chia, Sardinia', short: 'Chia', nights: 2, min: 0, max: 4, perNight: { special: 1600, sane: 800 } },
+        { id: 'smeralda', label: 'Costa Smeralda, Sardinia', short: 'C. Smeralda', nights: 5, min: 0, max: 6, perNight: { special: 3800, sane: 1400 } },
+        { id: 'chia', label: 'Chia, Sardinia', short: 'Chia', nights: 3, min: 0, max: 4, perNight: { special: 1600, sane: 800 } },
         { id: 'london2', label: 'London (QF2 buffer)', short: 'London', nights: 3, min: 0, max: 5, perNight: { special: 1450, sane: 750 } },
       ],
     },
-    yachtweek: {
+    yachtweek: {  // london1 5 + split 3 puts the flotilla on Sat 22
       id: 'yachtweek',
       mood: 'warm',
       name: 'Croatia — Yacht Week',
@@ -306,11 +306,11 @@ export const CFG: Cfg = {
       caseAgainst: 'The average age aboard is twenty-six, the sleep is theoretical, and it is the hottest week of the Croatian year.',
       transport: 2400,
       segments: [
-        { ...LONDON_IN },
-        { id: 'split', label: 'Split, Croatia', short: 'Split', nights: 1, min: 0, max: 3, perNight: { special: 800, sane: 450 } },
+        { ...LONDON_IN, nights: 5 },
+        { id: 'split', label: 'Split, Croatia', short: 'Split', nights: 3, min: 0, max: 3, perNight: { special: 800, sane: 450 } },
         { id: 'tyw', label: 'Yacht Week, Croatia (Sat–Sat)', short: 'Flotilla', nights: 7, min: 0, max: 7, perNight: { special: 2000, sane: 1200 }, link: 'https://www.theyachtweek.com' },
-        { id: 'hvar', label: 'Hvar, Croatia', short: 'Hvar', nights: 3, min: 0, max: 5, perNight: { special: 1600, sane: 800 } },
-        { ...LONDON_OUT },
+        { id: 'hvar', label: 'Hvar, Croatia', short: 'Hvar', nights: 2, min: 0, max: 5, perNight: { special: 1600, sane: 800 } },
+        { ...LONDON_OUT, nights: 2 },
       ],
     },
   },
@@ -333,9 +333,9 @@ export const DEFAULT_SELECTION: Selection = defaultSelection('fjords');
 
 const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-/** A calendar label N nights after 15 August 2026 (QF1 lands LHR that morning). */
+/** A calendar label N nights after 14 August 2026 (QF1 lands LHR that morning, as ticketed). */
 export function dateAt(off: number): string {
-  const d = new Date(2026, 7, 15);
+  const d = new Date(2026, 7, 14);
   d.setDate(d.getDate() + off);
   return `${d.getDate()} ${MON[d.getMonth()]}`;
 }

@@ -24,7 +24,7 @@ export function flagsFor(sel: Selection, c: ComputeResult): Flag[] {
 
   if (c.delta !== 0) {
     const dir = c.delta > 0 ? `trim ${c.delta}` : `add ${-c.delta}`;
-    f.push({ level: 'warn', text: `${c.totalNights} nights against a fixed 16 — QF2 leaves LHR on Monday 31 August regardless. ${dir[0].toUpperCase()}${dir.slice(1)} night${Math.abs(c.delta) === 1 ? '' : 's'} somewhere.` });
+    f.push({ level: 'warn', text: `${c.totalNights} nights against a fixed 19 — QF2 leaves LHR on Wednesday 2 September regardless. ${dir[0].toUpperCase()}${dir.slice(1)} night${Math.abs(c.delta) === 1 ? '' : 's'} somewhere.` });
   }
 
   const endsInLondon = c.lastCell?.id === 'london2';
@@ -100,8 +100,8 @@ export function flagsFor(sel: Selection, c: ComputeResult): Flag[] {
 
   if (sel.arc === 'highlow') {
     const tyw = c.cells.find((x) => x.id === 'tyw');
-    if (tyw && tyw.startOff !== 7)
-      f.push({ level: 'warn', text: `The flotilla must start Saturday 22 August (night 7) — this shape has it starting ${7 - tyw.startOff > 0 ? 'early' : 'late'}. Rebalance the north nights until the hinge lands on the Saturday.` });
+    if (tyw && tyw.startOff !== 8)
+      f.push({ level: 'warn', text: `The flotilla must start Saturday 22 August (night 8) — this shape has it starting ${7 - tyw.startOff > 0 ? 'early' : 'late'}. Rebalance the north nights until the hinge lands on the Saturday.` });
     f.push({ level: 'note', text: 'Tromsø → Split is a full travel day over Oslo — Saturday the 22nd is spent in the air, and that is the price of two worlds.' });
   }
 
@@ -123,16 +123,16 @@ export function flagsFor(sel: Selection, c: ComputeResult): Flag[] {
   if (warmId) {
     f.push({ level: 'ok', text: 'The crowd curve, played: the cool half runs while the Med is rammed, and the warm half begins as Europe goes back to work.' });
     const warm = c.cells.find((x) => x.id === warmId);
-    if (warm && warm.startOff < 7 && sel.arc !== 'highlow')
+    if (warm && warm.startOff < 8 && sel.arc !== 'highlow')
       f.push({ level: 'note', text: `The warm half starts ${warm.date}, before the Med empties on ~22 Aug — later is calmer and cheaper.` });
   }
 
-  f.push({ level: 'ok', text: 'The spine is fixed and kind: QF1 lands LHR 06:25 Saturday 15 August; QF2 departs Monday 31 August. The middle is yours.' });
+  f.push({ level: 'ok', text: 'The spine as ticketed: QF1 lands LHR 06:35 Friday 14 August; QF2 departs Wednesday 2 September. Nineteen nights, and nothing in between is owed to anybody.' });
   return f;
 }
 
 export function questionsFor(sel: Selection): string[] {
-  const q = ['QF seats first — QF1 ×2 on 8 Aug, SIN→LHR ×2 on 14 Aug, QF2 ×2 on 31 Aug. Everything else waits on these.'];
+  const q = ['Flights are solved — ticketed PE Flex with upgrades queued. Only beds and boats remain, and everything below books same-week.'];
   if (sel.arc === 'fjords') {
     q.push('Union Øye and Holmen availability decide this debate — ask before falling in love.');
     q.push('LHR→Ålesund and Tromsø→LHR both connect via Oslo — book as one SAS itinerary so a late leg is their problem.');

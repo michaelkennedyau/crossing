@@ -1,0 +1,60 @@
+/**
+ * Live Europe weather for the flexible fortnight — one batched Open-Meteo call (no API key, same
+ * pattern as the Andes weather lib) across every candidate node on the board. The client ranks;
+ * this just fetches honestly: current conditions + six days of max-temp and rain.
+ */
+export interface NorthWxNode {
+  id: string;
+  name: string;
+  country: string;
+  lat: number;
+  lon: number;
+  temp: number | null;
+  code: number | null; // WMO weather code, current
+  days: { tmax: number; rain: number }[]; // today + 5
+}
+
+export const EU_NODES: Omit<NorthWxNode, 'temp' | 'code' | 'days'>[] = [
+  { id: 'london', name: 'London', country: 'England', lat: 51.51, lon: -0.13 },
+  { id: 'edinburgh', name: 'Edinburgh', country: 'Scotland', lat: 55.95, lon: -3.19 },
+  { id: 'lofoten', name: 'Lofoten', country: 'Norway', lat: 68.15, lon: 13.61 },
+  { id: 'tromso', name: 'Tromsø', country: 'Norway', lat: 69.65, lon: 18.96 },
+  { id: 'venice', name: 'Venice', country: 'Italy', lat: 45.44, lon: 12.34 },
+  { id: 'cortina', name: 'Dolomites', country: 'Italy', lat: 46.54, lon: 12.14 },
+  { id: 'bled', name: 'Lake Bled', country: 'Slovenia', lat: 46.37, lon: 14.11 },
+  { id: 'split', name: 'Split', country: 'Croatia', lat: 43.51, lon: 16.44 },
+  { id: 'hvar', name: 'Hvar', country: 'Croatia', lat: 43.17, lon: 16.44 },
+  { id: 'dubrovnik', name: 'Dubrovnik', country: 'Croatia', lat: 42.65, lon: 18.09 },
+  { id: 'taormina', name: 'Taormina', country: 'Sicily', lat: 37.85, lon: 15.29 },
+  { id: 'olbia', name: 'Costa Smeralda', country: 'Sardinia', lat: 40.92, lon: 9.5 },
+  { id: 'milos', name: 'Milos', country: 'Greece', lat: 36.75, lon: 24.43 },
+  { id: 'lisbon', name: 'Lisbon', country: 'Portugal', lat: 38.72, lon: -9.14 },
+  { id: 'funchal', name: 'Funchal', country: 'Madeira', lat: 32.65, lon: -16.91 },
+];
+
+export async function fetchNorthWeather(): Promise<NorthWxNode[]> {
+  const lats = EU_NODES.map((n) => n.lat).join(',');
+  const lons = EU_NODES.map((n) => n.lon).join(',');
+  const url =
+    `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}` +
+    '&current=temperature_2m,weather_code&daily=temperature_2m_max,precipitation_sum' +
+    '&forecast_days=6&timezone=auto';
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`open-meteo ${res.status}`);
+  const raw = (await res.json()) as unknown;
+  const arr = Array.isArray(raw) ? raw : [raw];
+  return EU_NODES.map((n, i) => {
+    const d = arr[i] as {
+      current?: { temperature_2m?: number; weather_code?: number };
+      daily?: { temperature_2m_max?: number[]; precipitation_sum?: number[] };
+    } | undefined;
+    const tmax = d?.daily?.temperature_2m_max ?? [];
+    const rain = d?.daily?.precipitation_sum ?? [];
+    return {
+      ...n,
+      temp: d?.current?.temperature_2m ?? null,
+      code: d?.current?.weather_code ?? null,
+      days: tmax.map((t, j) => ({ tmax: t, rain: rain[j] ?? 0 })),
+    };
+  });
+}

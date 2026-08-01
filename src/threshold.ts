@@ -117,7 +117,7 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
     <div class="w-inner">
       <p class="w-eyebrow">68°N → 43°N</p>
       <h1 class="w-head">The North</h1>
-      <p class="w-hand">The second launch — Saigon, then the Arctic in its quiet week, then south to the warm half as the Med exhales. The crowd curve, played.</p>
+      <p class="w-hand">The second launch — Saigon first, then nineteen open nights steered by the sky. Land, look up, decide. A refresh, not a pilgrimage.</p>
       <span class="w-go">← Enter the north</span>
       <p class="w-state">Underway · departs 8 August</p>
     </div>
