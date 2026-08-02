@@ -482,3 +482,70 @@
   body.mission .shutter-body{display:block !important;}
   body.mission .shutter-body[hidden]{display:block !important;}
 }
+
+/* ── The legibility pass — readable beats pretty ("I just wish it was easier to see").
+   Scoped to the bridge; the voyage scroll keeps its cinema. Three moves: brighter dim
+   tokens, 400 weight for reading text, and +1–1.5px on every surface you actually read. ── */
+.bridge-overlay{--snow-dim:#C8D4DF;--schist:#96A7B8;font-weight:400;}
+[data-theme="light"] .bridge-overlay{--snow-dim:#3D5468;--schist:#5E7386;}
+
+.bridge-overlay .card-eyebrow{font-size:11px;}
+/* the outlook */
+.outlook .ol-narrative{font-size:15.5px;}
+.ol-chip .ol-name{font-size:12.5px;}
+.ol-chip .ol-score{font-size:11px;}
+.ol-chip .ol-because{font-size:13px;-webkit-line-clamp:3;}
+.ol-stamp{font-size:11px;}
+.ol-stale{font-size:11.5px;}
+/* the board */
+.wb-row--head span{font-size:9.5px;}
+.wb-place b{font-size:13.5px;}
+.wb-place i{font-size:10px;}
+.wb-temp,.wb-hop{font-size:12.5px;}
+.wb-verdict{font-size:11px;padding:4px 10px;}
+.wb-atchips button{font-size:11.5px;padding:6px 11px;}
+.wb-now{font-size:12px;}
+.wb-why{font-size:14.5px;}
+.wb-insight b{font-size:12.5px;}
+.wb-insight span{font-size:13.5px;}
+.wb-hotel b{font-size:14px;}
+.wb-hotel i{font-size:13px;}
+.wb-h-tier{font-size:9.5px;}
+.wb-event b{font-size:13.5px;}
+.wb-event i{font-size:11px;}
+.wb-event span{font-size:13px;}
+.wb-focus-line{font-size:13.5px;}
+.wb-focus-name{font-size:12px;}
+.pin-btn{font-size:11px;padding:4px 12px;}
+.wb-who button{font-size:11.5px;}
+/* the chart room */
+.skymap text{font-size:10px;}
+.skymap .sm-grat{font-size:8px;}
+.heat-name{font-size:11.5px;}
+.heat-cell{height:24px;font-size:11.5px;}
+.heat-row--head span{font-size:9.5px;}
+.hl-swatch,.hl-key{font-size:9.5px;}
+.heat-view button{font-size:9.5px;padding:3px 10px;}
+/* pins + the plan */
+.pb-body b{font-size:13.5px;}
+.pb-body i{font-size:12.5px;}
+.pb-node{font-size:10.5px;}
+.it-sub{font-size:14.5px;}
+.it-head b{font-size:13.5px;}
+.it-head i{font-size:11px;}
+.it-date{flex-basis:84px;font-size:11px;}
+.it-plan{font-size:13.5px;line-height:1.55;}
+.it-hotel b{font-size:14px;}
+.it-hotel i{font-size:13px;}
+.it-list{font-size:13px;}
+.it-list b{font-size:10px;}
+/* shutters + concierge */
+.shutter-eyebrow{font-size:11px;}
+.shutter-hint{font-size:14.5px;}
+.concierge-ans{font-size:15px;line-height:1.65;}
+.concierge-in input{font-size:15px;}
+/* shared surfaces inside the north bridge only */
+.bridge-overlay .ledger td{font-size:13.5px;}
+.bridge-overlay .pt-sub{font-size:13px;}
+.bridge-overlay .q,.bridge-overlay .flag{font-size:13.5px;}
+.bridge-overlay .checklist li{font-size:13.5px;}
