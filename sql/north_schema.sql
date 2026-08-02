@@ -65,3 +65,11 @@ CREATE TABLE IF NOT EXISTS north_outlook_log (
   json        TEXT NOT NULL,             -- the full Outlook payload
   created_at  TEXT NOT NULL DEFAULT (datetime('now'))
 );
+
+-- The recommended itinerary — one versioned JSON document (stops, days, hotels, dos),
+-- researched by the multi-agent fleet and replaced wholesale on PUT. id 'v1' is the live one.
+CREATE TABLE IF NOT EXISTS north_itinerary (
+  id TEXT PRIMARY KEY,
+  json TEXT NOT NULL,
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);

@@ -171,3 +171,25 @@ describe('the wall clock · next outlook re-fire', () => {
     expect(nextOutlookRefresh(Date.parse('2026-08-02T23:30:00Z')).toISOString()).toBe('2026-08-03T00:00:00.000Z');
   });
 });
+
+describe('chart room · scored outcomes', () => {
+  it('a perfect day scores 100, and the floor is 0', async () => {
+    const { dayScore } = await import('../src/north/board/geo');
+    expect(dayScore(25, 0)).toBe(100);
+    expect(dayScore(48, 30)).toBe(0);
+  });
+  it('heat, cold and rain each bleed points monotonically', async () => {
+    const { dayScore } = await import('../src/north/board/geo');
+    expect(dayScore(33, 0)).toBeLessThan(dayScore(31, 0));
+    expect(dayScore(12, 0)).toBeLessThan(dayScore(18, 0));
+    expect(dayScore(25, 8)).toBeLessThan(dayScore(25, 1));
+    expect(dayScore(25, 50)).toBe(dayScore(25, 10)); // rain penalty caps at 40
+  });
+  it('score colours map to the verdict bands', async () => {
+    const { scoreColor } = await import('../src/north/board/geo');
+    expect(scoreColor(80)).toBe('#8be8c0');
+    expect(scoreColor(60)).toBe('#e8e0a8');
+    expect(scoreColor(30)).toBe('#f2b45e');
+    expect(scoreColor(10)).toBe('#e88b8b');
+  });
+});

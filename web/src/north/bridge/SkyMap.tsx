@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { MAP_W, MAP_H, RAMP, RAMP_LABELS, graticule, nudgeLabels, project, tempBucket, tempRamp } from '../board/geo';
+import { useMemo, useState } from 'react';
+import { MAP_W, MAP_H, RAMP, RAMP_LABELS, dayScore, graticule, nudgeLabels, project, scoreColor, tempBucket, tempRamp } from '../board/geo';
 import { COASTS } from '../board/coast';
 import { stamp } from './Outlook';
 import { type Arc } from '../planner/cfg';
@@ -65,6 +65,8 @@ export function SkyMap({
       ),
     [nodes],
   );
+
+  const [view, setView] = useState<'temp' | 'score'>('score');
 
   if (!nodes.length) return null;
 
@@ -161,9 +163,13 @@ export function SkyMap({
         )}
       </svg>
 
-      <div className="heat" role="img" aria-label="Six-day maximum temperature matrix for every destination">
+      <div className="heat" role="img"
+        aria-label={view === 'temp' ? 'Six-day maximum temperature matrix for every destination' : 'Six-day scored-outcome matrix for every destination, 100 is a perfect day'}>
         <div className="heat-row heat-row--head">
-          <span />
+          <span className="heat-view" role="group" aria-label="Matrix view">
+            <button type="button" className={view === 'score' ? 'on' : ''} onClick={() => setView('score')}>score</button>
+            <button type="button" className={view === 'temp' ? 'on' : ''} onClick={() => setView('temp')}>°c</button>
+          </span>
           {dayLabels.map((d, i) => (
             <span key={i} className={i === 0 ? 'today' : ''}>{d}</span>
           ))}
@@ -171,26 +177,44 @@ export function SkyMap({
         {byLat.map((n) => (
           <div key={n.id} className="heat-row">
             <span className="heat-name">{n.name}</span>
-            {n.days.slice(0, daysN).map((d, i) => (
-              <span key={i} className={`heat-cell heat-cell--b${tempBucket(d.tmax)}${i === 0 ? ' today' : ''}`}
-                style={{ background: tempRamp(d.tmax) }}
-                title={`${n.name} ${dayLabels[i]}: ${Math.round(d.tmax)}°${d.rain >= 2 ? ' · rain' : ''}`}>
-                {Math.round(d.tmax)}
-                {d.rain >= 2 && <i className="heat-rain" aria-hidden="true" />}
-              </span>
-            ))}
+            {n.days.slice(0, daysN).map((d, i) => {
+              const score = dayScore(d.tmax, d.rain);
+              const bg = view === 'temp' ? tempRamp(d.tmax) : scoreColor(score);
+              const hotEdge = view === 'temp' ? ` heat-cell--b${tempBucket(d.tmax)}` : '';
+              return (
+                <span key={i} className={`heat-cell${hotEdge}${i === 0 ? ' today' : ''}`}
+                  style={{ background: bg }}
+                  title={`${n.name} ${dayLabels[i]}: ${Math.round(d.tmax)}° · scores ${score}/100${d.rain >= 2 ? ' · rain' : ''}`}>
+                  {view === 'temp' ? Math.round(d.tmax) : score}
+                  {d.rain >= 2 && <i className="heat-rain" aria-hidden="true" />}
+                </span>
+              );
+            })}
           </div>
         ))}
         <div className="heat-legend" aria-hidden="true">
-          {RAMP.map((c, i) => (
-            <span key={c} className="hl-swatch"><i style={{ background: c }} />{RAMP_LABELS[i]}</span>
-          ))}
-          <span className="hl-key">▪ edge = hot</span>
+          {view === 'temp' ? (
+            <>
+              {RAMP.map((c, i) => (
+                <span key={c} className="hl-swatch"><i style={{ background: c }} />{RAMP_LABELS[i]}</span>
+              ))}
+              <span className="hl-key">▪ edge = hot</span>
+            </>
+          ) : (
+            <>
+              {[['#8be8c0', '75+ go'], ['#e8e0a8', '50–74 your call'], ['#f2b45e', '25–49 a gamble'], ['#e88b8b', '<25 not this week']].map(([c, l]) => (
+                <span key={c} className="hl-swatch"><i style={{ background: c }} />{l}</span>
+              ))}
+            </>
+          )}
           <span className="hl-key">● = rain</span>
         </div>
       </div>
       <p className="pt-sub" style={{ marginTop: 8 }}>
-        colour is today's ceiling · size is sun in the next five days · the dashed line is the arc Claude currently backs
+        {view === 'score'
+          ? 'the score is the judgement — heat above 31°, cold below 18° and rain all bleed points from 100'
+          : "colour is today's ceiling · size is sun in the next five days"}
+        {' '}· the dashed line is the arc Claude currently backs
       </p>
     </div>
   );

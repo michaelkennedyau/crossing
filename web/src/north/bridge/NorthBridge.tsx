@@ -3,6 +3,7 @@ import { CFG, mergeCfg, type Arc, type ArcId, type Cfg, type CfgOverride } from 
 import { toggleTheme } from '../theme';
 import { WeatherBoard, type WxNode } from './WeatherBoard';
 import { PinnedBoard } from './PinnedBoard';
+import { Itinerary } from './Itinerary';
 import { SkyMap } from './SkyMap';
 import { Planner } from './Planner';
 import { NorthChecklist } from './NorthChecklist';
@@ -234,7 +235,10 @@ export function NorthBridge(): JSX.Element | null {
           topArc={topArc}
           outlookStamp={outlook ? { generatedAt: outlook.generatedAt, stale: !!outlook.stale } : null}
         />
-        <PinnedBoard />
+        <div className="dock">
+          <PinnedBoard />
+          <Itinerary />
+        </div>
         <WeatherBoard nodes={wxNodes} topSegIds={topPickSegIds} outlook={outlook} cfg={cfg} />
         <ShipClock />
         <Planner cfg={cfg} pick={topPick} manifest={manifest} />

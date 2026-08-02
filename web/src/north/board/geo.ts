@@ -41,6 +41,27 @@ export function tempRamp(tmax: number): string {
   return RAMP[tempBucket(tmax)];
 }
 
+/**
+ * Scored outcome for one day at one place — the board's judgement, not just a temperature.
+ * 100 is a perfect day for this couple; heat above 31° and cold below 18° bleed points at
+ * 4/degree, rain at 4/mm capped at 40. Pure, clamped, honest.
+ */
+export function dayScore(tmax: number, rainMm: number): number {
+  let s = 100;
+  if (tmax > 31) s -= (tmax - 31) * 4;
+  if (tmax < 18) s -= (18 - tmax) * 4;
+  s -= Math.min(40, Math.max(0, rainMm) * 4);
+  return Math.max(0, Math.min(100, Math.round(s)));
+}
+
+/** verdict colours for the score view: go / your-call / a-gamble / not-this-week */
+export function scoreColor(score: number): string {
+  if (score >= 75) return '#8be8c0';
+  if (score >= 50) return '#e8e0a8';
+  if (score >= 25) return '#f2b45e';
+  return '#e88b8b';
+}
+
 /** 10° graticule strictly inside the bbox, for the chart's instrument furniture */
 export function graticule(): { lats: { deg: number; y: number }[]; lons: { deg: number; x: number }[] } {
   const lats = [40, 50, 60, 70].map((deg) => ({ deg, y: project(deg, 0).y }));
