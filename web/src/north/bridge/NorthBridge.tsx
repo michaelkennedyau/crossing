@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { CFG, mergeCfg, type Arc, type ArcId, type Cfg, type CfgOverride } from '../planner/cfg';
 import { toggleTheme } from '../theme';
-import { WeatherBoard } from './WeatherBoard';
+import { WeatherBoard, type WxNode } from './WeatherBoard';
 import { PinnedBoard } from './PinnedBoard';
+import { SkyMap } from './SkyMap';
 import { Planner } from './Planner';
 import { NorthChecklist } from './NorthChecklist';
 import { Outlook, type OutlookPayload } from './Outlook';
@@ -82,6 +83,7 @@ export function NorthBridge(): JSX.Element | null {
   const [cfg, setCfg] = useState<Cfg>(CFG);
   const [outlook, setOutlook] = useState<OutlookPayload | null>(null);
   const [manifest, setManifest] = useState<Record<string, { lqip?: string }>>({});
+  const [wxNodes, setWxNodes] = useState<WxNode[] | null>(null); // null = loading, [] = offline
   const [theme, setTheme] = useState<string>(() => document.documentElement.getAttribute('data-theme') ?? 'dark');
 
   // the image manifest (aspect + LQIP per slug) — fetched once, the Planner paints LQIP-first
@@ -90,6 +92,14 @@ export function NorthBridge(): JSX.Element | null {
       .then((r) => r.json() as Promise<Record<string, { lqip?: string }>>)
       .then(setManifest)
       .catch(() => {});
+  }, []);
+
+  // one weather fetch feeds the chart room AND the board (the worker KV-caches it 30 min)
+  useEffect(() => {
+    fetch('/api/north/weather')
+      .then((r) => r.json() as Promise<{ nodes?: WxNode[] }>)
+      .then((d) => setWxNodes(d.nodes ?? []))
+      .catch(() => setWxNodes([]));
   }, []);
 
   // Claude's cached read of the board — absent (offline / no key) means the card never renders.
@@ -168,7 +178,8 @@ export function NorthBridge(): JSX.Element | null {
   const topPick = outlook
     ? ([...outlook.outlook.ranking].sort((a, b) => b.score - a.score)[0]?.arc as ArcId | undefined) ?? null
     : null;
-  const topPickSegIds = topPick && cfg.arcs[topPick] ? cfg.arcs[topPick].segments.map((s) => s.id) : [];
+  const topArc = topPick ? cfg.arcs[topPick] ?? null : null;
+  const topPickSegIds = topArc ? topArc.segments.map((s) => s.id) : [];
 
   return (
     <div className="bridge-overlay" role="dialog" aria-modal="true" aria-label="The Bridge — the north planner">
@@ -188,8 +199,9 @@ export function NorthBridge(): JSX.Element | null {
         </div>
 
         <Outlook data={outlook} cfg={cfg} />
+        <SkyMap nodes={wxNodes ?? []} topArc={topArc} />
         <PinnedBoard />
-        <WeatherBoard topSegIds={topPickSegIds} outlook={outlook} cfg={cfg} />
+        <WeatherBoard nodes={wxNodes} topSegIds={topPickSegIds} outlook={outlook} cfg={cfg} />
         <ShipClock />
         <Planner cfg={cfg} pick={topPick} manifest={manifest} />
         <Concierge

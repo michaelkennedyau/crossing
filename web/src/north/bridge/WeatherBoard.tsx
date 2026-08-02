@@ -11,7 +11,7 @@ import { type Cfg } from '../planner/cfg';
  * stays at the top of the board until you let it go.
  */
 interface WxDay { tmax: number; rain: number }
-interface WxNode {
+export interface WxNode {
   id: string; name: string; country: string; lat: number; lon: number;
   temp: number | null; code: number | null; days: WxDay[];
 }
@@ -117,16 +117,19 @@ function Spark({ days }: { days: WxDay[] }): JSX.Element | null {
 }
 
 export function WeatherBoard({
+  nodes: nodesProp,
   topSegIds = [],
   outlook = null,
   cfg,
 }: {
+  /** null = still loading, [] = feed offline — the bridge owns the single fetch */
+  nodes: WxNode[] | null;
   topSegIds?: string[];
   outlook?: OutlookPayload | null;
   cfg: Cfg;
 }): JSX.Element {
-  const [nodes, setNodes] = useState<WxNode[]>([]);
-  const [err, setErr] = useState(false);
+  const nodes = useMemo(() => nodesProp ?? [], [nodesProp]);
+  const err = nodesProp !== null && nodesProp.length === 0;
   const [at, setAt] = useState('london');
   const [open, setOpen] = useState<string | null>(null);
   const [events, setEvents] = useState<Record<string, AreaEvent[] | 'loading'>>({});
@@ -135,16 +138,6 @@ export function WeatherBoard({
   const topSet = useMemo(() => new Set(topSegIds), [topSegIds]);
   const inTopArc = (id: string): boolean => topSet.has(NODE_SEG_ALIAS[id] ?? id);
 
-  useEffect(() => {
-    fetch('/api/north/weather')
-      .then((r) => r.json() as Promise<{ nodes: WxNode[]; error?: string }>)
-      .then((d) => {
-        if (!d.nodes?.length) setErr(true);
-        else setNodes(d.nodes);
-      })
-      .catch(() => setErr(true));
-  }, []);
-
   const setWhoBoth = (w: string): void => { setWho(w); localStorage.setItem('north-who', w); };
   const setFocusBoth = (id: string | null): void => {
     setFocus(id);
@@ -152,17 +145,35 @@ export function WeatherBoard({
     else localStorage.removeItem('north-focus');
   };
 
-  const toggleRow = (id: string): void => {
-    const next = open === id ? null : id;
-    setOpen(next);
-    if (next && events[next] === undefined) {
-      setEvents((e) => ({ ...e, [next]: 'loading' }));
-      fetch(`/api/north/events?node=${next}`)
+  const openRow = (id: string): void => {
+    setOpen(id);
+    if (events[id] === undefined) {
+      setEvents((e) => ({ ...e, [id]: 'loading' }));
+      fetch(`/api/north/events?node=${id}`)
         .then((r) => r.json() as Promise<{ events: AreaEvent[] }>)
-        .then((d) => setEvents((e) => ({ ...e, [next]: d.events ?? [] })))
-        .catch(() => setEvents((e) => ({ ...e, [next]: [] })));
+        .then((d) => setEvents((e) => ({ ...e, [id]: d.events ?? [] })))
+        .catch(() => setEvents((e) => ({ ...e, [id]: [] })));
     }
   };
+  const toggleRow = (id: string): void => {
+    if (open === id) setOpen(null);
+    else openRow(id);
+  };
+
+  // the chart room hands over here: a clicked map node opens its card and scrolls to it
+  useEffect(() => {
+    const onOpenNode = (e: Event): void => {
+      const id = (e as CustomEvent<string>).detail;
+      if (!id) return;
+      openRow(id);
+      requestAnimationFrame(() => {
+        document.querySelector(`[data-node="${id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    };
+    window.addEventListener('north:open-node', onOpenNode);
+    return () => window.removeEventListener('north:open-node', onOpenNode);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [events, open]);
 
   const here = nodes.find((n) => n.id === at);
   const focused = nodes.find((n) => n.id === focus) ?? null;
@@ -306,7 +317,7 @@ export function WeatherBoard({
           const v = verdict(n);
           const isOpen = open === n.id;
           return (
-            <div key={n.id} className={`wb-rowwrap${isOpen ? ' open' : ''}`}>
+            <div key={n.id} data-node={n.id} className={`wb-rowwrap${isOpen ? ' open' : ''}`}>
               <button
                 type="button"
                 className={`wb-row wb-row--btn ${v.level}`}

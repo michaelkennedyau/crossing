@@ -11,6 +11,21 @@ import type { Arc, Cfg } from '../../web/src/north/planner/cfg';
 export const OUTLOOK_KV_KEY = 'north-outlook:v1';
 export const OUTLOOK_TTL_SECONDS = 10800; // 3 h ⇒ ≤8 Anthropic calls/day at full churn
 
+// Staleness: the last read is ALWAYS served instantly; past this age a background
+// regeneration fires (plus the daily cron floor). Nobody ever waits on Claude.
+export const OUTLOOK_STALE_HOURS = 3;
+
+/** hours since generatedAt; Infinity for garbage timestamps (treat as maximally stale) */
+export function ageHours(generatedAt: string, now: number = Date.now()): number {
+  const t = Date.parse(generatedAt);
+  if (Number.isNaN(t)) return Infinity;
+  return Math.max(0, (now - t) / 3_600_000);
+}
+
+export function isStale(generatedAt: string, now: number = Date.now()): boolean {
+  return ageHours(generatedAt, now) > OUTLOOK_STALE_HOURS;
+}
+
 export interface OutlookRanking {
   arc: string;
   score: number; // 0–100, clamped in sanitize (numeric bounds unsupported in structured outputs)

@@ -23,6 +23,9 @@ export interface OutlookPayload {
   cached?: boolean;
   /** score delta per arc vs the previous read (north_outlook_log) — the board's direction of travel */
   trend?: Record<string, number>;
+  /** last read is always served instantly; past 3 h it's flagged and re-fired in the background */
+  stale?: boolean;
+  ageHours?: number;
 }
 
 /** ▲ rising, ▼ falling, · flat — how an arc's score moved since the last read */
@@ -84,7 +87,13 @@ export function Outlook({ data, cfg }: { data: OutlookPayload | null; cfg: Cfg }
         </div>
       )}
 
-      <p className="ol-stamp">as of {stamp(data.generatedAt)}{data.cached ? ' · cached' : ''}</p>
+      <p className="ol-stamp">
+        as of {stamp(data.generatedAt)}
+        {typeof data.ageHours === 'number' && data.ageHours >= 1 ? ` · ${Math.round(data.ageHours)}h old` : ''}
+      </p>
+      {data.stale && (
+        <p className="ol-stale">△ stale read — over three hours old; the 3-hourly re-fire will replace it</p>
+      )}
     </div>
   );
 }

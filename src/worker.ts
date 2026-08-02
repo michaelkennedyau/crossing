@@ -1,6 +1,11 @@
 /// <reference types="@cloudflare/workers-types" />
 import { app } from './app';
 import type { Env } from './env';
+import { produceOutlook } from './routes/north-outlook';
+import { cached } from './lib/kv-cache';
+import { completeJson } from './lib/anthropic';
+import { EU_NODES } from './lib/north-weather';
+import { EVENTS_SCHEMA, EVENTS_TTL_SECONDS, buildEventsPrompt, eventsKvKey, sanitizeEvents } from './lib/north-events';
 
 /**
  * Worker entry (mirrors travel/app/src/worker/index.ts). The Worker owns the SSR shell ("/") and
@@ -26,5 +31,32 @@ export default {
         { status: 500, headers: { 'content-type': 'text/html; charset=utf-8' } },
       );
     }
+  },
+
+  // The daily floor: regenerate the outlook and pre-warm every node's events knowledge.
+  // Each step is independently fire-tolerant; events are KV-cached a week so most are no-ops.
+  async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+    const apiKey = env.ANTHROPIC_API_KEY;
+    if (!apiKey) return;
+    ctx.waitUntil(
+      (async () => {
+        try {
+          await produceOutlook(env, apiKey);
+        } catch (err) {
+          console.error('cron outlook failed', err instanceof Error ? err.message : String(err));
+        }
+        for (const node of EU_NODES) {
+          try {
+            await cached(env.KV, eventsKvKey(node.id), EVENTS_TTL_SECONDS, async () => {
+              const { system, user } = buildEventsPrompt(node.name, node.country);
+              const raw = await completeJson<unknown>(apiKey, { system, user, schema: EVENTS_SCHEMA });
+              return sanitizeEvents(raw);
+            });
+          } catch (err) {
+            console.error('cron events failed', node.id, err instanceof Error ? err.message : String(err));
+          }
+        }
+      })(),
+    );
   },
 } satisfies ExportedHandler<Env>;

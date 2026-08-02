@@ -40,6 +40,11 @@
   // via the ANTHROPIC_API_KEY secret (set with `wrangler secret put ANTHROPIC_API_KEY`).
   "ai": { "binding": "AI" },
 
+  // The outlook's heartbeat. GETs are serve-stored-instantly; ALL regeneration happens here
+  // (scheduled handlers get 15 min — a waitUntil after a response gets ~30s and was being
+  // cancelled mid-Claude-call). Every 3 h ⇒ ≤8 calls/day, same ceiling as the old lazy TTL.
+  "triggers": { "crons": ["0 */3 * * *"] },
+
   "vars": {
     "DEPART_ISO": "2026-08-22T12:15:00+10:00",
     // The North — QF BNE→SYD, Sat 8 Aug (placeholder time; correct on ticketing).

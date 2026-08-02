@@ -266,3 +266,29 @@ body.mission .wb-row--head{top:0;}
 @media (min-width:6500px){body.mission .bridge-col{column-count:4;}}
 [data-theme="light"] body.mission .bridge-head{background:rgba(255,255,255,.85);}
 @media (prefers-reduced-motion: reduce){.wb-deep{animation:none;}}
+
+/* ── The chart room — the sky, drawn ────────────────────────────────────────────── */
+.skymap{display:block;width:100%;height:auto;max-width:720px;}
+.skymap text{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.08em;fill:var(--snow-dim);}
+.skymap .sm-faint{fill:var(--schist);font-size:8px;}
+.sm-node{cursor:pointer;}
+.sm-node:hover text,.sm-node:focus-visible text{fill:var(--snow);}
+.sm-node:focus-visible{outline:2px solid var(--live);outline-offset:2px;}
+.sm-rain{fill:none;stroke:rgba(139,196,232,.7);stroke-width:1.4;animation:sm-pulse 2.4s ease-in-out infinite;}
+@keyframes sm-pulse{0%,100%{opacity:.25;}50%{opacity:.9;}}
+.heat{display:grid;gap:2px;margin-top:14px;overflow-x:auto;}
+.heat-row{display:grid;grid-template-columns:minmax(88px,110px) repeat(6,minmax(34px,1fr));gap:2px;align-items:center;}
+.heat-row--head span{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--schist);text-align:center;padding-bottom:2px;}
+.heat-row--head span.today{color:var(--ember);}
+.heat-name{font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;color:var(--snow-dim);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.heat-cell{position:relative;display:grid;place-items:center;height:20px;border-radius:4px;
+  font-family:var(--font-mono);font-size:10px;color:#0A1016;font-weight:600;}
+.heat-cell.today{outline:1.5px solid var(--ember);outline-offset:1px;}
+.heat-rain{position:absolute;right:3px;top:3px;width:4px;height:4px;border-radius:50%;background:rgba(30,64,110,.85);}
+.ol-stale{margin:6px 0 0;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.04em;color:var(--ember);}
+[data-theme="light"] .bridge-overlay .skymap rect{fill:rgba(20,33,44,.03);}
+[data-theme="light"] .bridge-overlay .heat-cell{color:#14212C;}
+body.mission .chartroom .skymap{max-width:none;}
+@media (prefers-reduced-motion: reduce){.sm-rain{animation:none;opacity:.7;}}
