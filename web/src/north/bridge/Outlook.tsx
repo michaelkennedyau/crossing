@@ -35,6 +35,7 @@ export function trendMark(delta: number | undefined): { mark: string; cls: strin
 }
 
 export function pickArcEvent(arc: string): void {
+  window.dispatchEvent(new CustomEvent('north:open-shutter', { detail: 'planner' }));
   window.dispatchEvent(new CustomEvent('north:pick-arc', { detail: arc }));
 }
 

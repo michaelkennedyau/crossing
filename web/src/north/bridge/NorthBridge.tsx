@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { CFG, mergeCfg, type Arc, type ArcId, type Cfg, type CfgOverride } from '../planner/cfg';
 import { toggleTheme } from '../theme';
 import { WeatherBoard, type WxNode } from './WeatherBoard';
@@ -38,6 +38,42 @@ function useCountdown(): string {
   const sTot = Math.floor(ms / 1000);
   const d = Math.floor(sTot / 86400);
   return ms <= 0 ? 'launched' : `${d}d ${pad(Math.floor((sTot % 86400) / 3600))}:${pad(Math.floor((sTot % 3600) / 60))}:${pad(sTot % 60)}`;
+}
+
+/**
+ * Progressive disclosure — the answer to "too much data on one page". Every instrument is
+ * one honest line first (eyebrow + live hint), a full card only when asked; state persists
+ * per instrument. The mission wall ignores shutters entirely: a wall wants everything at
+ * once, a laptop wants a deck. Anything can force a shutter open via north:open-shutter.
+ */
+function Shutter({
+  id, eyebrow, hint, defaultOpen = false, className = '', children,
+}: {
+  id: string; eyebrow: string; hint: string; defaultOpen?: boolean; className?: string; children: ReactNode;
+}): JSX.Element {
+  const [open, setOpen] = useState<boolean>(() => {
+    if (id === 'planner' && /arc=/.test(location.hash)) return true; // deep links land on the planner
+    const saved = localStorage.getItem(`north-shutter:${id}`);
+    return saved !== null ? saved === '1' : defaultOpen;
+  });
+  useEffect(() => {
+    const onOpen = (e: Event): void => { if ((e as CustomEvent<string>).detail === id) setOpen(true); };
+    window.addEventListener('north:open-shutter', onOpen);
+    return () => window.removeEventListener('north:open-shutter', onOpen);
+  }, [id]);
+  const toggle = (): void => {
+    setOpen((o) => { localStorage.setItem(`north-shutter:${id}`, o ? '0' : '1'); return !o; });
+  };
+  return (
+    <div className={`shutter ${className}${open ? ' open' : ''}`}>
+      <button type="button" className="shutter-head" aria-expanded={open} onClick={toggle}>
+        <span className="shutter-eyebrow">{eyebrow}</span>
+        <span className="shutter-hint">{hint}</span>
+        <em aria-hidden="true">{open ? '▾' : '▸'}</em>
+      </button>
+      <div className="shutter-body" hidden={!open}>{children}</div>
+    </div>
+  );
 }
 
 function ShipClock(): JSX.Element {
@@ -241,28 +277,47 @@ export function NorthBridge(): JSX.Element | null {
           </span>
         </div>
 
-        <Outlook data={outlook} cfg={cfg} />
-        <SkyMap
-          nodes={wxNodes ?? []}
-          topArc={topArc}
-          outlookStamp={outlook ? { generatedAt: outlook.generatedAt, stale: !!outlook.stale } : null}
-        />
-        <div className="dock">
-          <PinnedBoard />
-          <Itinerary />
-        </div>
-        <WeatherBoard nodes={wxNodes} topSegIds={topPickSegIds} outlook={outlook} cfg={cfg} />
+        <Shutter id="outlook" className="s-outlook" eyebrow="The outlook" defaultOpen
+          hint={outlook ? outlook.outlook.headline : 'Claude reads the sky'}>
+          <Outlook data={outlook} cfg={cfg} />
+        </Shutter>
+        <Shutter id="chart" className="s-chart" eyebrow="The chart room"
+          hint="the sky drawn — map, matrix, scored outcomes">
+          <SkyMap
+            nodes={wxNodes ?? []}
+            topArc={topArc}
+            outlookStamp={outlook ? { generatedAt: outlook.generatedAt, stale: !!outlook.stale } : null}
+          />
+        </Shutter>
+        <Shutter id="dock" className="s-dock" eyebrow="The idea board"
+          hint="your pins, and the plan on paper — researched, not booked">
+          <div className="dock">
+            <PinnedBoard />
+            <Itinerary />
+          </div>
+        </Shutter>
+        <Shutter id="board" className="s-board" eyebrow="The board"
+          hint="where are you, what's the weather — every coast ranked">
+          <WeatherBoard nodes={wxNodes} topSegIds={topPickSegIds} outlook={outlook} cfg={cfg} />
+        </Shutter>
         <ShipClock />
-        <Planner cfg={cfg} pick={topPick} manifest={manifest} />
-        <Concierge
-          endpoint="/api/north/concierge"
-          eyebrow="The concierge · ask the fortnight"
-          placeholder="Where's the warmth this week? Which arc survives a wet Lofoten?"
-        />
-        <div className="grid2 ops">
-          <Logistics />
-          <NorthChecklist />
-        </div>
+        <Shutter id="planner" className="s-planner" eyebrow="The planner"
+          hint={topArc ? `sixteen routes, two tiers — Claude currently backs ${topArc.name}` : 'sixteen routes, two tiers'}>
+          <Planner cfg={cfg} pick={topPick} manifest={manifest} />
+        </Shutter>
+        <Shutter id="concierge" className="s-concierge" eyebrow="The concierge" hint="ask the fortnight anything">
+          <Concierge
+            endpoint="/api/north/concierge"
+            eyebrow="The concierge · ask the fortnight"
+            placeholder="Where's the warmth this week? Which arc survives a wet Lofoten?"
+          />
+        </Shutter>
+        <Shutter id="ops" className="s-ops" eyebrow="Logistics" hint="the fixed spine and the checklist">
+          <div className="grid2 ops">
+            <Logistics />
+            <NorthChecklist />
+          </div>
+        </Shutter>
         <p className="colophon">Imagery curated from Wikimedia Commons · a private voyage log for il varo</p>
       </div>
     </div>

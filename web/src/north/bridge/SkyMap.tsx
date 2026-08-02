@@ -38,6 +38,7 @@ export function SkyMap({
   outlookStamp?: { generatedAt: string; stale: boolean } | null;
 }): JSX.Element | null {
   const openNode = (id: string): void => {
+    window.dispatchEvent(new CustomEvent('north:open-shutter', { detail: 'board' }));
     window.dispatchEvent(new CustomEvent('north:open-node', { detail: id }));
   };
 

@@ -166,9 +166,10 @@ export function WeatherBoard({
       const id = (e as CustomEvent<string>).detail;
       if (!id) return;
       openRow(id);
-      requestAnimationFrame(() => {
+      // the board may be unshuttering in the same tick — give layout a beat before scrolling
+      setTimeout(() => {
         document.querySelector(`[data-node="${id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      });
+      }, 120);
     };
     window.addEventListener('north:open-node', onOpenNode);
     return () => window.removeEventListener('north:open-node', onOpenNode);
