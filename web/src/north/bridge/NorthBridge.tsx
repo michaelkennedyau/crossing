@@ -3,7 +3,8 @@ import { CFG, mergeCfg, type Arc, type ArcId, type Cfg, type CfgOverride } from 
 import { toggleTheme } from '../theme';
 import { WeatherBoard, type WxNode } from './WeatherBoard';
 import { PinnedBoard } from './PinnedBoard';
-import { Itinerary } from './Itinerary';
+import { Itinerary, type Itin } from './Itinerary';
+import { Spread } from './Spread';
 import { SkyMap } from './SkyMap';
 import { Planner } from './Planner';
 import { NorthChecklist } from './NorthChecklist';
@@ -150,6 +151,14 @@ export function NorthBridge(): JSX.Element | null {
   const [outlook, setOutlook] = useState<OutlookPayload | null>(null);
   const [manifest, setManifest] = useState<Record<string, { lqip?: string }>>({});
   const [wxNodes, setWxNodes] = useState<WxNode[] | null>(null); // null = loading, [] = offline
+  const [itin, setItin] = useState<Itin | null>(null); // one fetch feeds the spread AND the reading view
+
+  useEffect(() => {
+    fetch('/api/north/itinerary')
+      .then((r) => r.json() as Promise<{ itinerary: Itin | null }>)
+      .then((d) => { if (d.itinerary?.stops?.length) setItin(d.itinerary); })
+      .catch(() => {});
+  }, []);
   const [theme, setTheme] = useState<string>(() => document.documentElement.getAttribute('data-theme') ?? 'dark');
 
   // the image manifest (aspect + LQIP per slug) — fetched once, the Planner paints LQIP-first
@@ -277,7 +286,13 @@ export function NorthBridge(): JSX.Element | null {
           </span>
         </div>
 
-        <Shutter id="outlook" className="s-outlook" eyebrow="The outlook" defaultOpen
+        {itin && (
+          <Shutter id="spread" className="s-spread" eyebrow="The spread" defaultOpen
+            hint="nineteen nights on one rail — tap a day to lift it out">
+            <Spread itin={itin} wxNodes={wxNodes} />
+          </Shutter>
+        )}
+        <Shutter id="outlook" className="s-outlook" eyebrow="The outlook"
           hint={outlook ? outlook.outlook.headline : 'Claude reads the sky'}>
           <Outlook data={outlook} cfg={cfg} />
         </Shutter>
@@ -293,7 +308,7 @@ export function NorthBridge(): JSX.Element | null {
           hint="your pins, and the plan on paper — researched, not booked">
           <div className="dock">
             <PinnedBoard />
-            <Itinerary />
+            <Itinerary itin={itin} />
           </div>
         </Shutter>
         <Shutter id="board" className="s-board" eyebrow="The board"

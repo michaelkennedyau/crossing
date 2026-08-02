@@ -1,38 +1,27 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { savePin } from './WeatherBoard';
 
 /**
- * The plan on paper — the recommended itinerary, researched stop-by-stop by the fleet and
- * stored as one document. Every hotel and every day is pinnable to the shared board.
- * Renders nothing until the document exists; the bridge never waits on it.
+ * The plan on paper — the recommended itinerary as the READING view (the spread is the
+ * instrument view of the same document; the bridge owns the single fetch and passes it
+ * down). Every hotel and every day is pinnable to the shared board.
  */
-interface ItinHotel { name: string; why: string; url: string }
-interface ItinDay { date: string; title: string; plan: string }
-interface ItinStop {
+export interface ItinHotel { name: string; why: string; url: string }
+export interface ItinDay { date: string; title: string; plan: string }
+export interface ItinStop {
   key: string; name: string; node: string; dates: string; nights: number;
   hotel: ItinHotel; altHotel: ItinHotel; days: ItinDay[];
   eat: string[]; do: string[]; events: string[]; watchouts: string[];
 }
-interface Itin { title: string; sub: string; stops: ItinStop[] }
+export interface Itin { title: string; sub: string; stops: ItinStop[] }
 
-export function Itinerary(): JSX.Element | null {
-  const [itin, setItin] = useState<Itin | null>(null);
+export function Itinerary({ itin }: { itin: Itin | null }): JSX.Element | null {
   const [open, setOpen] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetch('/api/north/itinerary')
-      .then((r) => r.json() as Promise<{ itinerary: Itin | null }>)
-      .then((d) => {
-        if (d.itinerary?.stops?.length) {
-          setItin(d.itinerary);
-          setOpen(d.itinerary.stops[0].key);
-        }
-      })
-      .catch(() => {});
-  }, []);
 
   if (!itin) return null;
   const who = localStorage.getItem('north-who') ?? 'michael';
+  // first stop reads open by default; '' means the reader closed everything on purpose
+  const effectiveOpen = open ?? itin.stops[0]?.key ?? null;
 
   return (
     <div className="card itinerary">
@@ -41,11 +30,11 @@ export function Itinerary(): JSX.Element | null {
       <p className="it-sub">{itin.sub}</p>
 
       {itin.stops.map((s) => {
-        const isOpen = open === s.key;
+        const isOpen = effectiveOpen === s.key;
         return (
           <div key={s.key} className={`it-stop${isOpen ? ' open' : ''}`}>
             <button type="button" className="it-head" aria-expanded={isOpen}
-              onClick={() => setOpen(isOpen ? null : s.key)}>
+              onClick={() => setOpen(isOpen ? '' : s.key)}>
               <b>{s.name}</b>
               <i>{s.dates} · {s.nights}n</i>
               <em>{isOpen ? '▾' : '▸'}</em>
