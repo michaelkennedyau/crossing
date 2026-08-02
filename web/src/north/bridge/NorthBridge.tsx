@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { CFG, mergeCfg, type Arc, type ArcId, type Cfg, type CfgOverride } from '../planner/cfg';
 import { toggleTheme } from '../theme';
 import { WeatherBoard } from './WeatherBoard';
+import { PinnedBoard } from './PinnedBoard';
 import { Planner } from './Planner';
 import { NorthChecklist } from './NorthChecklist';
 import { Outlook, type OutlookPayload } from './Outlook';
@@ -139,7 +140,25 @@ export function NorthBridge(): JSX.Element | null {
     document.addEventListener('click', onClick);
     document.addEventListener('keydown', onKey);
     if (/#(bridge|arc=)/.test(location.hash)) openBridge();
-    return () => { document.removeEventListener('click', onClick); document.removeEventListener('keydown', onKey); };
+
+    // mission control — the G9 wall. When the viewport is an ultrawide (Samsung G9 57"
+    // at native or scaled res) or #mission is forced, the bridge opens itself and the
+    // whole board reflows into a single everything-at-once screen (CSS keys off body.mission).
+    const mqs = [matchMedia('(min-width: 5000px)'), matchMedia('(min-width: 3400px) and (min-aspect-ratio: 21/9)')];
+    const applyMission = (): void => {
+      const on = mqs.some((q) => q.matches) || location.hash.includes('mission');
+      document.body.classList.toggle('mission', on);
+      if (on) openBridge();
+    };
+    applyMission();
+    mqs.forEach((q) => q.addEventListener('change', applyMission));
+    window.addEventListener('hashchange', applyMission);
+    return () => {
+      document.removeEventListener('click', onClick);
+      document.removeEventListener('keydown', onKey);
+      mqs.forEach((q) => q.removeEventListener('change', applyMission));
+      window.removeEventListener('hashchange', applyMission);
+    };
   }, []);
 
   if (!open) return null;
@@ -169,7 +188,8 @@ export function NorthBridge(): JSX.Element | null {
         </div>
 
         <Outlook data={outlook} cfg={cfg} />
-        <WeatherBoard topSegIds={topPickSegIds} />
+        <PinnedBoard />
+        <WeatherBoard topSegIds={topPickSegIds} outlook={outlook} cfg={cfg} />
         <ShipClock />
         <Planner cfg={cfg} pick={topPick} manifest={manifest} />
         <Concierge

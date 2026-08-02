@@ -8,6 +8,7 @@ import { initMist } from '../world/mist-gl';
 import { initCountdown } from '../instruments/countdown';
 import { initLegReadout } from '../instruments/leg-readout';
 import { initNorthMinimap } from '../north/minimap';
+import { initLiveCurve } from '../north/live-curve';
 
 /**
  * The north engine island. Same looping assembly as the Andes — one scroll scalar drives the
@@ -22,6 +23,7 @@ initMist(reduced);
 initLegReadout();
 initReveals();
 initNorthMinimap();
+initLiveCurve();
 initCountdown();
 
 startTicker();

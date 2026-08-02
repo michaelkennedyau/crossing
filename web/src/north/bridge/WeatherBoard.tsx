@@ -1,17 +1,21 @@
 import { useEffect, useMemo, useState } from 'react';
+import { KNOWLEDGE } from '../board/knowledge';
+import { trendMark, type OutlookPayload } from './Outlook';
+import { type Cfg } from '../planner/cfg';
 
 /**
- * The board — "where are you, what's the weather." The trip's actual operating system:
- * pick your current position, and every candidate in Europe ranks itself by the next five
- * days of sky, with an honest verdict and how far it is from where you're standing.
- * Ten years of Platinum means the getting-there is a solved problem; weather is the only
- * variable that matters, and the QF2 wall (LHR, Wed 2 Sep) the only rule.
+ * The board — "where are you, what's the weather," grown into the trip's operating system.
+ * Every row is now a card that opens into a card: the why, Claude's live insight on that
+ * coast (with its direction of travel), the two beds, and the festivals nearby — and any of
+ * it can be pinned to the shared idea board by either traveller. Click an insight and it
+ * stays at the top of the board until you let it go.
  */
 interface WxDay { tmax: number; rain: number }
 interface WxNode {
   id: string; name: string; country: string; lat: number; lon: number;
   temp: number | null; code: number | null; days: WxDay[];
 }
+interface AreaEvent { name: string; where: string; whenText: string; kind: string; note: string }
 
 const WMO: [number, string][] = [
   [0, 'clear'], [1, 'mostly clear'], [2, 'partly cloudy'], [3, 'overcast'],
@@ -64,6 +68,34 @@ function verdict(n: WxNode): { level: 'go' | 'maybe' | 'skip'; text: string } {
 // weather-node id → arc-segment id, where they differ (most match 1:1)
 const NODE_SEG_ALIAS: Record<string, string> = { olbia: 'smeralda', london: 'london1', cortina: 'cortina' };
 
+interface NodeInsight { arc: string; arcName: string; score: number; verdict: string; because: string; delta: number }
+
+/** the strongest arc that sails through this node — Claude's live read of the coast it sits on */
+function nodeInsight(nodeId: string, outlook: OutlookPayload | null, cfg: Cfg): NodeInsight | null {
+  if (!outlook?.outlook) return null;
+  const seg = NODE_SEG_ALIAS[nodeId] ?? nodeId;
+  const ranked = [...outlook.outlook.ranking].sort((a, b) => b.score - a.score);
+  for (const r of ranked) {
+    const arc = cfg.arcs[r.arc as keyof typeof cfg.arcs];
+    if (arc?.segments.some((s) => s.id === seg)) {
+      return { arc: r.arc, arcName: arc.name, score: r.score, verdict: r.verdict, because: r.because, delta: outlook.trend?.[r.arc] ?? 0 };
+    }
+  }
+  return null;
+}
+
+const slug = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+/** upsert a pin on the shared board and tell every listening card the board grew */
+export async function savePin(p: { kind: string; node: string; title: string; detail?: string; url?: string; who: string }): Promise<void> {
+  await fetch('/api/north/pins', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ id: `${p.kind}:${p.node}:${slug(p.title)}`, ...p }),
+  }).catch(() => {});
+  window.dispatchEvent(new Event('north:pins-changed'));
+}
+
 /** six-day micro-sparkline: tmax as a thin line, rain days (≥2 mm) as drops under it */
 function Spark({ days }: { days: WxDay[] }): JSX.Element | null {
   const d6 = days.slice(0, 6);
@@ -84,10 +116,22 @@ function Spark({ days }: { days: WxDay[] }): JSX.Element | null {
   );
 }
 
-export function WeatherBoard({ topSegIds = [] }: { topSegIds?: string[] }): JSX.Element {
+export function WeatherBoard({
+  topSegIds = [],
+  outlook = null,
+  cfg,
+}: {
+  topSegIds?: string[];
+  outlook?: OutlookPayload | null;
+  cfg: Cfg;
+}): JSX.Element {
   const [nodes, setNodes] = useState<WxNode[]>([]);
   const [err, setErr] = useState(false);
   const [at, setAt] = useState('london');
+  const [open, setOpen] = useState<string | null>(null);
+  const [events, setEvents] = useState<Record<string, AreaEvent[] | 'loading'>>({});
+  const [who, setWho] = useState<string>(() => localStorage.getItem('north-who') ?? 'michael');
+  const [focus, setFocus] = useState<string | null>(() => localStorage.getItem('north-focus'));
   const topSet = useMemo(() => new Set(topSegIds), [topSegIds]);
   const inTopArc = (id: string): boolean => topSet.has(NODE_SEG_ALIAS[id] ?? id);
 
@@ -101,7 +145,28 @@ export function WeatherBoard({ topSegIds = [] }: { topSegIds?: string[] }): JSX.
       .catch(() => setErr(true));
   }, []);
 
+  const setWhoBoth = (w: string): void => { setWho(w); localStorage.setItem('north-who', w); };
+  const setFocusBoth = (id: string | null): void => {
+    setFocus(id);
+    if (id) localStorage.setItem('north-focus', id);
+    else localStorage.removeItem('north-focus');
+  };
+
+  const toggleRow = (id: string): void => {
+    const next = open === id ? null : id;
+    setOpen(next);
+    if (next && events[next] === undefined) {
+      setEvents((e) => ({ ...e, [next]: 'loading' }));
+      fetch(`/api/north/events?node=${next}`)
+        .then((r) => r.json() as Promise<{ events: AreaEvent[] }>)
+        .then((d) => setEvents((e) => ({ ...e, [next]: d.events ?? [] })))
+        .catch(() => setEvents((e) => ({ ...e, [next]: [] })));
+    }
+  };
+
   const here = nodes.find((n) => n.id === at);
+  const focused = nodes.find((n) => n.id === focus) ?? null;
+  const focusedInsight = focused ? nodeInsight(focused.id, outlook, cfg) : null;
   const ranked = useMemo(() => {
     if (!here) return [];
     return nodes
@@ -110,9 +175,99 @@ export function WeatherBoard({ topSegIds = [] }: { topSegIds?: string[] }): JSX.
       .sort((a, b) => b.sun - a.sun || a.d - b.d);
   }, [nodes, at, here]);
 
+  const deepPanel = (n: WxNode): JSX.Element => {
+    const k = KNOWLEDGE[n.id];
+    const ins = nodeInsight(n.id, outlook, cfg);
+    const evs = events[n.id];
+    return (
+      <div className="wb-deep" role="region" aria-label={`${n.name} in depth`}>
+        {k && <p className="wb-why">{k.why}</p>}
+
+        {ins && (
+          <button
+            type="button"
+            className={`wb-insight ${ins.verdict}`}
+            title="keep this insight at the top of the board"
+            onClick={() => setFocusBoth(n.id)}
+          >
+            <b>{ins.arcName}</b> · {ins.score} <em className={`ol-trend ${trendMark(ins.delta).cls}`}>{trendMark(ins.delta).mark}</em>
+            <span>{ins.because}</span>
+          </button>
+        )}
+
+        {k && (
+          <div className="wb-hotels">
+            {k.hotels.map((h) => (
+              <div key={h.name} className={`wb-hotel ${h.tier}`}>
+                <span className="wb-h-tier">{h.tier === 'good' ? 'the good room' : 'the sane room'}</span>
+                <b>{h.url ? <a href={h.url} target="_blank" rel="noopener">{h.name} ↗</a> : h.name}</b>
+                <i>{h.note}</i>
+                <button
+                  type="button"
+                  className="pin-btn"
+                  aria-label={`pin ${h.name}`}
+                  onClick={() => void savePin({ kind: 'hotel', node: n.id, title: h.name, detail: h.note, url: h.url, who })}
+                >
+                  ⊕ pin
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="wb-events">
+          <p className="qs-title">Around {n.name} in the window</p>
+          {evs === 'loading' && <p className="pt-sub">reading the calendar…</p>}
+          {Array.isArray(evs) && evs.length === 0 && <p className="pt-sub">nothing notable recurs here in the window — which is its own argument.</p>}
+          {Array.isArray(evs) &&
+            evs.map((ev) => (
+              <div key={ev.name} className="wb-event">
+                <b>{ev.name}</b>
+                <i>{ev.where} · {ev.whenText} · {ev.kind}</i>
+                <span>{ev.note}</span>
+                <button
+                  type="button"
+                  className="pin-btn"
+                  aria-label={`pin ${ev.name}`}
+                  onClick={() => void savePin({ kind: 'event', node: n.id, title: ev.name, detail: `${ev.whenText} — ${ev.note}`, who })}
+                >
+                  ⊕ pin
+                </button>
+              </div>
+            ))}
+          {Array.isArray(evs) && evs.length > 0 && <p className="wb-verify">dates from model knowledge — verify before booking</p>}
+        </div>
+
+        <button
+          type="button"
+          className="pin-btn pin-btn--dest"
+          onClick={() => void savePin({ kind: 'destination', node: n.id, title: n.name, detail: k?.why ?? '', who })}
+        >
+          ⊕ pin {n.name} to the board
+        </button>
+      </div>
+    );
+  };
+
   return (
     <div className="card">
       <p className="card-eyebrow" style={{ color: 'var(--live)' }}>The board · where are you, what's the weather</p>
+
+      {focused && (
+        <div className="wb-focus" role="status">
+          <span className="wb-focus-name">◉ {focused.name}</span>
+          {focusedInsight ? (
+            <span className="wb-focus-line">
+              <b>{focusedInsight.arcName}</b> · {focusedInsight.score}{' '}
+              <em className={`ol-trend ${trendMark(focusedInsight.delta).cls}`}>{trendMark(focusedInsight.delta).mark}</em> · {focusedInsight.because}
+            </span>
+          ) : (
+            <span className="wb-focus-line">{KNOWLEDGE[focused.id]?.why ?? ''}</span>
+          )}
+          <button type="button" className="wb-focus-x" aria-label="let the insight go" onClick={() => setFocusBoth(null)}>✕</button>
+        </div>
+      )}
+
       <div className="wb-head">
         <label className="lever-label" htmlFor="wb-at">You are in</label>
         <select id="wb-at" className="wb-select" value={at} onChange={(e) => setAt(e.target.value)}>
@@ -124,6 +279,13 @@ export function WeatherBoard({ topSegIds = [] }: { topSegIds?: string[] }): JSX.
           {nodes.map((n) => (
             <button key={n.id} type="button" className={at === n.id ? 'on' : ''} onClick={() => setAt(n.id)}>
               {n.name}
+            </button>
+          ))}
+        </div>
+        <div className="wb-who" role="group" aria-label="Pinning as">
+          {['michael', 'claire'].map((w) => (
+            <button key={w} type="button" className={who === w ? 'on' : ''} onClick={() => setWhoBoth(w)}>
+              {w}
             </button>
           ))}
         </div>
@@ -142,18 +304,27 @@ export function WeatherBoard({ topSegIds = [] }: { topSegIds?: string[] }): JSX.
         </div>
         {ranked.map(({ n, sun, d }) => {
           const v = verdict(n);
+          const isOpen = open === n.id;
           return (
-            <div key={n.id} className={`wb-row ${v.level}`}>
-              <span className="wb-place">
-                <b>{n.name}{inTopArc(n.id) && <span className="wb-pick" title="in Claude's top-ranked arc"> ◆</span>}</b>
-                <i>{n.country}</i>
-              </span>
-              <span className="wb-temp">{n.temp !== null ? `${Math.round(n.temp)}°` : '—'} {codeWord(n.code)}</span>
-              <span className="wb-sun" role="img" aria-label={`${sun} of 5 days sunny`}>
-                <Spark days={n.days} />
-              </span>
-              <span className="wb-hop">{hopLabel(d)}</span>
-              <span className={`wb-verdict ${v.level}`}>{v.text}</span>
+            <div key={n.id} className={`wb-rowwrap${isOpen ? ' open' : ''}`}>
+              <button
+                type="button"
+                className={`wb-row wb-row--btn ${v.level}`}
+                aria-expanded={isOpen}
+                onClick={() => toggleRow(n.id)}
+              >
+                <span className="wb-place">
+                  <b>{n.name}{inTopArc(n.id) && <span className="wb-pick" title="in Claude's top-ranked arc"> ◆</span>}</b>
+                  <i>{n.country}</i>
+                </span>
+                <span className="wb-temp">{n.temp !== null ? `${Math.round(n.temp)}°` : '—'} {codeWord(n.code)}</span>
+                <span className="wb-sun" role="img" aria-label={`${sun} of 5 days sunny`}>
+                  <Spark days={n.days} />
+                </span>
+                <span className="wb-hop">{hopLabel(d)}</span>
+                <span className={`wb-verdict ${v.level}`}>{v.text} <i className="wb-caret">{isOpen ? '▾' : '▸'}</i></span>
+              </button>
+              {isOpen && deepPanel(n)}
             </div>
           );
         })}

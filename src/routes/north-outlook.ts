@@ -22,6 +22,7 @@ export const northOutlookRouter = new Hono<{ Bindings: Env }>();
 interface OutlookPayload {
   outlook: Outlook;
   generatedAt: string;
+  trend?: Record<string, number>;
 }
 
 async function mergedCfg(env: Env) {
@@ -57,7 +58,28 @@ northOutlookRouter.get('/', async (c) => {
         const raw = await completeJson<unknown>(apiKey, { system, user, schema: OUTLOOK_SCHEMA });
         const outlook = sanitizeOutlook(raw, Object.keys(cfg.arcs));
         if (!outlook) throw new Error('outlook failed sanitize');
-        return { outlook, generatedAt: new Date().toISOString() };
+        const generatedAt = new Date().toISOString();
+        // trend: compare against the last logged read, then append this one (append-only history)
+        const prev = await c.env.DB.prepare('SELECT json FROM north_outlook_log ORDER BY id DESC LIMIT 1')
+          .first<{ json: string }>()
+          .catch(() => null);
+        const trend: Record<string, number> = {};
+        if (prev) {
+          try {
+            const p = JSON.parse(prev.json) as { outlook?: { ranking?: { arc: string; score: number }[] } };
+            const prevScores = new Map((p.outlook?.ranking ?? []).map((r) => [r.arc, r.score]));
+            for (const r of outlook.ranking) {
+              const was = prevScores.get(r.arc);
+              if (typeof was === 'number') trend[r.arc] = r.score - was;
+            }
+          } catch { /* first read */ }
+        }
+        const payload = { outlook, generatedAt, trend };
+        await c.env.DB.prepare('INSERT OR REPLACE INTO north_outlook_log (id, json) VALUES (?, ?)')
+          .bind(generatedAt, JSON.stringify(payload))
+          .run()
+          .catch(() => {});
+        return payload;
       },
     );
     return c.json({ ...value, cached: hit });

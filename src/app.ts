@@ -16,6 +16,8 @@ import { northCountdownRouter } from './routes/north-countdown';
 import { northWeatherRouter } from './routes/north-weather';
 import { northOutlookRouter } from './routes/north-outlook';
 import { northConciergeRouter } from './routes/north-concierge';
+import { northPinsRouter } from './routes/north-pins';
+import { northEventsRouter } from './routes/north-events';
 
 export const app = new Hono<{ Bindings: Env }>();
 
@@ -39,6 +41,8 @@ app.route('/api/north/countdown', northCountdownRouter);
 app.route('/api/north/weather', northWeatherRouter);
 app.route('/api/north/outlook', northOutlookRouter);
 app.route('/api/north/concierge', northConciergeRouter);
+app.route('/api/north/pins', northPinsRouter);
+app.route('/api/north/events', northEventsRouter);
 
 // SSR shells. The Threshold is the door; both voyages are complete before any JS runs.
 app.get('/', (c) => c.html(renderThreshold()));

@@ -41,3 +41,27 @@ CREATE TABLE IF NOT EXISTS north_spine (
   json        TEXT NOT NULL,
   updated_at  TEXT NOT NULL DEFAULT (datetime('now'))
 );
+
+-- The shared idea board: anything either traveller pins (a destination, a hotel, an event, a
+-- stray thought) lands here. Soft-delete only (enabled=0) — shared brain DB, nothing destroyed.
+CREATE TABLE IF NOT EXISTS north_pins (
+  id          TEXT PRIMARY KEY,
+  kind        TEXT NOT NULL,             -- destination | hotel | event | note
+  node        TEXT NOT NULL DEFAULT '',  -- weather-node id it belongs to ('' = general)
+  title       TEXT NOT NULL,
+  detail      TEXT NOT NULL DEFAULT '',
+  url         TEXT NOT NULL DEFAULT '',
+  who         TEXT NOT NULL DEFAULT '',  -- michael | claire
+  enabled     INTEGER NOT NULL DEFAULT 1,
+  sort        INTEGER NOT NULL DEFAULT 0,
+  created_at  TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Outlook history: every FRESH Claude read is appended here (the 3-hour cache means ≤8 rows/day).
+-- This is how insights track over time — deltas per arc, and one day a sparkline of the fortnight's
+-- opinion of itself. Append-only.
+CREATE TABLE IF NOT EXISTS north_outlook_log (
+  id          TEXT PRIMARY KEY,          -- ISO timestamp of generation
+  json        TEXT NOT NULL,             -- the full Outlook payload
+  created_at  TEXT NOT NULL DEFAULT (datetime('now'))
+);

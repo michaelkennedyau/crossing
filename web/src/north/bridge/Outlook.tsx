@@ -21,6 +21,14 @@ export interface OutlookPayload {
   outlook: OutlookData;
   generatedAt: string;
   cached?: boolean;
+  /** score delta per arc vs the previous read (north_outlook_log) — the board's direction of travel */
+  trend?: Record<string, number>;
+}
+
+/** ▲ rising, ▼ falling, · flat — how an arc's score moved since the last read */
+export function trendMark(delta: number | undefined): { mark: string; cls: string } {
+  if (!delta) return { mark: '·', cls: 'flat' };
+  return delta > 0 ? { mark: `▲${delta}`, cls: 'up' } : { mark: `▼${Math.abs(delta)}`, cls: 'down' };
 }
 
 export function pickArcEvent(arc: string): void {
@@ -57,7 +65,10 @@ export function Outlook({ data, cfg }: { data: OutlookPayload | null; cfg: Cfg }
               onClick={() => pickArcEvent(r.arc)}
             >
               <span className="ol-name">{arc.name}</span>
-              <span className="ol-score">{r.score}</span>
+              <span className="ol-score">
+                {r.score}
+                <em className={`ol-trend ${trendMark(data.trend?.[r.arc]).cls}`}> {trendMark(data.trend?.[r.arc]).mark}</em>
+              </span>
               <span className="ol-because">{r.because}</span>
             </button>
           );

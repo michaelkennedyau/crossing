@@ -122,6 +122,12 @@ const CROWD_CURVE = `<figure class="curve" aria-hidden="true">
   <figcaption>the crowd curve · europe, 15–31 aug</figcaption>
 </figure>`;
 
+// The live curve mounts empty; the north-engine island fills it with today's actual sky —
+// six days of max temps from today forward across five board nodes. Empty stays invisible.
+const LIVE_CURVE = `<figure class="curve curve--live" id="live-curve">
+  <figcaption>the live sky · six days from today · re-anchors daily</figcaption>
+</figure>`;
+
 
 // ── The branch — two named routes with mini route-maps, plus the full board. Static SSR links
 // (the bridge opens and decodes #arc=…); the tier chips are a light progressive enhancement. ──
@@ -182,7 +188,7 @@ function renderLeg(leg: Leg): string {
     <p class="eyebrow">${esc(leg.eyebrow)}</p>
     <${headTag} class="head ${leg.headClass ?? ''}">${esc(leg.head)}</${headTag}>
     ${leg.hand ? `<p class="hand">${leg.hand}</p>` : ''}
-    ${leg.chart ? CROWD_CURVE : ''}
+    ${leg.chart ? CROWD_CURVE + LIVE_CURVE : ''}
     ${leg.extra === 'BRANCH' ? renderBranch() : ''}
     ${leg.telemetry ? `<p class="telemetry">${leg.telemetry}</p>` : ''}
     ${leg.live ? `<p class="live-pill"><span class="live-dot"></span>${esc(leg.live)}</p>` : ''}
@@ -360,6 +366,7 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 .curve{margin:var(--s4) 0 0;max-width:560px;padding:16px 14px 8px;border:1px solid rgba(126,142,160,.18);
   border-radius:12px;background:rgba(8,13,22,.44);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
 .curve svg{display:block;width:100%;height:auto;}
+.curve--live:not(:has(svg)){display:none;}
 /* the two curves draw themselves in as the leg reveals; the areas breathe up after */
 .curve .c-draw{stroke-dasharray:1;stroke-dashoffset:1;
   transition:stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1) .35s;}
