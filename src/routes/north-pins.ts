@@ -23,6 +23,15 @@ northPinsRouter.post('/', async (c) => {
     | null;
   if (!b || typeof b.id !== 'string' || typeof b.title !== 'string' || !b.title.trim())
     return c.json({ ok: false, error: 'id and title required' }, 400);
+  // urls become hrefs on the board — only ever http(s), or nothing
+  if (b.url) {
+    try {
+      const u = new URL(b.url);
+      if (u.protocol !== 'http:' && u.protocol !== 'https:') return c.json({ ok: false, error: 'bad url' }, 400);
+    } catch {
+      return c.json({ ok: false, error: 'bad url' }, 400);
+    }
+  }
   const kind = ['destination', 'hotel', 'event', 'note', 'insight'].includes(b.kind ?? '') ? b.kind : 'note';
   await c.env.DB.prepare(
     'INSERT INTO north_pins (id, kind, node, title, detail, url, who, enabled, sort, created_at) ' +

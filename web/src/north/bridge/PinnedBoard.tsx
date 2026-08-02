@@ -20,6 +20,16 @@ const NODE_NAMES: Record<string, string> = {
 
 const KIND_MARK: Record<string, string> = { destination: '⌖', hotel: '⌂', event: '✦', insight: '◉', note: '✎' };
 
+/** hrefs on the board are http(s) or nothing — stored urls are re-checked at render too */
+function safeHref(u: string): string | null {
+  try {
+    const p = new URL(u).protocol;
+    return p === 'http:' || p === 'https:' ? u : null;
+  } catch {
+    return null;
+  }
+}
+
 export function PinnedBoard(): JSX.Element | null {
   const [pins, setPins] = useState<Pin[]>([]);
 
@@ -63,7 +73,7 @@ export function PinnedBoard(): JSX.Element | null {
               <div key={p.id} className={`pb-pin ${p.kind}`}>
                 <span className="pb-mark" aria-hidden="true">{KIND_MARK[p.kind] ?? '✎'}</span>
                 <span className="pb-body">
-                  <b>{p.url ? <a href={p.url} target="_blank" rel="noopener">{p.title} ↗</a> : p.title}</b>
+                  <b>{safeHref(p.url) ? <a href={safeHref(p.url) ?? undefined} target="_blank" rel="noopener">{p.title} ↗</a> : p.title}</b>
                   {p.detail && <i>{p.detail}</i>}
                 </span>
                 {p.who && <span className={`pb-who ${p.who}`}>{p.who}</span>}
