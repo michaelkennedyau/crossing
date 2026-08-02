@@ -124,12 +124,24 @@ export function NorthBridge(): JSX.Element | null {
       .catch(() => {});
   }, []);
 
-  // one weather fetch feeds the chart room AND the board (the worker KV-caches it 30 min)
+  // one weather fetch feeds the chart room AND the board (the worker KV-caches it 30 min);
+  // one quiet retry so a transient blip doesn't blank the wall for the whole session
   useEffect(() => {
-    fetch('/api/north/weather')
-      .then((r) => r.json() as Promise<{ nodes?: WxNode[] }>)
-      .then((d) => setWxNodes(d.nodes ?? []))
-      .catch(() => setWxNodes([]));
+    let retried = false;
+    const load = (): void => {
+      fetch('/api/north/weather')
+        .then((r) => r.json() as Promise<{ nodes?: WxNode[] }>)
+        .then((d) => {
+          const nodes = d.nodes ?? [];
+          setWxNodes(nodes);
+          if (!nodes.length && !retried) { retried = true; setTimeout(load, 3000); }
+        })
+        .catch(() => {
+          setWxNodes([]);
+          if (!retried) { retried = true; setTimeout(load, 3000); }
+        });
+    };
+    load();
   }, []);
 
   // Claude's cached read of the board — absent (offline / no key) means the card never renders.

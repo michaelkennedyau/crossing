@@ -450,3 +450,8 @@
 .it-list--warn span{border-color:rgba(242,180,94,.4);color:var(--ember);}
 [data-theme="light"] .bridge-overlay .it-head{background:rgba(20,33,44,.04);}
 [data-theme="light"] .bridge-overlay .it-hotel{background:rgba(255,255,255,.7);}
+
+/* if the sky feed is down and the chart room never mounts, the planner claims its column */
+@media (min-width:2600px){
+  body.mission .bridge-col:not(:has(.chartroom)) .card.planner{grid-column:2/4;}
+}
