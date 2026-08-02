@@ -12,14 +12,23 @@ import { flagsFor, questionsFor } from '../planner/constraints';
  * calendar and the consequences land live. The chosen shape rides the URL hash, so a picked arc
  * is linkable — send Claire the link, get a verdict.
  */
-const ARC_IDS: ArcId[] = [
+// Display order for the TS-default arcs; ids only present in cfg (D1-added) append after.
+const ARC_ORDER: ArcId[] = [
   'highlow', 'slovcroatia', 'dolosicily', 'scotgreece', 'norsardinia',
   'fjords', 'highlands', 'dolomiti', 'slovenia', 'sicily', 'sardinia',
   'cyclades', 'portugal', 'madeira', 'gulet', 'yachtweek',
 ];
 
-// arc → image slug (web/public/img/<slug>-1280.webp) — the debate, seen before it is read
-const ARC_IMG: Record<ArcId, string> = {
+/** cfg is the source of truth for which arcs exist — D1 rows can add or hide arcs live. */
+function arcIdsOf(cfg: Cfg): ArcId[] {
+  const present = Object.keys(cfg.arcs) as ArcId[];
+  const ordered = ARC_ORDER.filter((id) => id in cfg.arcs);
+  return [...ordered, ...present.filter((id) => !ARC_ORDER.includes(id))];
+}
+
+// arc → image slug (web/public/img/<slug>-1280.webp) — the debate, seen before it is read.
+// An arc may name its own via Arc.img; unknown arcs fall back to the aurora.
+const ARC_IMG: Partial<Record<ArcId, string>> = {
   highlow: 'n-aurora', fjords: 'n-hjorund', highlands: 'arc-highlands', dolomiti: 'arc-dolomiti',
   slovenia: 'arc-slovenia', sicily: 'arc-sicily', sardinia: 'arc-sardinia', cyclades: 'arc-cyclades',
   portugal: 'arc-portugal', madeira: 'arc-madeira', gulet: 'arc-gulet', yachtweek: 'arc-yachtweek',
@@ -34,7 +43,7 @@ function decodeSel(hash: string, cfg: Cfg): Selection | null {
   const m = /arc=([a-z]+):(?:(special|sane):)?([\d.]+)/i.exec(hash);
   if (!m) return null;
   const arcId = m[1] as ArcId;
-  if (!ARC_IDS.includes(arcId)) return null;
+  if (!(arcId in cfg.arcs)) return null;
   const arc = cfg.arcs[arcId];
   const parts = m[3].split('.').map((n) => Number.parseInt(n, 10));
   const sel = defaultSelection(arcId, cfg, (m[2] as Tier) || 'special');
@@ -69,11 +78,23 @@ type SortBy = 'curve' | 'price';
 
 const MOOD_LABEL: Record<string, string> = { both: 'both worlds', cool: 'the cool half', warm: 'the warm half' };
 
-export function Planner({ cfg }: { cfg: Cfg }): JSX.Element {
-  const [sel, setSel] = useState<Selection>(() => decodeSel(location.hash, CFG) ?? DEFAULT_SELECTION);
+export function Planner({
+  cfg,
+  pick = null,
+  manifest = {},
+}: {
+  cfg: Cfg;
+  pick?: ArcId | null;
+  manifest?: Record<string, { lqip?: string }>;
+}): JSX.Element {
+  const [rawSel, setSel] = useState<Selection>(() => decodeSel(location.hash, CFG) ?? DEFAULT_SELECTION);
   const [mood, setMood] = useState<Mood>('all');
   const [sortBy, setSortBy] = useState<SortBy>('curve');
   const planRef = useRef<HTMLDivElement>(null);
+
+  const arcIds = useMemo(() => arcIdsOf(cfg), [cfg]);
+  // If a D1 edit hid the selected arc mid-session, fall to the first visible one.
+  const sel = cfg.arcs[rawSel.arc] ? rawSel : defaultSelection(arcIds[0], cfg, rawSel.tier);
 
   const r = useMemo(() => compute(sel, cfg), [sel, cfg]);
   const flags = useMemo(() => flagsFor(sel, r), [sel, r]);
@@ -93,14 +114,25 @@ export function Planner({ cfg }: { cfg: Cfg }): JSX.Element {
   };
   const setTier = (tier: Tier): void => setSel((prev) => ({ ...prev, tier }));
 
+  // the Outlook's chips hand an arc over via a DOM event — decoupled siblings
+  useEffect(() => {
+    const onPick = (e: Event): void => {
+      const id = (e as CustomEvent<string>).detail as ArcId;
+      if (cfg.arcs[id]) pickArc(id);
+    };
+    window.addEventListener('north:pick-arc', onPick);
+    return () => window.removeEventListener('north:pick-arc', onPick);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cfg]);
+
   const visibleArcs = useMemo(() => {
-    const ids = ARC_IDS.filter((id) => mood === 'all' || cfg.arcs[id].mood === mood);
+    const ids = arcIds.filter((id) => mood === 'all' || cfg.arcs[id].mood === mood);
     if (sortBy === 'price') {
       const costOf = (id: ArcId): number => compute(defaultSelection(id, cfg, sel.tier), cfg).cost;
       return [...ids].sort((a, b) => costOf(a) - costOf(b));
     }
     return ids;
-  }, [mood, sortBy, cfg, sel.tier]);
+  }, [arcIds, mood, sortBy, cfg, sel.tier]);
   const step = (segId: string, d: number): void =>
     setSel((prev) => {
       const seg = arc.segments.find((x) => x.id === segId);
@@ -131,7 +163,7 @@ export function Planner({ cfg }: { cfg: Cfg }): JSX.Element {
         <div className="seg seg--chips" role="group" aria-label="Filter destinations">
           {(['all', 'both', 'cool', 'warm'] as Mood[]).map((m) => (
             <button key={m} type="button" className={mood === m ? 'on' : ''} onClick={() => setMood(m)}>
-              {m === 'all' ? `all ${ARC_IDS.length}` : MOOD_LABEL[m]}
+              {m === 'all' ? `all ${arcIds.length}` : MOOD_LABEL[m]}
             </button>
           ))}
         </div>
@@ -148,20 +180,23 @@ export function Planner({ cfg }: { cfg: Cfg }): JSX.Element {
           const a = cfg.arcs[id];
           const cost = compute(defaultSelection(id, cfg, sel.tier), cfg).cost;
           const on = sel.arc === id;
+          const slug = a.img ?? ARC_IMG[id] ?? 'n-aurora';
+          const lqip = manifest[slug]?.lqip;
+          // LQIP-first paint: the tiny data-URI base64 sits under the webp, so the card never pops in blank
+          const bg = lqip
+            ? `url("/img/${slug}-1280.webp"), url("${lqip}")`
+            : `url("/img/${slug}-1280.webp")`;
           return (
             <button key={id} type="button" className={`arc-card${on ? ' on' : ''}`} onClick={() => pickArc(id)} aria-pressed={on}>
-              <span
-                className="ai"
-                role="img"
-                aria-label={a.name}
-                style={{ backgroundImage: `url("/img/${ARC_IMG[id]}-1280.webp")` }}
-              >
+              <span className="ai" role="img" aria-label={a.name}>
+                <i className="aimg" style={{ backgroundImage: bg }} />
                 <em className="am">{MOOD_LABEL[a.mood]}</em>
                 {on && <em className="ax">✓ chosen</em>}
+                {!on && pick === id && <em className="ax pick">◆ claude's pick</em>}
+                <span className="an2"><b>{a.name}</b><u>{aud(cost)}</u></span>
               </span>
-              <span className="an">{a.name}</span>
               <span className="aw">{a.caseFor}</span>
-              <span className="ac">{aud(cost)} · 19 nights · {sel.tier === 'special' ? 'good rooms' : 'sane rooms'}</span>
+              <span className="ac">19 nights · {sel.tier === 'special' ? 'good rooms' : 'sane rooms'}</span>
             </button>
           );
         })}
@@ -201,13 +236,18 @@ export function Planner({ cfg }: { cfg: Cfg }): JSX.Element {
       <div className="cal">
         <p className="cal-cap">{sailable ? '✦ nineteen nights, berth to berth' : '△ the calendar doesn’t close — QF2 won’t wait'}</p>
         <div className="strip">
-          {r.cells.map((c) => (
-            <div key={c.id} className="seg-cell" style={{ flexGrow: c.nights, background: tint(c.id) }}>
-              <div className="sn">{c.date}</div>
-              <div className="sl">{c.short}</div>
-              <div className="sw">{c.nights}n</div>
-            </div>
-          ))}
+          {r.cells.map((c) => {
+            // the cell holding offset 8 = Sat 22 Aug, the exhale — the narrative's one chart, echoed here
+            const exhale = c.startOff <= 8 && 8 < c.startOff + c.nights;
+            return (
+              <div key={c.id} className={`seg-cell${exhale ? ' exhale' : ''}`} style={{ flexGrow: c.nights, background: tint(c.id) }}>
+                {exhale && <div className="se">sat 22</div>}
+                <div className="sn">{c.date}</div>
+                <div className="sl">{c.short}</div>
+                <div className="sw">{c.nights}n</div>
+              </div>
+            );
+          })}
         </div>
         <div className="cal-legend">
           <span>QF2 · LHR {dateAt(19)} · BNE {dateAt(21)}</span>

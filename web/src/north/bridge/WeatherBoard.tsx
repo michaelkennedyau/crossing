@@ -61,10 +61,35 @@ function verdict(n: WxNode): { level: 'go' | 'maybe' | 'skip'; text: string } {
   return { level: 'skip', text: `${5 - sun}/5 days of rain · not this week` };
 }
 
-export function WeatherBoard(): JSX.Element {
+// weather-node id → arc-segment id, where they differ (most match 1:1)
+const NODE_SEG_ALIAS: Record<string, string> = { olbia: 'smeralda', london: 'london1', cortina: 'cortina' };
+
+/** six-day micro-sparkline: tmax as a thin line, rain days (≥2 mm) as drops under it */
+function Spark({ days }: { days: WxDay[] }): JSX.Element | null {
+  const d6 = days.slice(0, 6);
+  if (d6.length < 2) return null;
+  const W = 72;
+  const H = 20;
+  const ts = d6.map((d) => d.tmax);
+  const min = Math.min(...ts);
+  const span = Math.max(1, Math.max(...ts) - min);
+  const x = (i: number): number => 2 + (i * (W - 4)) / (d6.length - 1);
+  const y = (t: number): number => 3.5 + (1 - (t - min) / span) * (H - 11);
+  const pts = ts.map((t, i) => `${x(i).toFixed(1)},${y(t).toFixed(1)}`).join(' ');
+  return (
+    <svg className="wb-spark" viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
+      <polyline points={pts} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      {d6.map((d, i) => (d.rain >= 2 ? <circle key={i} className="rain" cx={x(i)} cy={H - 2.5} r="1.6" /> : null))}
+    </svg>
+  );
+}
+
+export function WeatherBoard({ topSegIds = [] }: { topSegIds?: string[] }): JSX.Element {
   const [nodes, setNodes] = useState<WxNode[]>([]);
   const [err, setErr] = useState(false);
   const [at, setAt] = useState('london');
+  const topSet = useMemo(() => new Set(topSegIds), [topSegIds]);
+  const inTopArc = (id: string): boolean => topSet.has(NODE_SEG_ALIAS[id] ?? id);
 
   useEffect(() => {
     fetch('/api/north/weather')
@@ -95,6 +120,13 @@ export function WeatherBoard(): JSX.Element {
             <option key={n.id} value={n.id}>{n.name} · {n.country}</option>
           ))}
         </select>
+        <div className="wb-atchips" role="group" aria-label="You are in">
+          {nodes.map((n) => (
+            <button key={n.id} type="button" className={at === n.id ? 'on' : ''} onClick={() => setAt(n.id)}>
+              {n.name}
+            </button>
+          ))}
+        </div>
         {here && (
           <span className="wb-now">
             {here.temp !== null ? `${Math.round(here.temp)}°` : '—'} · {codeWord(here.code)} · next 5 days: {sunDays(here)}/5 sun
@@ -105,14 +137,20 @@ export function WeatherBoard(): JSX.Element {
       {err && <p className="pt-sub">The sky feed is offline — the board still works by looking out the window.</p>}
 
       <div className="wb-rows">
+        <div className="wb-row wb-row--head" aria-hidden="true">
+          <span>place</span><span>now</span><span>6-day</span><span>hop</span><span>verdict</span>
+        </div>
         {ranked.map(({ n, sun, d }) => {
           const v = verdict(n);
           return (
             <div key={n.id} className={`wb-row ${v.level}`}>
-              <span className="wb-place"><b>{n.name}</b><i>{n.country}</i></span>
+              <span className="wb-place">
+                <b>{n.name}{inTopArc(n.id) && <span className="wb-pick" title="in Claude's top-ranked arc"> ◆</span>}</b>
+                <i>{n.country}</i>
+              </span>
               <span className="wb-temp">{n.temp !== null ? `${Math.round(n.temp)}°` : '—'} {codeWord(n.code)}</span>
-              <span className="wb-sun" aria-label={`${sun} of 5 days sunny`}>
-                {'●'.repeat(sun)}{'○'.repeat(5 - sun)}
+              <span className="wb-sun" role="img" aria-label={`${sun} of 5 days sunny`}>
+                <Spark days={n.days} />
               </span>
               <span className="wb-hop">{hopLabel(d)}</span>
               <span className={`wb-verdict ${v.level}`}>{v.text}</span>

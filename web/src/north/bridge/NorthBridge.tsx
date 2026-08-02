@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
-import { CFG, mergeCfg, type Cfg } from '../planner/cfg';
+import { CFG, mergeCfg, type Arc, type ArcId, type Cfg, type CfgOverride } from '../planner/cfg';
 import { toggleTheme } from '../theme';
 import { WeatherBoard } from './WeatherBoard';
 import { Planner } from './Planner';
 import { NorthChecklist } from './NorthChecklist';
+import { Outlook, type OutlookPayload } from './Outlook';
+import { Concierge } from '../../bridge/Concierge';
 
 /**
  * The North's bridge — a structural sibling of the Andes Bridge, lean v1: ship's clock, the
@@ -77,14 +79,46 @@ function Logistics(): JSX.Element {
 export function NorthBridge(): JSX.Element | null {
   const [open, setOpen] = useState(false);
   const [cfg, setCfg] = useState<Cfg>(CFG);
+  const [outlook, setOutlook] = useState<OutlookPayload | null>(null);
+  const [manifest, setManifest] = useState<Record<string, { lqip?: string }>>({});
   const [theme, setTheme] = useState<string>(() => document.documentElement.getAttribute('data-theme') ?? 'dark');
 
-  // live override — never blocks; the panel is usable immediately with defaults
+  // the image manifest (aspect + LQIP per slug) — fetched once, the Planner paints LQIP-first
   useEffect(() => {
-    fetch('/api/north/cfg')
-      .then((r) => r.json() as Promise<{ override?: Partial<Cfg> | null }>)
-      .then((c) => setCfg(mergeCfg(CFG, c.override)))
+    fetch('/img/manifest.json')
+      .then((r) => r.json() as Promise<Record<string, { lqip?: string }>>)
+      .then(setManifest)
       .catch(() => {});
+  }, []);
+
+  // Claude's cached read of the board — absent (offline / no key) means the card never renders.
+  useEffect(() => {
+    fetch('/api/north/outlook')
+      .then((r) => r.json() as Promise<OutlookPayload | { outlook: null }>)
+      .then((j) => { if (j.outlook) setOutlook(j as OutlookPayload); })
+      .catch(() => {});
+  }, []);
+
+  // live overrides — never block; the panel is usable immediately with defaults.
+  // Two sources compose: /api/north/cfg (assumption tweaks) then /api/north/arcs
+  // (D1 arc rows + spine), which win. Each source fails independently.
+  useEffect(() => {
+    void Promise.allSettled([
+      fetch('/api/north/cfg').then((r) => r.json() as Promise<{ override?: CfgOverride | null }>),
+      fetch('/api/north/arcs').then(
+        (r) => r.json() as Promise<{ arcs?: Record<string, Arc>; spine?: { nightsTotal?: number } | null }>,
+      ),
+    ]).then(([cfgRes, arcsRes]) => {
+      let next = CFG;
+      if (cfgRes.status === 'fulfilled') next = mergeCfg(next, cfgRes.value.override);
+      if (arcsRes.status === 'fulfilled') {
+        const { arcs, spine } = arcsRes.value;
+        if ((arcs && Object.keys(arcs).length) || spine?.nightsTotal) {
+          next = mergeCfg(next, { arcs, nightsTotal: spine?.nightsTotal });
+        }
+      }
+      if (next !== CFG) setCfg(next);
+    });
   }, []);
 
   // open/close wiring — any [data-open-bridge] opens; deep-link via #bridge or #arc=
@@ -111,6 +145,12 @@ export function NorthBridge(): JSX.Element | null {
   if (!open) return null;
   const close = (): void => withTransition(() => { setOpen(false); document.body.style.overflow = ''; });
 
+  // Claude's top-ranked arc — badged on the Planner card and on the board's matching nodes.
+  const topPick = outlook
+    ? ([...outlook.outlook.ranking].sort((a, b) => b.score - a.score)[0]?.arc as ArcId | undefined) ?? null
+    : null;
+  const topPickSegIds = topPick && cfg.arcs[topPick] ? cfg.arcs[topPick].segments.map((s) => s.id) : [];
+
   return (
     <div className="bridge-overlay" role="dialog" aria-modal="true" aria-label="The Bridge — the north planner">
       <div className="bridge-grain" aria-hidden="true" />
@@ -128,9 +168,15 @@ export function NorthBridge(): JSX.Element | null {
           </span>
         </div>
 
-        <WeatherBoard />
+        <Outlook data={outlook} cfg={cfg} />
+        <WeatherBoard topSegIds={topPickSegIds} />
         <ShipClock />
-        <Planner cfg={cfg} />
+        <Planner cfg={cfg} pick={topPick} manifest={manifest} />
+        <Concierge
+          endpoint="/api/north/concierge"
+          eyebrow="The concierge · ask the fortnight"
+          placeholder="Where's the warmth this week? Which arc survives a wet Lofoten?"
+        />
         <div className="grid2">
           <Logistics />
           <NorthChecklist />

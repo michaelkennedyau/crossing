@@ -1,0 +1,166 @@
+/* The North board's own styles — the arc chooser, the weather board, the outlook — plus the
+   light-theme token remap at the bottom. Extracted from the entry's (mislabeled) LIGHT_CSS
+   string; imported ?inline and concatenated with the shared bridge.css exactly as before. */
+
+.presets--wrap{flex-wrap:wrap;}
+.presets--wrap .preset{flex:0 0 auto;}
+
+/* chooser — sticky so mood/sort/tier stay reachable while scrolling sixteen cards */
+.chooser-bar{position:sticky;top:0;z-index:6;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  margin:16px 0 2px;padding:8px 2px;background:rgba(4,8,16,.55);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:10px;}
+.seg--chips{flex-wrap:wrap;}
+.seg--chips button{flex:0 0 auto;font-size:11px;padding:7px 11px;border-radius:999px;}
+
+/* arc cards — imagery-led: 3/2 image with the name and price on a bottom scrim */
+.arc-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:11px;margin:12px 0 6px;}
+.arc-card{display:flex;flex-direction:column;padding:0;overflow:hidden;text-align:left;cursor:pointer;
+  background:rgba(233,240,242,.04);border:1px solid rgba(124,138,147,.2);border-radius:12px;transition:.16s;}
+.arc-card:hover{border-color:rgba(124,138,147,.45);transform:translateY(-2px);}
+.arc-card.on{border-color:var(--ember);box-shadow:0 0 0 1px var(--ember),0 6px 22px rgba(0,0,0,.25);}
+.arc-card .ai{position:relative;display:block;aspect-ratio:3/2;overflow:hidden;
+  border-bottom:1px solid rgba(124,138,147,.14);}
+.arc-card .aimg{position:absolute;inset:0;background-size:cover;background-position:center;
+  filter:saturate(.92);transition:transform .5s cubic-bezier(.16,1,.3,1);}
+.arc-card.on .aimg{filter:none;}
+.arc-card:hover .aimg{transform:scale(1.04);}
+.arc-card .ai::after{content:"";position:absolute;inset:auto 0 0 0;height:58%;pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(4,8,16,.78));}
+.arc-card .an2{position:absolute;left:10px;right:10px;bottom:8px;z-index:1;display:flex;
+  justify-content:space-between;align-items:baseline;gap:8px;}
+.arc-card .an2 b{font-family:var(--font-mono);font-size:12.5px;font-weight:600;letter-spacing:.02em;color:#EDF3F8;
+  text-shadow:0 1px 6px rgba(0,0,0,.5);}
+.arc-card .an2 u{text-decoration:none;font-family:var(--font-mono);font-size:10.5px;color:#CBD7E1;
+  font-variant-numeric:tabular-nums;white-space:nowrap;text-shadow:0 1px 6px rgba(0,0,0,.5);}
+.arc-card .am{position:absolute;left:8px;top:7px;z-index:1;font-style:normal;font-family:var(--font-mono);font-size:8.5px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--snow);background:rgba(4,8,16,.55);
+  border:1px solid rgba(233,240,242,.18);border-radius:999px;padding:3px 8px;backdrop-filter:blur(4px);}
+.arc-card .ax{position:absolute;right:8px;top:7px;z-index:1;font-style:normal;font-family:var(--font-mono);font-size:9px;
+  letter-spacing:.08em;color:#1A1205;background:var(--ember);border-radius:999px;padding:3px 8px;font-weight:600;}
+.arc-card .ax.pick{color:#04211A;background:var(--live);}
+.arc-card .aw{font-family:var(--font-hand);font-style:italic;font-size:12.5px;line-height:1.45;color:var(--snow-dim);
+  padding:9px 11px 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.arc-card .ac{font-family:var(--font-mono);font-size:10px;color:var(--snow-dim);padding:7px 11px 10px;margin-top:auto;
+  font-variant-numeric:tabular-nums;}
+.plan-anchor{scroll-margin-top:64px;}
+
+/* money is columns of digits — everywhere it renders */
+.ledger .n,.pt-total .amt,.ol-score,.wb-temp{font-variant-numeric:tabular-nums;}
+
+/* steppers reach 44px targets on touch */
+@media (pointer:coarse){
+  .stepper button{min-width:44px;min-height:44px;}
+}
+
+/* the Sat-22 exhale, marked on the calendar strip */
+.seg-cell{position:relative;}
+.seg-cell.exhale{border-top:2px solid var(--ember);}
+.seg-cell.exhale .se{position:absolute;right:4px;top:2px;font-family:var(--font-mono);font-size:7.5px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ember);}
+
+/* ── the board ── */
+.wb-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+.wb-head .lever-label{margin:0;}
+.wb-select{font-family:var(--font-mono);font-size:12px;color:var(--snow);background:rgba(9,14,20,.7);
+  border:1px solid rgba(124,138,147,.3);border-radius:8px;padding:8px 10px;}
+.wb-atchips{display:none;}
+@media (min-width:640px){
+  .wb-select{display:none;}
+  .wb-atchips{display:flex;gap:6px;overflow-x:auto;max-width:100%;padding-bottom:2px;scrollbar-width:thin;}
+  .wb-atchips button{flex:0 0 auto;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.04em;
+    color:var(--snow-dim);background:rgba(233,240,242,.05);border:1px solid rgba(124,138,147,.25);
+    border-radius:999px;padding:5px 10px;cursor:pointer;transition:.14s;}
+  .wb-atchips button.on{color:var(--live);border-color:var(--live);background:rgba(139,232,192,.08);}
+}
+.wb-now{font-family:var(--font-mono);font-size:11px;color:var(--live);letter-spacing:.04em;}
+.wb-rows{display:grid;gap:2px;}
+.wb-row{display:grid;grid-template-columns:minmax(110px,1.2fr) minmax(90px,1fr) 82px minmax(84px,.9fr) minmax(140px,1.4fr);
+  gap:10px;align-items:center;padding:8px 6px;border-bottom:1px solid rgba(124,138,147,.1);border-radius:6px;}
+.wb-row.go{background:rgba(139,232,192,.05);}
+.wb-row--head{position:sticky;top:52px;z-index:5;background:rgba(4,8,16,.72);backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(124,138,147,.24);}
+.wb-row--head span{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.18em;color:var(--schist);}
+.wb-place b{font-family:var(--font-mono);font-size:12.5px;font-weight:600;color:var(--snow);}
+.wb-place i{display:block;font-style:normal;font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--schist);}
+.wb-pick{color:var(--live);}
+.wb-temp,.wb-hop{font-family:var(--font-mono);font-size:11px;color:var(--snow-dim);}
+.wb-sun{color:var(--ember);}
+.wb-spark{display:block;width:72px;height:20px;color:var(--ember);}
+.wb-spark .rain{fill:var(--turquoise,#5BC8DE);}
+.wb-verdict{justify-self:start;font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;
+  border-radius:999px;padding:3px 9px;border:1px solid transparent;}
+.wb-verdict.go{color:#04211A;background:var(--live);font-weight:600;}
+.wb-verdict.maybe{color:var(--ember);border-color:rgba(242,180,94,.45);background:rgba(242,180,94,.08);}
+.wb-verdict.skip{color:var(--schist);border-color:rgba(126,142,160,.3);}
+@media (max-width:640px){.wb-row{grid-template-columns:1fr 1fr;} .wb-sun,.wb-hop{display:none;} .wb-row--head{display:none;}}
+
+/* ── the outlook ── */
+.outlook .ol-headline{font-family:var(--font-display);font-weight:300;font-size:clamp(20px,3vw,28px);
+  line-height:1.15;letter-spacing:-.01em;color:var(--snow);margin:6px 0 0;text-wrap:balance;}
+.outlook .ol-narrative{font-family:var(--font-hand);font-style:italic;font-size:14.5px;line-height:1.55;
+  color:var(--snow-dim);margin:8px 0 0;max-width:60ch;text-wrap:pretty;}
+.ol-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin:14px 0 0;}
+.ol-chip{display:grid;gap:3px;text-align:left;cursor:pointer;padding:9px 11px;border-radius:10px;
+  background:rgba(233,240,242,.04);border:1px solid rgba(124,138,147,.2);transition:.14s;}
+.ol-chip:hover{border-color:rgba(124,138,147,.5);transform:translateY(-1px);}
+.ol-chip .ol-name{font-family:var(--font-mono);font-size:11.5px;font-weight:600;color:var(--snow);}
+.ol-chip .ol-score{font-family:var(--font-mono);font-size:10px;color:var(--snow-dim);}
+.ol-chip .ol-because{font-family:var(--font-hand);font-style:italic;font-size:12px;line-height:1.4;
+  color:var(--snow-dim);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.ol-chip.go{border-left:3px solid var(--live);}
+.ol-chip.go .ol-score{color:var(--live);}
+.ol-chip.maybe{border-left:3px solid var(--ember);}
+.ol-chip.maybe .ol-score{color:var(--ember);}
+.ol-chip.skip{opacity:.6;border-left:3px solid rgba(126,142,160,.4);}
+.ol-watch{margin-top:12px;}
+.ol-stamp{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--schist);margin:12px 0 0;}
+@media (prefers-reduced-motion: reduce){
+  .arc-card:hover,.ol-chip:hover{transform:none;}
+  .arc-card:hover .aimg{transform:none;}
+}
+
+/* ── day mode — token remap, scoped to the Bridge (the voyage scroll stays a night-world) ── */
+[data-theme="light"] .bridge-overlay .wb-select{background:rgba(255,255,255,.9);}
+[data-theme="light"] .bridge-overlay .wb-row.go{background:rgba(14,124,107,.06);}
+[data-theme="light"] .bridge-overlay .wb-row--head{background:rgba(240,244,248,.9);}
+[data-theme="light"] .bridge-overlay .chooser-bar{background:rgba(240,244,248,.82);}
+[data-theme="light"] .bridge-overlay{
+  --snow:#14212C; --snow-dim:#46586A; --schist:#5E7086;
+  --ember:#A96D14; --ember-hot:#8A5A0E; --ember-deep:#8A5A0E;
+  --live:#0E7C6B; --live-deep:#0A5C50;
+  background:rgba(240,244,248,.86); box-shadow:none;
+}
+[data-theme="light"] .bridge-grain{opacity:.035;}
+[data-theme="light"] .bridge-overlay .card{
+  background:rgba(255,255,255,.82); border-color:rgba(70,88,106,.16);
+  box-shadow:0 2px 18px rgba(20,33,44,.07);
+}
+[data-theme="light"] .bridge-overlay .bridge-close,
+[data-theme="light"] .bridge-overlay .preset,
+[data-theme="light"] .bridge-overlay .seg button,
+[data-theme="light"] .bridge-overlay .stepper button{
+  background:rgba(20,33,44,.05); border-color:rgba(70,88,106,.24);
+}
+[data-theme="light"] .bridge-overlay .bridge-close:hover,
+[data-theme="light"] .bridge-overlay .stepper button:hover{background:rgba(20,33,44,.1);}
+[data-theme="light"] .bridge-overlay .preset.on{background:rgba(169,109,20,.1);}
+[data-theme="light"] .bridge-overlay .seg button.on{background:rgba(14,124,107,.1);}
+[data-theme="light"] .bridge-overlay .seg button.on.ember{background:rgba(169,109,20,.1);}
+[data-theme="light"] .bridge-overlay .stepper{border-color:rgba(70,88,106,.24);}
+[data-theme="light"] .bridge-overlay .clock-val,
+[data-theme="light"] .bridge-overlay .pt-total .amt{text-shadow:none;}
+[data-theme="light"] .bridge-overlay .ledger td{border-bottom-color:rgba(70,88,106,.14);}
+[data-theme="light"] .bridge-overlay .ledger tr.tot td{border-top-color:rgba(70,88,106,.35);}
+[data-theme="light"] .bridge-overlay .flag,
+[data-theme="light"] .bridge-overlay .q,
+[data-theme="light"] .bridge-overlay .checklist li{border-bottom-color:rgba(70,88,106,.12);}
+[data-theme="light"] .bridge-overlay .checklist .box{border-color:rgba(70,88,106,.4);}
+[data-theme="light"] .bridge-overlay .checklist li.done .box{background:rgba(14,124,107,.1);}
+[data-theme="light"] .bridge-overlay .seg-cell{border-color:rgba(70,88,106,.18);}
+[data-theme="light"] .bridge-overlay .arc-card{background:rgba(255,255,255,.8);border-color:rgba(70,88,106,.2);}
+[data-theme="light"] .bridge-overlay .arc-card.on{box-shadow:0 0 0 1px var(--ember),0 6px 18px rgba(20,33,44,.12);}
+[data-theme="light"] .bridge-overlay .ol-chip{background:rgba(255,255,255,.8);border-color:rgba(70,88,106,.2);}
+[data-theme="light"] .bridge-overlay .wb-verdict.go{color:#fff;}
+[data-theme="light"] .bridge-overlay .arc-card .ax.pick{color:#fff;}

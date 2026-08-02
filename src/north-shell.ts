@@ -88,16 +88,28 @@ const LEGS: Leg[] = [
 // the leg copy carries the same argument in text. x: 15→31 Aug (x = 40 + (day−15) × 31.25).
 const CROWD_CURVE = `<figure class="curve" aria-hidden="true">
   <svg viewBox="0 0 560 240">
+    <defs>
+      <linearGradient id="cg-south" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="rgba(174,189,203,.20)"/><stop offset="1" stop-color="rgba(174,189,203,0)"/>
+      </linearGradient>
+      <linearGradient id="cg-north" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="rgba(139,232,192,.18)"/><stop offset="1" stop-color="rgba(139,232,192,0)"/>
+      </linearGradient>
+    </defs>
     <rect x="40" y="26" width="500" height="182" fill="rgba(237,243,248,.03)"/>
     <text x="540" y="18" text-anchor="end" class="c-faint">THE 19 NIGHTS · FRI 14 → WED 2 SEP</text>
     <line x1="40" y1="208" x2="540" y2="208" stroke="rgba(174,189,203,.35)" stroke-width="1"/>
     <line x1="102" y1="208" x2="102" y2="212" stroke="rgba(174,189,203,.35)" stroke-width="1"/>
     <line x1="259" y1="208" x2="259" y2="212" stroke="rgba(174,189,203,.35)" stroke-width="1"/>
-    <path d="M40,58 L120,55 L200,57 L259,60 C282,80 316,140 356,166 C398,186 470,192 540,194"
+    <path class="c-area" fill="url(#cg-south)"
+      d="M40,58 L120,55 L200,57 L259,60 C282,80 316,140 356,166 C398,186 470,192 540,194 L540,208 L40,208 Z"/>
+    <path class="c-area" fill="url(#cg-north)"
+      d="M40,148 L84,152 L102,172 C122,192 158,199 200,201 L540,204 L540,208 L40,208 Z"/>
+    <path class="c-draw" pathLength="1" d="M40,58 L120,55 L200,57 L259,60 C282,80 316,140 356,166 C398,186 470,192 540,194"
       fill="none" stroke="var(--snow-dim)" stroke-width="1.8" stroke-linecap="round" opacity=".85"/>
-    <path d="M40,148 L84,152 L102,172 C122,192 158,199 200,201 L540,204"
+    <path class="c-draw" pathLength="1" d="M40,148 L84,152 L102,172 C122,192 158,199 200,201 L540,204"
       fill="none" stroke="var(--live)" stroke-width="1.8" stroke-linecap="round"/>
-    <line x1="259" y1="30" x2="259" y2="208" stroke="var(--ember)" stroke-width="1.2" stroke-dasharray="2 3"/>
+    <line class="c-exhale" x1="259" y1="30" x2="259" y2="208" stroke="var(--ember)" stroke-width="1.2" stroke-dasharray="2 3"/>
     <text x="56" y="44">THE SOUTH · CROWDS &amp; PRICES</text>
     <text x="330" y="126">−20–40%</text>
     <text x="330" y="192" class="c-live">THE NORTH · QUIET FROM THE 17TH</text>
@@ -115,12 +127,13 @@ const CROWD_CURVE = `<figure class="curve" aria-hidden="true">
 // (the bridge opens and decodes #arc=…); the tier chips are a light progressive enhancement. ──
 function renderBranch(): string {
   return `<div class="branch">
-  <div class="tier-chips" role="group" aria-label="Room tier">
+  <div class="tier-chips" role="group" aria-label="Room tier" style="--i:0">
     <button type="button" class="chip on" data-tier="special">the good rooms</button>
     <button type="button" class="chip" data-tier="sane">the sane rooms</button>
   </div>
 
-  <a class="bcard rec" data-open-bridge data-arc-link href="#arc=slovcroatia:special:2.4.2.7.4">
+  <a class="bcard rec" data-open-bridge data-arc-link href="#arc=slovcroatia:special:2.4.2.7.4"
+    style="--i:1;--bimg:url('/img/arc-slovenia-1280.webp')">
     <svg class="bmap" viewBox="0 0 140 84" aria-hidden="true">
       <path d="M14,22 C36,20 54,26 64,32 L56,48 C66,56 76,60 86,64 L112,72" fill="none"
         stroke="rgba(174,189,203,.45)" stroke-width="1.2" stroke-dasharray="3 3" stroke-linecap="round"/>
@@ -138,7 +151,8 @@ function renderBranch(): string {
     </span>
   </a>
 
-  <a class="bcard" data-open-bridge data-arc-link href="#arc=highlow:special:2.4.2.7.4">
+  <a class="bcard" data-open-bridge data-arc-link href="#arc=highlow:special:2.4.2.7.4"
+    style="--i:2;--bimg:url('/img/n-aurora-1280.webp')">
     <svg class="bmap" viewBox="0 0 140 84" aria-hidden="true">
       <path d="M14,66 C34,46 48,24 66,14 L92,10 C104,28 112,48 118,68" fill="none"
         stroke="rgba(174,189,203,.45)" stroke-width="1.2" stroke-dasharray="3 3" stroke-linecap="round"/>
@@ -155,7 +169,7 @@ function renderBranch(): string {
     </span>
   </a>
 
-  <button class="bcard ball" data-open-bridge type="button">
+  <button class="bcard ball" data-open-bridge type="button" style="--i:3">
     <span class="bt"><b>All sixteen routes →</b><i>Two price tiers, a case and a counter for each — the full board.</i></span>
   </button>
 </div>`;
@@ -202,6 +216,9 @@ const CSS = `
   --font-hand:'Instrument Serif',Georgia,serif;
   --font-body:'Outfit',system-ui,-apple-system,sans-serif;
   --p:0; --dawn:0; --quiet:0;
+  /* fluid space scale — one rhythm for the narrative blocks */
+  --s1:clamp(6px,.8vw,10px); --s2:clamp(12px,1.4vw,16px); --s3:clamp(18px,2.2vw,26px);
+  --s4:clamp(26px,3.2vw,36px); --s5:clamp(38px,4.6vw,54px);
   --sky-top:#1A1410; --sky-mid:#140F12; --sky-bot:#101018; --horizon:#3A2A24;
   --horizon-a:.12; --star-a:0; --fog-a:.5; --green-a:0;
 }
@@ -270,13 +287,13 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 .eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:.3em;
   text-transform:uppercase;color:var(--snow-dim);margin:0 0 18px;}
 .head{font-family:var(--font-display);font-weight:300;letter-spacing:-.01em;margin:0;
-  font-size:clamp(28px,4.8vw,50px);line-height:1.07;color:var(--snow);}
-.head.hero{font-size:clamp(64px,17vw,210px);line-height:.9;}
+  font-size:clamp(28px,4.8vw,50px);line-height:1.07;color:var(--snow);text-wrap:balance;}
+.head.hero{font-size:clamp(64px,16vw,196px);line-height:.9;font-variation-settings:'opsz' 144;}
 .head.cut{font-style:italic;font-size:clamp(44px,9vw,108px);}
 .hand{font-family:var(--font-hand);font-style:italic;font-size:clamp(17px,2.3vw,23px);
-  color:var(--snow-dim);line-height:1.5;margin:20px 0 0;max-width:46ch;}
+  color:var(--snow-dim);line-height:1.55;margin:var(--s3) 0 0;max-width:44ch;text-wrap:pretty;}
 .ember-word{color:var(--ember);font-style:italic;}
-.telemetry{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;color:var(--snow-dim);margin:22px 0 0;}
+.telemetry{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;color:var(--snow-dim);margin:var(--s3) 0 0;}
 .syd-note{display:inline-block;margin-top:7px;color:var(--ember);opacity:.62;}
 .place{display:block;width:fit-content;margin-top:24px;font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;
   color:var(--snow-dim);text-decoration:none;border-bottom:1px solid rgba(126,142,160,.3);padding-bottom:2px;transition:.16s;}
@@ -294,16 +311,31 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 .bridge-open:hover{background:rgba(242,180,94,.18);}
 
 /* ── the branch ── */
-.branch{margin-top:26px;display:grid;gap:11px;max-width:560px;}
+.branch{margin-top:var(--s3);display:grid;gap:11px;max-width:560px;}
 .tier-chips{display:flex;gap:7px;margin-bottom:2px;}
 .chip{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;color:var(--snow-dim);
   background:rgba(237,243,248,.05);border:1px solid rgba(126,142,160,.25);border-radius:999px;
   padding:7px 13px;cursor:pointer;transition:.14s;}
 .chip.on{color:var(--ember-hot);border-color:var(--ember);background:rgba(242,180,94,.12);}
-.bcard{display:flex;gap:15px;align-items:center;text-align:left;text-decoration:none;color:var(--snow);
+.bcard{position:relative;overflow:hidden;isolation:isolate;
+  display:flex;gap:15px;align-items:center;text-align:left;text-decoration:none;color:var(--snow);
   background:rgba(8,13,22,.52);border:1px solid rgba(126,142,160,.22);border-radius:14px;
   padding:13px 16px;cursor:pointer;transition:.16s;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+/* arc photography behind the route-map, under a left-to-right scrim — imagery-led like the Planner */
+.bcard::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;
+  background-image:linear-gradient(90deg,rgba(8,13,22,.94) 34%,rgba(8,13,22,.3)),var(--bimg,none);
+  background-size:cover;background-position:center;opacity:.55;transition:opacity .4s;}
+.bcard:hover::after{opacity:.78;}
+/* ember sweep along the top edge on hover */
+.bcard::before{content:"";position:absolute;left:0;top:0;height:1px;width:0;z-index:1;
+  background:linear-gradient(90deg,var(--ember),transparent);transition:width .5s ease;}
+.bcard:hover::before{width:100%;}
 .bcard:hover{border-color:rgba(126,142,160,.5);transform:translateY(-2px);}
+/* staggered reveal — keyframed (not transitioned) so hover transforms stay snappy after */
+[data-reveal] .tier-chips,[data-reveal] .bcard{opacity:0;}
+[data-reveal].in .tier-chips,[data-reveal].in .bcard{
+  animation:brise .9s cubic-bezier(.16,1,.3,1) both;animation-delay:calc(var(--i,0)*90ms + .1s);}
+@keyframes brise{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
 .bcard.rec{border-color:var(--ember);box-shadow:0 0 0 1px var(--ember),0 8px 26px rgba(0,0,0,.3);}
 .bcard .bmap{flex:0 0 128px;height:auto;}
 .bcard .bmap text{font-family:var(--font-mono);font-size:7px;letter-spacing:.05em;fill:var(--snow-dim);}
@@ -316,12 +348,25 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 .btag--rival{background:transparent;color:var(--live);border:1px solid rgba(139,232,192,.4);}
 .bcard.ball{border-style:dashed;background:rgba(8,13,22,.3);font:inherit;}
 @media (max-width:560px){.bcard{flex-direction:column;align-items:flex-start;}.bcard .bmap{flex-basis:auto;width:150px;}}
-@media (prefers-reduced-motion: reduce){.bcard:hover{transform:none;}}
+@media (prefers-reduced-motion: reduce){
+  .bcard:hover{transform:none;}
+  [data-reveal] .tier-chips,[data-reveal] .bcard{opacity:1;animation:none;}
+  .bcard::before{transition:none;}
+  .curve .c-draw{stroke-dasharray:none;stroke-dashoffset:0;transition:none;}
+  .curve .c-area{opacity:1;transition:none;}
+}
 
 /* ── the crowd curve (hand-authored SVG, minimap idiom) ── */
-.curve{margin:30px 0 0;max-width:560px;padding:16px 14px 8px;border:1px solid rgba(126,142,160,.18);
+.curve{margin:var(--s4) 0 0;max-width:560px;padding:16px 14px 8px;border:1px solid rgba(126,142,160,.18);
   border-radius:12px;background:rgba(8,13,22,.44);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
 .curve svg{display:block;width:100%;height:auto;}
+/* the two curves draw themselves in as the leg reveals; the areas breathe up after */
+.curve .c-draw{stroke-dasharray:1;stroke-dashoffset:1;
+  transition:stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1) .35s;}
+[data-reveal].in .c-draw{stroke-dashoffset:0;}
+.curve .c-area{opacity:0;transition:opacity 1.2s ease 1.4s;}
+[data-reveal].in .c-area{opacity:1;}
+.curve .c-exhale{filter:drop-shadow(0 0 4px rgba(242,180,94,.75));}
 .curve text{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;fill:var(--snow-dim);}
 .curve .c-ember{fill:var(--ember);}
 .curve .c-live{fill:var(--live);}
@@ -361,6 +406,15 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 .mm-timeline .t-date{flex:0 0 34px;opacity:.7;}
 .mm-timeline .t-launch .t-date,.mm-timeline .t-launch .t-leg{color:var(--ember);}
 @media (max-width:680px){#minimap{display:none;}}
+
+/* ── mobile passage bar — the minimap's small-screen stand-in, riding the same --p scalar ── */
+#passbar{display:none;}
+@media (max-width:680px){
+  #passbar{display:block;position:fixed;left:0;right:0;bottom:0;height:2px;z-index:41;
+    background:rgba(126,142,160,.18);}
+  #passbar i{position:absolute;inset:0;background:linear-gradient(90deg,var(--ember-deep),var(--ember));
+    transform-origin:0 50%;transform:scaleX(var(--p));}
+}
 
 @keyframes livepulse{0%,100%{opacity:1;}50%{opacity:.45;}}
 @keyframes emberbeat{0%,100%{box-shadow:0 0 8px var(--ember),0 0 18px rgba(242,180,94,.4);}
@@ -449,6 +503,7 @@ ${LEGS.map(renderLeg).join('\n')}
 
 <p class="readout"><b data-readout-leg>Cold open</b> · QF1 T− <span data-readout-countdown>—</span></p>
 ${renderMinimap()}
+<div id="passbar" aria-hidden="true"><i></i></div>
 <div id="bridge-root"></div>
 <script>
 // branch tier chips — swap :special:/:sane: in the route links and the shown price. No framework;
