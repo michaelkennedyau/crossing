@@ -8,6 +8,7 @@ import { Planner } from './Planner';
 import { NorthChecklist } from './NorthChecklist';
 import { Outlook, type OutlookPayload } from './Outlook';
 import { Concierge } from '../../bridge/Concierge';
+import { nextOutlookRefresh } from '../board/clock';
 
 /**
  * The North's bridge — a structural sibling of the Andes Bridge, lean v1: ship's clock, the
@@ -23,7 +24,8 @@ const withTransition = (cb: () => void): void => {
 
 function pad(n: number): string { return String(n).padStart(2, '0'); }
 
-function ShipClock(): JSX.Element {
+/** live countdown to wheels-up — shared by the clock card and the mission HUD */
+function useCountdown(): string {
   const iso = document.body.dataset.depart ?? '';
   const target = Date.parse(iso);
   const [now, setNow] = useState(Date.now());
@@ -34,13 +36,40 @@ function ShipClock(): JSX.Element {
   const ms = Math.max(0, target - now);
   const sTot = Math.floor(ms / 1000);
   const d = Math.floor(sTot / 86400);
-  const txt = ms <= 0 ? 'launched' : `${d}d ${pad(Math.floor((sTot % 86400) / 3600))}:${pad(Math.floor((sTot % 3600) / 60))}:${pad(sTot % 60)}`;
+  return ms <= 0 ? 'launched' : `${d}d ${pad(Math.floor((sTot % 86400) / 3600))}:${pad(Math.floor((sTot % 3600) / 60))}:${pad(sTot % 60)}`;
+}
+
+function ShipClock(): JSX.Element {
+  const txt = useCountdown();
   return (
-    <div className="card">
+    <div className="card clock">
       <p className="card-eyebrow">Ship's clock · QF · BNE Sat 8 Aug</p>
       <div className="clock-val">{txt}</div>
       <div className="clock-sub">days · hrs · min · sec to wheels-up</div>
       <div className="clock-syd">↗ then QF1 — Saigon, and nineteen open nights from London</div>
+    </div>
+  );
+}
+
+/** mission-wall instrument rail: the countdown plus an honest feed light (motion = live only) */
+function BridgeHud({ outlook, wxOffline }: { outlook: OutlookPayload | null; wxOffline: boolean }): JSX.Element {
+  const txt = useCountdown();
+  const next = nextOutlookRefresh();
+  const nextTxt = next.toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit' });
+  const olStamp = outlook
+    ? new Date(outlook.generatedAt).toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit' })
+    : '';
+  const state = !outlook ? 'off' : outlook.stale ? 'stale' : 'live';
+  const label = !outlook
+    ? 'outlook offline'
+    : outlook.stale
+      ? `△ STALE · ${Math.round(outlook.ageHours ?? 0)}h old · re-fire ~${nextTxt}`
+      : `LIVE · outlook ${olStamp} · next ~${nextTxt}`;
+  return (
+    <div className="bridge-hud">
+      <div className="hud-feed"><span className={`hud-dot ${state}`} /> {label}</div>
+      {wxOffline && <div className="hud-feed"><span className="hud-dot off" /> sky feed offline</div>}
+      <div className="hud-clock">{txt}<i>to wheels-up · QF1 sat 8 aug</i></div>
     </div>
   );
 }
@@ -190,6 +219,7 @@ export function NorthBridge(): JSX.Element | null {
             <p className="bridge-eyebrow">The Bridge · the north</p>
             <h2 className="bridge-title">Plotting where she sails</h2>
           </div>
+          <BridgeHud outlook={outlook} wxOffline={wxNodes !== null && wxNodes.length === 0} />
           <span style={{ display: 'flex', gap: 8 }}>
             <button type="button" className="bridge-close" onClick={() => setTheme(toggleTheme())} aria-label="Toggle day or night theme">
               {theme === 'light' ? '☾ Night' : '☀ Day'}
@@ -199,7 +229,11 @@ export function NorthBridge(): JSX.Element | null {
         </div>
 
         <Outlook data={outlook} cfg={cfg} />
-        <SkyMap nodes={wxNodes ?? []} topArc={topArc} />
+        <SkyMap
+          nodes={wxNodes ?? []}
+          topArc={topArc}
+          outlookStamp={outlook ? { generatedAt: outlook.generatedAt, stale: !!outlook.stale } : null}
+        />
         <PinnedBoard />
         <WeatherBoard nodes={wxNodes} topSegIds={topPickSegIds} outlook={outlook} cfg={cfg} />
         <ShipClock />
@@ -209,7 +243,7 @@ export function NorthBridge(): JSX.Element | null {
           eyebrow="The concierge · ask the fortnight"
           placeholder="Where's the warmth this week? Which arc survives a wet Lofoten?"
         />
-        <div className="grid2">
+        <div className="grid2 ops">
           <Logistics />
           <NorthChecklist />
         </div>

@@ -74,7 +74,7 @@
 }
 .wb-now{font-family:var(--font-mono);font-size:11px;color:var(--live);letter-spacing:.04em;}
 .wb-rows{display:grid;gap:2px;}
-.wb-row{display:grid;grid-template-columns:minmax(110px,1.2fr) minmax(90px,1fr) 82px minmax(84px,.9fr) minmax(140px,1.4fr);
+.wb-row{display:grid;grid-template-columns:minmax(110px,1.2fr) minmax(90px,1fr) 96px minmax(84px,.9fr) minmax(140px,1.4fr);
   gap:10px;align-items:center;padding:8px 6px;border-bottom:1px solid rgba(124,138,147,.1);border-radius:6px;}
 .wb-row.go{background:rgba(139,232,192,.05);}
 .wb-row--head{position:sticky;top:52px;z-index:5;background:rgba(4,8,16,.72);backdrop-filter:blur(8px);
@@ -86,7 +86,7 @@
 .wb-pick{color:var(--live);}
 .wb-temp,.wb-hop{font-family:var(--font-mono);font-size:11px;color:var(--snow-dim);}
 .wb-sun{color:var(--ember);}
-.wb-spark{display:block;width:72px;height:20px;color:var(--ember);}
+.wb-spark{display:block;width:88px;height:24px;color:var(--ember);}
 .wb-spark .rain{fill:var(--turquoise,#5BC8DE);}
 .wb-verdict{justify-self:start;font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;
   border-radius:999px;padding:3px 9px;border:1px solid transparent;}
@@ -255,16 +255,6 @@
 [data-theme="light"] .bridge-overlay .wb-focus{background:rgba(255,255,255,.88);}
 [data-theme="light"] .bridge-overlay .wb-hotel,[data-theme="light"] .bridge-overlay .pb-pin{background:rgba(255,255,255,.7);}
 
-/* ── Mission control — the G9 wall (7680×2160 or #mission) ──────────────────────── */
-body.mission .bridge-overlay{padding:18px 22px;}
-body.mission .bridge-col{max-width:none;column-count:3;column-gap:20px;}
-body.mission .bridge-col>*{break-inside:avoid;margin-bottom:20px;}
-body.mission .bridge-head{column-span:all;position:sticky;top:0;z-index:20;
-  background:rgba(4,8,16,.8);backdrop-filter:blur(10px);border-radius:12px;padding:10px 16px;}
-body.mission .clock-val{font-size:56px;}
-body.mission .wb-row--head{top:0;}
-@media (min-width:6500px){body.mission .bridge-col{column-count:4;}}
-[data-theme="light"] body.mission .bridge-head{background:rgba(255,255,255,.85);}
 @media (prefers-reduced-motion: reduce){.wb-deep{animation:none;}}
 
 /* ── The chart room — the sky, drawn ────────────────────────────────────────────── */
@@ -288,7 +278,120 @@ body.mission .wb-row--head{top:0;}
 .heat-cell.today{outline:1.5px solid var(--ember);outline-offset:1px;}
 .heat-rain{position:absolute;right:3px;top:3px;width:4px;height:4px;border-radius:50%;background:rgba(30,64,110,.85);}
 .ol-stale{margin:6px 0 0;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.04em;color:var(--ember);}
-[data-theme="light"] .bridge-overlay .skymap rect{fill:rgba(20,33,44,.03);}
 [data-theme="light"] .bridge-overlay .heat-cell{color:#14212C;}
-body.mission .chartroom .skymap{max-width:none;}
 @media (prefers-reduced-motion: reduce){.sm-rain{animation:none;opacity:.7;}}
+
+/* ── Chart tokens — every non-data paint on the sky chart, theme-safe ───────────── */
+.skymap{--chart-coast:rgba(174,189,203,.34);--chart-grid:rgba(126,142,160,.14);
+  --chart-frame:rgba(126,142,160,.18);--chart-wash:rgba(237,243,248,.02);--chart-ink:rgba(4,8,16,.6);}
+[data-theme="light"] .bridge-overlay .skymap{--chart-coast:rgba(46,66,86,.45);
+  --chart-grid:rgba(70,88,106,.14);--chart-frame:rgba(70,88,106,.28);
+  --chart-wash:rgba(20,33,44,.03);--chart-ink:rgba(255,255,255,.8);}
+.skymap .sm-grat{font-size:7px;letter-spacing:.12em;fill:var(--schist);}
+.heat-legend{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:8px;grid-column:1/-1;}
+.hl-swatch{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:8.5px;
+  letter-spacing:.08em;color:var(--schist);}
+.hl-swatch i{width:10px;height:10px;border-radius:3px;display:inline-block;}
+.hl-key{font-family:var(--font-mono);font-size:8.5px;letter-spacing:.08em;color:var(--schist);}
+.heat-cell--b4{box-shadow:inset 0 -2px 0 rgba(138,58,14,.55);}
+.heat-cell--b5{box-shadow:inset 0 -2px 0 rgba(122,26,26,.75);}
+.heat-cell.today{box-shadow:none;outline:1.5px solid var(--ember);outline-offset:1px;}
+.heat-cell.today.heat-cell--b4{box-shadow:inset 0 -2px 0 rgba(138,58,14,.55);}
+.heat-cell.today.heat-cell--b5{box-shadow:inset 0 -2px 0 rgba(122,26,26,.75);}
+
+/* ── The HUD — the wall's instrument rail (hidden off-mission) ──────────────────── */
+.bridge-hud{display:none;}
+.hud-clock{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:34px;
+  color:var(--live);text-shadow:0 0 18px rgba(139,232,192,.3);line-height:1;}
+.hud-clock i{font-style:normal;display:block;font-size:9.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--snow-dim);margin-top:3px;}
+.hud-feed{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11.5px;
+  letter-spacing:.05em;color:var(--snow-dim);}
+.hud-dot{width:9px;height:9px;border-radius:50%;background:var(--schist);flex:0 0 auto;}
+.hud-dot.live{background:var(--live);animation:hud-breathe 3.2s ease-in-out infinite;}
+.hud-dot.stale{background:var(--ember);}
+@keyframes hud-breathe{0%,100%{box-shadow:0 0 0 0 rgba(139,232,192,.45);}
+  50%{box-shadow:0 0 0 7px rgba(139,232,192,0);opacity:.75;}}
+[data-theme="light"] .hud-clock{text-shadow:none;}
+
+/* ── Mission control — the G9 wall: everything at once, zero page scroll ────────── */
+@media (min-width:2600px){
+  body.mission .bridge-overlay{overflow:hidden;padding:0;}
+  body.mission .bridge-col{
+    display:grid;height:100vh;height:100dvh;max-width:none;margin:0;
+    padding:14px 18px 16px;gap:14px 16px;overflow:hidden;
+    grid-template-columns:minmax(0,1fr) minmax(0,1.1fr) minmax(0,1.7fr) minmax(0,1.15fr);
+    grid-template-rows:auto minmax(0,1.35fr) minmax(0,1fr);
+    grid-template-areas:"head head head head" "outlook chart planner board" "pinned ops planner concierge";}
+  body.mission .bridge-col>*{margin:0;min-height:0;min-width:0;}
+  body.mission .bridge-col>.card,body.mission .bridge-col>section.card,body.mission .ops{
+    overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(124,138,147,.35) transparent;}
+  body.mission .card.outlook{grid-area:outlook;}
+  body.mission .chartroom{grid-area:chart;}
+  body.mission .card.planner{grid-area:planner;}
+  body.mission .card.board{grid-area:board;}
+  body.mission .card.pinned{grid-area:pinned;}
+  body.mission .card.concierge{grid-area:concierge;}
+  body.mission .ops{grid-area:ops;grid-template-columns:1fr;align-content:start;overflow-y:auto;}
+  body.mission .ops .card{margin:0 0 14px;}
+  body.mission .card.clock,body.mission .colophon{display:none;}
+  body.mission .bridge-col:not(:has(.card.outlook)) .card.concierge{grid-area:auto;grid-row:2/4;grid-column:1;}
+  body.mission .bridge-col:not(:has(.card.pinned)) .ops{grid-area:auto;grid-row:3;grid-column:1;}
+  body.mission .bridge-head{grid-area:head;display:flex;align-items:center;gap:26px;margin:0;
+    padding:10px 18px;background:rgba(4,8,16,.8);border:1px solid rgba(124,138,147,.18);
+    border-radius:12px;backdrop-filter:blur(10px);}
+  body.mission .bridge-eyebrow{margin:0 0 4px;}
+  body.mission .bridge-hud{display:flex;align-items:center;gap:22px;margin-left:auto;}
+  body.mission .chooser-bar{top:0;}
+  body.mission .wb-row--head{top:0;}
+  body.mission .wb-focus{top:0;}
+  body.mission .chartroom .skymap{max-width:none;}
+  body.mission .bridge-col>*{animation:bridge-rise .55s cubic-bezier(.16,1,.3,1) backwards;}
+  body.mission .bridge-col>:nth-child(3){animation-delay:.05s}
+  body.mission .bridge-col>:nth-child(4){animation-delay:.1s}
+  body.mission .bridge-col>:nth-child(5){animation-delay:.15s}
+  body.mission .bridge-col>:nth-child(6){animation-delay:.2s}
+  body.mission .bridge-col>:nth-child(7){animation-delay:.25s}
+  body.mission .bridge-col>:nth-child(8){animation-delay:.3s}
+  body.mission .bridge-col>:nth-child(9){animation-delay:.35s}
+  [data-theme="light"] body.mission .bridge-head{background:rgba(255,255,255,.85);}
+}
+@keyframes bridge-rise{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+/* 32:9 band — both G9 modes (3840×1080 scaled AND 7680×2160 native) + anything ≥5000 */
+@media (min-width:5000px),((min-width:3400px) and (min-aspect-ratio:21/9)){
+  body.mission .bridge-col{
+    grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,2.1fr) minmax(0,1.35fr) minmax(0,1fr);
+    grid-template-rows:auto minmax(0,1.25fr) minmax(0,1fr);
+    grid-template-areas:"head head head head head" "outlook chart planner board pinned" "concierge chart planner board ops";}
+  body.mission .bridge-col:not(:has(.card.outlook)) .card.concierge{grid-row:2/4;grid-column:1;}
+  body.mission .bridge-col:not(:has(.card.pinned)) .ops{grid-row:3;grid-column:5;}
+}
+/* wall-distance type bump — native 7680 G9 only (the 3840×1080 scaled mode stays base) */
+@media (min-width:6500px){
+  body.mission .card-eyebrow{font-size:13.5px;}
+  body.mission .bridge-title{font-size:34px;}
+  body.mission .hud-clock{font-size:44px;}
+  body.mission .ol-headline{font-size:36px;}
+  body.mission .ol-narrative{font-size:18px;}
+  body.mission .ol-chip .ol-name{font-size:14.5px;}
+  body.mission .ol-chip .ol-because{font-size:15px;}
+  body.mission .wb-place b{font-size:16px;}
+  body.mission .wb-place i{font-size:11.5px;}
+  body.mission .wb-temp,body.mission .wb-hop{font-size:14px;}
+  body.mission .wb-verdict{font-size:12.5px;}
+  body.mission .wb-spark{width:96px;height:26px;}
+  body.mission .heat-name{font-size:12.5px;}
+  body.mission .heat-cell{height:27px;font-size:12.5px;}
+  body.mission .skymap text{font-size:10.5px;}
+  body.mission .arc-cards{grid-template-columns:repeat(auto-fill,minmax(258px,1fr));}
+  body.mission .arc-card .an2 b{font-size:15px;}
+  body.mission .arc-card .aw{font-size:14.5px;}
+  body.mission .pt-sub{font-size:17px;}
+  body.mission .ledger td{font-size:15.5px;}
+  body.mission .checklist li,body.mission .flag,body.mission .q{font-size:15px;}
+  body.mission .seg button,body.mission .preset{font-size:13.5px;}
+}
+@media (prefers-reduced-motion: reduce){
+  .hud-dot.live{animation:none;}
+  body.mission .bridge-col>*{animation:none;}
+}

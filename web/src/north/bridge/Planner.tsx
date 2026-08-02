@@ -145,7 +145,7 @@ export function Planner({
   const sailable = r.delta === 0;
 
   return (
-    <section className="card">
+    <section className="card planner">
       <div className="pt-head">
         <div>
           <p className="card-eyebrow" style={{ color: 'var(--live)' }}>The Planner · compose the middle</p>

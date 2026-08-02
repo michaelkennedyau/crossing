@@ -100,18 +100,18 @@ export async function savePin(p: { kind: string; node: string; title: string; de
 function Spark({ days }: { days: WxDay[] }): JSX.Element | null {
   const d6 = days.slice(0, 6);
   if (d6.length < 2) return null;
-  const W = 72;
-  const H = 20;
+  const W = 88;
+  const H = 24;
   const ts = d6.map((d) => d.tmax);
   const min = Math.min(...ts);
   const span = Math.max(1, Math.max(...ts) - min);
-  const x = (i: number): number => 2 + (i * (W - 4)) / (d6.length - 1);
-  const y = (t: number): number => 3.5 + (1 - (t - min) / span) * (H - 11);
+  const x = (i: number): number => 3 + (i * (W - 6)) / (d6.length - 1);
+  const y = (t: number): number => 4 + (1 - (t - min) / span) * (H - 13);
   const pts = ts.map((t, i) => `${x(i).toFixed(1)},${y(t).toFixed(1)}`).join(' ');
   return (
     <svg className="wb-spark" viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
-      <polyline points={pts} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-      {d6.map((d, i) => (d.rain >= 2 ? <circle key={i} className="rain" cx={x(i)} cy={H - 2.5} r="1.6" /> : null))}
+      <polyline points={pts} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      {d6.map((d, i) => (d.rain >= 2 ? <circle key={i} className="rain" cx={x(i)} cy={H - 3} r="2" /> : null))}
     </svg>
   );
 }
@@ -261,7 +261,7 @@ export function WeatherBoard({
   };
 
   return (
-    <div className="card">
+    <div className="card board">
       <p className="card-eyebrow" style={{ color: 'var(--live)' }}>The board · where are you, what's the weather</p>
 
       {focused && (

@@ -38,7 +38,7 @@ export function pickArcEvent(arc: string): void {
   window.dispatchEvent(new CustomEvent('north:pick-arc', { detail: arc }));
 }
 
-function stamp(iso: string): string {
+export function stamp(iso: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
   return d.toLocaleString('en-AU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });

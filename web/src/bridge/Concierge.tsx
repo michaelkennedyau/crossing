@@ -65,7 +65,7 @@ export function Concierge({
   }
 
   return (
-    <div className="card">
+    <div className="card concierge">
       <p className="card-eyebrow">{eyebrow}</p>
       <div className="concierge-in">
         <input
