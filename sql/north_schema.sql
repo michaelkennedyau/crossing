@@ -19,3 +19,25 @@ CREATE TABLE IF NOT EXISTS north_cfg (
   json        TEXT NOT NULL,
   updated_at  TEXT NOT NULL DEFAULT (datetime('now'))
 );
+
+-- Per-arc overrides/additions. json is a FULL Arc object (same shape as
+-- web/src/north/planner/cfg.ts Arc); rows replace the TS default by id — the same
+-- replace-by-id semantics mergeCfg already has. enabled=0 soft-hides an arc (never DELETE
+-- in the shared DB). JSON-per-arc rather than relational segments on purpose: the Worker
+-- never computes over arc internals (all cost math is client-side), so D1 is purely a
+-- durable, live-editable store and a join+reassembly layer would buy nothing.
+CREATE TABLE IF NOT EXISTS north_arcs (
+  id          TEXT PRIMARY KEY,
+  json        TEXT NOT NULL,
+  sort        INTEGER NOT NULL DEFAULT 0,
+  enabled     INTEGER NOT NULL DEFAULT 1,
+  updated_at  TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- The fixed spine as a single JSON row: { nightsTotal, landIso, departIso, notes }.
+-- Only nightsTotal is consumed by the client today; the rest is documentation-grade.
+CREATE TABLE IF NOT EXISTS north_spine (
+  id          TEXT PRIMARY KEY DEFAULT 'default',
+  json        TEXT NOT NULL,
+  updated_at  TEXT NOT NULL DEFAULT (datetime('now'))
+);

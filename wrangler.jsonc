@@ -30,6 +30,12 @@
   //   wrangler kv namespace create crossing-cache
   "kv_namespaces": [{ "binding": "KV", "id": "2334d01945f640739712f9b4ed006da6" }],
 
+  // Originals archive — the durable home for web/.img-src (the machine-loss fix). Variants are
+  // still processed at BUILD time with sharp (which cannot run in Workers) and committed; R2 only
+  // holds the source files. Bucket must exist BEFORE the next deploy:
+  //   wrangler r2 bucket create crossing-images
+  "r2_buckets": [{ "binding": "R2_IMAGES", "bucket_name": "crossing-images" }],
+
   // Workers AI (optional helpers). The concierge itself calls the Anthropic Messages API
   // via the ANTHROPIC_API_KEY secret (set with `wrangler secret put ANTHROPIC_API_KEY`).
   "ai": { "binding": "AI" },

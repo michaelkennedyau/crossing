@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CFG, dateAt, defaultSelection, type ArcId } from '../src/north/planner/cfg';
+import { CFG, dateAt, defaultSelection, isArcLike, mergeCfg, type Arc, type ArcId } from '../src/north/planner/cfg';
 import { compute } from '../src/north/planner/compute';
 import { flagsFor } from '../src/north/planner/constraints';
 
@@ -177,5 +177,61 @@ describe('north planner · the rules', () => {
     const f = flagsFor(sel, compute(sel));
     expect(f.some((x) => x.level === 'warn' && x.text.includes('theoretical'))).toBe(true);
     expect(f.some((x) => x.text.includes('Sat 22 Aug'))).toBe(true);
+  });
+});
+
+describe('north planner · the D1 merge', () => {
+  const editedFjords: Arc = {
+    ...CFG.arcs.fjords,
+    name: 'Norway, corrected',
+    segments: CFG.arcs.fjords.segments.map((s) =>
+      s.id === 'oye' ? { ...s, perNight: { special: 1900, sane: 850 } } : s,
+    ),
+  };
+
+  it('a D1 arc row replaces its TS default wholly', () => {
+    const cfg = mergeCfg(CFG, { arcs: { fjords: editedFjords } });
+    expect(cfg.arcs.fjords.name).toBe('Norway, corrected');
+    expect(cfg.arcs.fjords.segments.find((s) => s.id === 'oye')?.perNight.special).toBe(1900);
+    // untouched arcs stay canonical
+    expect(cfg.arcs.gulet).toBe(CFG.arcs.gulet);
+  });
+
+  it('an unknown new arc appears and computes against the spine', () => {
+    const wildcard: Arc = {
+      ...CFG.arcs.madeira,
+      id: 'azores' as ArcId,
+      name: 'The Azores',
+    };
+    const cfg = mergeCfg(CFG, { arcs: { azores: wildcard } });
+    expect(cfg.arcs['azores' as ArcId].name).toBe('The Azores');
+    expect(cfg.arcs['azores' as ArcId].id).toBe('azores'); // merge stamps the key as the id
+    const r = compute(defaultSelection('azores' as ArcId, cfg), cfg);
+    expect(r.delta).toBe(0);
+  });
+
+  it('a null (disabled) arc drops out; a malformed row is ignored', () => {
+    const cfg = mergeCfg(CFG, {
+      arcs: {
+        yachtweek: null,
+        fjords: { name: 'broken', segments: [] } as unknown as Arc,
+      },
+    });
+    expect('yachtweek' in cfg.arcs).toBe(false);
+    expect(cfg.arcs.fjords).toBe(CFG.arcs.fjords); // malformed override ignored
+  });
+
+  it('a spine nightsTotal override flows into the delta', () => {
+    const cfg = mergeCfg(CFG, { nightsTotal: 21 });
+    const r = compute(defaultSelection('fjords', cfg), cfg);
+    expect(r.totalNights).toBe(19);
+    expect(r.delta).toBe(-2);
+  });
+
+  it('isArcLike accepts a real arc and rejects the near-misses', () => {
+    expect(isArcLike(CFG.arcs.slovenia)).toBe(true);
+    expect(isArcLike(null)).toBe(false);
+    expect(isArcLike({ name: 'no segments' })).toBe(false);
+    expect(isArcLike({ name: 'bad rates', segments: [{ id: 'x', perNight: { special: 'lots' } }] })).toBe(false);
   });
 });

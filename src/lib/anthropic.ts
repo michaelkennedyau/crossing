@@ -1,3 +1,48 @@
+/** One place to change the model. claude-opus-5 is the current default ($5/$25 per MTok). */
+export const MODEL = 'claude-opus-5';
+
+/**
+ * Non-streaming structured-output call — one JSON blob in, schema-guaranteed JSON out.
+ * output_config.format constrains the first text block to valid JSON matching the schema
+ * (numeric min/max are unsupported there — clamp in the caller). Thinking is on by default
+ * on claude-opus-5 and max_tokens caps thinking + text together, hence the headroom.
+ */
+export async function completeJson<T>(
+  apiKey: string,
+  opts: {
+    system: string;
+    user: string;
+    schema: Record<string, unknown>;
+    model?: string;
+    maxTokens?: number;
+  },
+): Promise<T> {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: opts.model ?? MODEL,
+      max_tokens: opts.maxTokens ?? 4000,
+      system: opts.system,
+      messages: [{ role: 'user', content: opts.user }],
+      output_config: { format: { type: 'json_schema', schema: opts.schema } },
+    }),
+  });
+  if (!res.ok) throw new Error(`anthropic ${res.status}`);
+  const msg = (await res.json()) as {
+    stop_reason?: string;
+    content?: { type: string; text?: string }[];
+  };
+  if (msg.stop_reason === 'refusal') throw new Error('anthropic refusal');
+  const text = msg.content?.find((b) => b.type === 'text')?.text;
+  if (!text) throw new Error('anthropic empty response');
+  return JSON.parse(text) as T;
+}
+
 /**
  * Stream from the Anthropic Messages API and relay it to the client as simple SSE text events.
  * Mirrors brain/src/lib/curator-ai.ts (raw fetch, anthropic-version 2023-06-01) but streamed — the
@@ -7,6 +52,7 @@ export async function streamConcierge(
   apiKey: string,
   userMessage: string,
   system: string,
+  model: string = MODEL,
 ): Promise<Response> {
   const upstream = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -16,7 +62,7 @@ export async function streamConcierge(
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
+      model,
       max_tokens: 1024,
       system,
       stream: true,
