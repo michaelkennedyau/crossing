@@ -50,12 +50,28 @@ A no-op pass is a success: if nothing contradicts the live data, change nothing,
 const KICKOFF = 'Run your maintenance pass now.';
 
 async function clipboardSecret(label, hint) {
-  const rl = createInterface({ input: process.stdin, output: process.stdout });
-  await rl.question(`Copy your ${label} to the clipboard${hint ? ` (${hint})` : ''}, then press Enter... `);
-  rl.close();
+  if (process.stdin.isTTY) {
+    const rl = createInterface({ input: process.stdin, output: process.stdout });
+    await rl.question(`Copy your ${label} to the clipboard${hint ? ` (${hint})` : ''}, then press Enter... `);
+    rl.close();
+  }
   const v = execFileSync('pbpaste', [], { encoding: 'utf8' }).trim();
   if (!v) throw new Error(`clipboard was empty — ${label} not captured`);
   return v;
+}
+
+const KEYCHAIN_SERVICE = 'varo-anthropic-api';
+function keychainGet() {
+  try {
+    const k = execFileSync('security', ['find-generic-password', '-s', KEYCHAIN_SERVICE, '-w'], { encoding: 'utf8' }).trim();
+    return k.startsWith('sk-ant') ? k : null;
+  } catch { return null; }
+}
+function keychainSave(k) {
+  try {
+    execFileSync('security', ['add-generic-password', '-s', KEYCHAIN_SERVICE, '-a', 'steward', '-w', k, '-U']);
+    console.log('(anthropic key saved to the login keychain as ' + KEYCHAIN_SERVICE + ')');
+  } catch { /* keychain save is best-effort */ }
 }
 
 async function api(key, method, route, body) {
@@ -78,9 +94,12 @@ async function saveIds(ids) {
 }
 
 async function getKey() {
-  if (process.env.ANTHROPIC_API_KEY) return process.env.ANTHROPIC_API_KEY;
+  if (process.env.ANTHROPIC_API_KEY) { keychainSave(process.env.ANTHROPIC_API_KEY); return process.env.ANTHROPIC_API_KEY; }
+  const stored = keychainGet();
+  if (stored) return stored;
   const k = await clipboardSecret('Anthropic API key', 'console → API keys');
   if (!k.startsWith('sk-ant')) throw new Error('clipboard does not look like an Anthropic key');
+  keychainSave(k);
   return k;
 }
 
@@ -105,26 +124,10 @@ async function provision() {
   }
 
   if (!ids.vault_id) {
-    const vault = await api(key, 'POST', '/vaults', { name: 'crossing-steward-vault' });
+    const vault = await api(key, 'POST', '/vaults', { display_name: 'crossing-steward-vault' });
     ids.vault_id = vault.id;
     await saveIds(ids);
     console.log('vault:', ids.vault_id);
-  }
-
-  if (!ids.cf_credential_id) {
-    const cfToken = await clipboardSecret('Cloudflare API token', 'Workers Scripts:Edit + Account Settings:Read');
-    const cred = await api(key, 'POST', `/vaults/${ids.vault_id}/credentials`, {
-      display_name: 'Cloudflare deploy token for crossing',
-      auth: {
-        type: 'environment_variable',
-        secret_name: 'CLOUDFLARE_API_TOKEN',
-        secret_value: cfToken,
-        networking: { type: 'limited', allowed_hosts: ['api.cloudflare.com', '*.cloudflare.com'] },
-      },
-    });
-    ids.cf_credential_id = cred.id;
-    await saveIds(ids);
-    console.log('cloudflare credential:', ids.cf_credential_id);
   }
 
   if (!ids.agent_id) {
@@ -141,6 +144,39 @@ async function provision() {
     console.log('agent:', ids.agent_id, 'v' + ids.agent_version);
   }
 
+  if (!ids.cf_credential_id) {
+    console.log('\nAgent, vault and environment are up. Last step needs your Cloudflare API token');
+    console.log('(Workers Scripts:Edit + Account Settings:Read — dash.cloudflare.com/profile/api-tokens):');
+    console.log('  copy it to the clipboard, then:  node scripts/steward-setup.mjs cf');
+    return;
+  }
+  await ensureDeployment(key, ids);
+}
+
+async function addCloudflareAndDeploy() {
+  const key = await getKey();
+  const ids = await loadIds();
+  if (!ids.vault_id) throw new Error('no vault — run provision first');
+  if (!ids.cf_credential_id) {
+    const cfToken = await clipboardSecret('Cloudflare API token', 'Workers Scripts:Edit + Account Settings:Read');
+    if (cfToken.startsWith('sk-ant')) throw new Error('that clipboard holds an Anthropic key, not a Cloudflare token');
+    const cred = await api(key, 'POST', `/vaults/${ids.vault_id}/credentials`, {
+      display_name: 'Cloudflare deploy token for crossing',
+      auth: {
+        type: 'environment_variable',
+        secret_name: 'CLOUDFLARE_API_TOKEN',
+        secret_value: cfToken,
+        networking: { type: 'limited', allowed_hosts: ['api.cloudflare.com', '*.cloudflare.com'] },
+      },
+    });
+    ids.cf_credential_id = cred.id;
+    await saveIds(ids);
+    console.log('cloudflare credential:', ids.cf_credential_id);
+  }
+  await ensureDeployment(key, ids);
+}
+
+async function ensureDeployment(key, ids) {
   if (!ids.deployment_id) {
     const ghToken = execFileSync('gh', ['auth', 'token'], { encoding: 'utf8' }).trim();
     const dep = await api(key, 'POST', '/deployments', {
@@ -196,10 +232,11 @@ async function lifecycle(action) {
 const cmd = process.argv[2];
 try {
   if (!cmd) await provision();
+  else if (cmd === 'cf') await addCloudflareAndDeploy();
   else if (cmd === 'run') await manualRun();
   else if (cmd === 'status') await status();
   else if (cmd === 'pause' || cmd === 'unpause') await lifecycle(cmd);
-  else { console.error('usage: steward-setup.mjs [run|status|pause|unpause]'); process.exit(1); }
+  else { console.error('usage: steward-setup.mjs [cf|run|status|pause|unpause]'); process.exit(1); }
 } catch (e) {
   console.error(String(e.message ?? e));
   process.exit(1);
