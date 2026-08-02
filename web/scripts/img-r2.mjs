@@ -57,7 +57,10 @@ async function putIndex(index) {
 async function push() {
   let files = [];
   try {
-    files = (await readdir(SRC)).filter((f) => /\.(jpe?g|png)$/i.test(f));
+    // recursive: sources live in per-voyage subfolders (.img-src/north/…); keys keep the relpath
+    files = (await readdir(SRC, { recursive: true }))
+      .map((f) => String(f).split(path.sep).join('/'))
+      .filter((f) => /\.(jpe?g|png)$/i.test(f));
   } catch {
     console.error(`nothing to push — ${SRC} does not exist`);
     process.exit(1);
