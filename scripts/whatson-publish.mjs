@@ -12,6 +12,7 @@ import os from 'node:os';
 
 const SITE = 'https://crossing.varo.au';
 const STOP_CITY = {
+  'hvar-shore': 'Hvar',
   'london-in': 'London', 'london-out': 'London', bled: 'Lake Bled', soca: 'Soča Valley', croatia: 'Hvar',
 };
 
