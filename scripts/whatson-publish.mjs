@@ -37,14 +37,6 @@ for (const s of itinerary.stops) {
       `'${esc(s.days[0]?.title ?? s.dates)}', '${esc(`${city} · ${s.dates}`)}', '${esc(`${s.nights} nights`)}', ` +
       `'', '${esc(s.watchouts?.[0] ?? '')}', '${esc(highlights)}', '${esc(theCase)}', 'crossing');`,
   );
-  for (const ev of s.events ?? []) {
-    const title = ev.split(/ — |, confirmed| \(/)[0].trim().slice(0, 120);
-    stmts.push(
-      `INSERT OR REPLACE INTO discovered_events (id, title, venue, event_date, source, description, city, status, expires_at) VALUES (` +
-        `'crossing-ev-${esc(slugify(`${s.key}-${title}`))}', '${esc(title)}', '${esc(s.name)}', NULL, 'manual', ` +
-        `'${esc(ev)}', '${esc(city)}', 'new', '2026-09-03');`,
-    );
-  }
 }
 
 const tmp = path.join(os.tmpdir(), `whatson-publish-${process.pid}.sql`);
@@ -57,4 +49,4 @@ try {
 } finally {
   await rm(tmp, { force: true });
 }
-console.log(`published ${itinerary.stops.length} experiences + ${stmts.length - itinerary.stops.length} events to whatson`);
+console.log(`published ${itinerary.stops.length} experiences to whatson (events live in sql/north_events_seed.sql)`);

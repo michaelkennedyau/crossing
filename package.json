@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "version": "0.1.0",
-  "description": "IL VARO — The Crossing. A scroll-cinematic voyage + live instrument bridge, on the Varo engine.",
+  "description": "IL VARO \u2014 The Crossing. A scroll-cinematic voyage + live instrument bridge, on the Varo engine.",
   "scripts": {
     "dev": "wrangler dev",
     "build:web": "npm --prefix web run build",
@@ -15,7 +15,8 @@
     "db:apply": "wrangler d1 execute varo-family-brain --remote --file=sql/crossing_schema.sql",
     "db:apply:local": "wrangler d1 execute varo-family-brain --local --file=sql/crossing_schema.sql",
     "db:apply:north": "wrangler d1 execute varo-family-brain --remote --file=sql/north_schema.sql",
-    "db:apply:north:local": "wrangler d1 execute varo-family-brain --local --file=sql/north_schema.sql"
+    "db:apply:north:local": "wrangler d1 execute varo-family-brain --local --file=sql/north_schema.sql",
+    "db:seed:events": "wrangler d1 execute varo-family-brain --remote --file=sql/north_events_seed.sql"
   },
   "dependencies": {
     "hono": "^4.7.0"

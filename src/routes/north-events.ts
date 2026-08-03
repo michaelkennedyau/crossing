@@ -54,9 +54,16 @@ northEventsRouter.get('/', async (c) => {
       const raw = await completeJson<unknown>(apiKey, { system, user, schema: EVENTS_SCHEMA });
       return sanitizeEvents(raw);
     });
-    // whatson rows lead; model rows that duplicate a real title fall away
-    const seen = new Set(real.map((e) => e.name.toLowerCase().slice(0, 24)));
-    const merged = [...real, ...value.filter((e) => !seen.has(e.name.toLowerCase().slice(0, 24)))].slice(0, 6);
+    // whatson rows lead; model rows that duplicate a real event fall away — matched by
+    // token overlap, since the model names the same festival with different word order
+    const tokens = (s: string): Set<string> =>
+      new Set(s.toLowerCase().split(/[^a-zà-ž0-9]+/).filter((w) => w.length > 3));
+    const realTokens = real.map((e) => tokens(e.name));
+    const dupes = (name: string): boolean => {
+      const t = tokens(name);
+      return realTokens.some((rt) => [...t].filter((w) => rt.has(w)).length >= 2);
+    };
+    const merged = [...real, ...value.filter((e) => !dupes(e.name))].slice(0, 6);
     return c.json({ events: merged, verify: 'whatson entries are researched · the rest is model knowledge — verify before booking' });
   } catch {
     return c.json({ events: real, reason: real.length ? undefined : 'unavailable' });
