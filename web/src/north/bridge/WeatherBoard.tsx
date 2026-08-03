@@ -16,6 +16,12 @@ export interface WxNode {
   temp: number | null; code: number | null; days: WxDay[];
 }
 interface AreaEvent { name: string; where: string; whenText: string; kind: string; note: string }
+interface Pivot {
+  node: string; name: string; tagline: string; whyNow: string; getIn: string; bail: string;
+  days: { n: number; title: string; plan: string }[];
+  hotels: { name: string; tier: string; why: string; url: string }[];
+  eat: string[]; do: string[]; events: string[]; watchouts: string[];
+}
 
 const WMO: [number, string][] = [
   [0, 'clear'], [1, 'mostly clear'], [2, 'partly cloudy'], [3, 'overcast'],
@@ -133,6 +139,7 @@ export function WeatherBoard({
   const [at, setAt] = useState('london');
   const [open, setOpen] = useState<string | null>(null);
   const [events, setEvents] = useState<Record<string, AreaEvent[] | 'loading'>>({});
+  const [pivots, setPivots] = useState<Record<string, Pivot | 'loading' | null>>({});
   const [who, setWho] = useState<string>(() => localStorage.getItem('north-who') ?? 'michael');
   const [focus, setFocus] = useState<string | null>(() => localStorage.getItem('north-focus'));
   const topSet = useMemo(() => new Set(topSegIds), [topSegIds]);
@@ -153,6 +160,13 @@ export function WeatherBoard({
         .then((r) => r.json() as Promise<{ events: AreaEvent[] }>)
         .then((d) => setEvents((e) => ({ ...e, [id]: d.events ?? [] })))
         .catch(() => setEvents((e) => ({ ...e, [id]: [] })));
+    }
+    if (pivots[id] === undefined) {
+      setPivots((p) => ({ ...p, [id]: 'loading' }));
+      fetch(`/api/north/pivots?node=${id}`)
+        .then((r) => r.json() as Promise<{ pivot: Pivot | null }>)
+        .then((d) => setPivots((p) => ({ ...p, [id]: d.pivot })))
+        .catch(() => setPivots((p) => ({ ...p, [id]: null })));
     }
   };
   const toggleRow = (id: string): void => {
@@ -187,6 +201,33 @@ export function WeatherBoard({
       .sort((a, b) => b.sun - a.sun || a.d - b.d);
   }, [nodes, at, here]);
 
+  const pivotBlock = (n: WxNode): JSX.Element | null => {
+    const pv = pivots[n.id];
+    if (!pv || pv === 'loading') return null;
+    return (
+      <div className="wb-pivot">
+        <p className="qs-title" style={{ color: 'var(--ember)' }}>The grab-and-go pivot · {pv.days.length} days, bookable in 48h</p>
+        <p className="wb-pv-why">{pv.whyNow}</p>
+        {pv.days.map((d) => (
+          <div key={d.n} className="wb-pv-day">
+            <span className="wb-pv-n">day {d.n}</span>
+            <span className="wb-pv-plan"><b>{d.title}</b> — {d.plan}</span>
+          </div>
+        ))}
+        <p className="wb-pv-line"><b>get in</b> {pv.getIn}</p>
+        <p className="wb-pv-line"><b>the bail</b> {pv.bail}</p>
+        {pv.watchouts.length > 0 && <p className="wb-pv-line wb-pv-warn"><b>△</b> {pv.watchouts[0]}</p>}
+        <button
+          type="button"
+          className="pin-btn"
+          onClick={() => void savePin({ kind: 'destination', node: n.id, title: `Pivot: ${pv.name}`, detail: pv.whyNow, who })}
+        >
+          ⊕ pin this pivot
+        </button>
+      </div>
+    );
+  };
+
   const deepPanel = (n: WxNode): JSX.Element => {
     const k = KNOWLEDGE[n.id];
     const ins = nodeInsight(n.id, outlook, cfg);
@@ -206,6 +247,8 @@ export function WeatherBoard({
             <span>{ins.because}</span>
           </button>
         )}
+
+        {pivotBlock(n)}
 
         {k && (
           <div className="wb-hotels">

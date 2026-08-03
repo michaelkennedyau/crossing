@@ -19,6 +19,7 @@ import { northConciergeRouter } from './routes/north-concierge';
 import { northPinsRouter } from './routes/north-pins';
 import { northEventsRouter } from './routes/north-events';
 import { northItineraryRouter } from './routes/north-itinerary';
+import { northPivotsRouter } from './routes/north-pivots';
 
 export const app = new Hono<{ Bindings: Env }>();
 
@@ -45,6 +46,7 @@ app.route('/api/north/concierge', northConciergeRouter);
 app.route('/api/north/pins', northPinsRouter);
 app.route('/api/north/events', northEventsRouter);
 app.route('/api/north/itinerary', northItineraryRouter);
+app.route('/api/north/pivots', northPivotsRouter);
 
 // SSR shells. The Threshold is the door; both voyages are complete before any JS runs.
 app.get('/', (c) => c.html(renderThreshold()));

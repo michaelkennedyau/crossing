@@ -626,3 +626,19 @@
   body.mission .bridge-col:has(.s-spread):not(:has(.card.outlook)) .s-concierge{grid-row:3/5;grid-column:1;}
   body.mission .bridge-col:has(.s-spread):not(:has(.dock .card)) .s-ops{grid-row:4;grid-column:5;}
 }
+
+/* the grab-and-go pivot — a whole trip folded into the deep card */
+.wb-pivot{display:grid;gap:7px;border:1px solid rgba(242,180,94,.3);border-left:3px solid var(--ember);
+  border-radius:10px;padding:12px 14px;background:rgba(242,180,94,.04);}
+.wb-pv-why{margin:0;font-family:var(--font-hand);font-style:italic;font-size:13.5px;color:var(--snow-dim);}
+.wb-pv-day{display:flex;gap:10px;align-items:baseline;}
+.wb-pv-n{flex:0 0 44px;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ember);}
+.wb-pv-plan{font-size:13px;line-height:1.5;color:var(--snow-dim);}
+.wb-pv-plan b{color:var(--snow);}
+.wb-pv-line{margin:0;font-size:12.5px;line-height:1.5;color:var(--snow-dim);}
+.wb-pv-line b{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--schist);margin-right:6px;}
+.wb-pv-warn{color:var(--ember);}
+.wb-pv-warn b{color:var(--ember);}
+[data-theme="light"] .bridge-overlay .wb-pivot{background:rgba(169,109,20,.05);}
