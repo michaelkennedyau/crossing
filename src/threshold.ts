@@ -1,10 +1,27 @@
 /**
  * The Threshold — crossing.varo.au's landing. The Andes stand as a door between two worlds:
- * south to the deferred family crossing (preserved intact at /andes), north to the second
- * launch (/north). One ridgeline is the hinge; the ember sits in the doorway, undecided no more.
- * Static and self-contained: no JS islands, hover states only, complete before any asset loads.
+ * south to the crossing (the pivot under live watch), north to the second launch — stood
+ * down pending the mountain. The south door's status line is LIVE: it reads the pass watch
+ * from KV so the door itself answers "has anything changed". No JS islands; SSR only.
  */
-export function renderThreshold(): string {
+import type { Env } from './env';
+import { PASSES_KV_KEY, type PassesPayload } from './lib/south-watch';
+
+const LIBERTADORES_CLOSED_SINCE = Date.parse('2026-07-14');
+
+export async function renderThreshold(env?: Env): Promise<string> {
+  let southState = 'Deferred · five metres at the pass';
+  if (env) {
+    const latest = await env.KV.get<PassesPayload>(PASSES_KV_KEY, 'json').catch(() => null);
+    if (latest?.passes) {
+      const lib = latest.passes.libertadores;
+      const day = Math.floor((Date.now() - LIBERTADORES_CLOSED_SINCE) / 86_400_000);
+      southState =
+        lib.status === 'closed'
+          ? `The watch, not the trip · Los Libertadores closed day ${day}`
+          : `Los Libertadores ${lib.status} — the 12 Aug rule is live · watch inside`;
+    }
+  }
   return `<!DOCTYPE html>
 <html lang="en-AU">
 <head>
@@ -110,7 +127,7 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
       <h1 class="w-head">The Crossing</h1>
       <p class="w-hand">The Andes by water — all five, the lakes, the pass, the snow. The mountain closed its door this winter; the voyage keeps.</p>
       <span class="w-go">Enter the south →</span>
-      <p class="w-state">Deferred · five metres at the pass</p>
+      <p class="w-state">${southState}</p>
     </div>
   </a>
   <a class="world north" href="/north" aria-label="North — The second launch, Saigon to the fjords, for two, August 2026">
@@ -119,7 +136,7 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
       <h1 class="w-head">The North</h1>
       <p class="w-hand">The second launch — Saigon first, then nineteen open nights steered by the sky. Land, look up, decide. A refresh, not a pilgrimage.</p>
       <span class="w-go">← Enter the north</span>
-      <p class="w-state">Underway · departs 8 August</p>
+      <p class="w-state">Underway · departs 8 August — the cruise question is live on the bridge</p>
     </div>
   </a>
 </div>

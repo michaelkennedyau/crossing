@@ -256,3 +256,56 @@
 
 @media (max-width: 560px) { .cmp-grid { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .bridge-overlay { animation: none; } }
+
+/* ── the pass watch — three roads, live, the pivot's deciding instrument ── */
+.pw-changed { font-style: normal; font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em;
+  color: #1A1205; background: var(--ember); border-radius: 999px; padding: 2px 8px; margin-left: 8px; }
+.pw-row { display: flex; gap: 12px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid rgba(124,138,147,.12); }
+.pw-pill { flex: 0 0 88px; text-align: center; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
+  text-transform: uppercase; border-radius: 999px; padding: 4px 0; border: 1px solid transparent; }
+.pw-pill.open { color: #04211A; background: var(--live, #8BE8C0); font-weight: 600; }
+.pw-pill.restricted { color: var(--ember); border-color: rgba(242,180,94,.5); background: rgba(242,180,94,.1); }
+.pw-pill.closed { color: #E88B8B; border-color: rgba(232,139,139,.45); background: rgba(232,139,139,.08); }
+.pw-pill.unknown { color: var(--schist, #7E8EA0); border-color: rgba(126,142,160,.35); }
+.pw-body { display: grid; gap: 2px; }
+.pw-body b { font-family: var(--font-mono); font-size: 12.5px; letter-spacing: .02em; }
+.pw-body i { font-style: normal; font-size: 13px; line-height: 1.5; color: var(--snow-dim); }
+.pw-strips { display: grid; gap: 5px; margin-top: 12px; }
+.pw-strip { display: flex; gap: 4px; align-items: center; }
+.pw-strip-name { flex: 0 0 64px; font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--schist, #7E8EA0); }
+.pw-dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.pw-dot.open { background: var(--live, #8BE8C0); }
+.pw-dot.restricted { background: var(--ember); }
+.pw-dot.closed { background: rgba(232,139,139,.75); }
+.pw-dot.unknown { background: rgba(126,142,160,.35); }
+.pw-stamp { font-family: var(--font-mono); font-size: 11px; letter-spacing: .05em; color: var(--schist, #7E8EA0); margin: 10px 0 0; }
+.pw-trigger { font-size: 13px; line-height: 1.55; color: var(--ember); margin: 10px 0 0;
+  border-top: 1px solid rgba(124,138,147,.18); padding-top: 10px; }
+.pw-sub { font-family: var(--font-hand); font-style: italic; font-size: 14px; color: var(--snow-dim); margin: 6px 0 0; }
+
+/* aged carry-forward + fresh confirmation, honestly marked */
+.pw-pill.aged { opacity: .65; border-style: dashed; }
+.pw-confirmed { font-style: normal; font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em;
+  color: var(--live, #8BE8C0); }
+
+/* the plough window — ten days of sky, dry days lit */
+.pw-plough { margin-top: 12px; }
+.pw-days { display: flex; gap: 4px; }
+.pw-day { flex: 1; display: grid; gap: 2px; text-align: center; border: 1px solid rgba(126,142,160,.25);
+  border-radius: 6px; padding: 5px 2px 4px; min-width: 30px; }
+.pw-day i { font-style: normal; font-family: var(--font-mono); font-size: 10px; color: var(--snow-dim); min-height: 13px; }
+.pw-day b { font-family: var(--font-mono); font-size: 9px; letter-spacing: .06em; color: var(--schist, #7E8EA0); font-weight: 400; }
+.pw-day.dry { background: rgba(139,232,192,.07); border-color: rgba(139,232,192,.3); }
+.pw-day.win { border-color: var(--live, #8BE8C0); box-shadow: inset 0 -2px 0 var(--live, #8BE8C0); }
+.pw-day:not(.dry) { background: rgba(139,196,232,.08); }
+
+/* the verdict card */
+.si-verdict { font-family: var(--font-hand); font-style: italic; font-size: 15.5px; line-height: 1.55;
+  color: var(--snow); margin: 8px 0 4px; max-width: 60ch; }
+.si-section { margin-top: 12px; }
+.si-title { font-family: var(--font-mono); font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--ember); margin: 0 0 6px; }
+.si-line { display: flex; gap: 8px; font-size: 13.5px; line-height: 1.55; color: var(--snow-dim);
+  margin: 0 0 6px; }
+.si-line .mk { color: var(--schist, #7E8EA0); flex: 0 0 auto; }

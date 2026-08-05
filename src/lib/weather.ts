@@ -21,7 +21,21 @@ const NODES = [
 
 interface OMResp {
   current?: { temperature_2m?: number; snowfall?: number };
-  hourly?: { freezing_level_height?: number[] };
+  hourly?: { time?: number[]; freezing_level_height?: number[] };
+}
+
+/** the reading for NOW, not midnight — hourly[0] was systematically the overnight value.
+ * times are epoch seconds (timeformat=unixtime) so the comparison is exact on a UTC worker. */
+function currentHourValue(times: number[] | undefined, values: number[] | undefined): number | null {
+  if (!values?.length) return null;
+  if (!times?.length) return values[0] ?? null;
+  const now = Date.now() / 1000;
+  let idx = 0;
+  for (let i = 0; i < times.length; i++) {
+    if (times[i] <= now) idx = i;
+    else break;
+  }
+  return values[idx] ?? null;
 }
 
 export async function fetchNodes(): Promise<NodeWx[]> {
@@ -29,7 +43,7 @@ export async function fetchNodes(): Promise<NodeWx[]> {
   const lon = NODES.map((n) => n.lon).join(',');
   const url =
     `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
-    `&current=temperature_2m,snowfall&hourly=freezing_level_height&forecast_days=1&timezone=auto`;
+    `&current=temperature_2m,snowfall&hourly=freezing_level_height&forecast_days=1&timezone=auto&timeformat=unixtime`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`open-meteo ${res.status}`);
   const data = (await res.json()) as OMResp | OMResp[];
@@ -43,7 +57,7 @@ export async function fetchNodes(): Promise<NodeWx[]> {
       lon: n.lon,
       temp: d.current?.temperature_2m ?? null,
       snow,
-      freezing: d.hourly?.freezing_level_height?.[0] ?? null,
+      freezing: currentHourValue(d.hourly?.time, d.hourly?.freezing_level_height),
       status: (snow ?? 0) > 1 ? 'storm' : 'clear',
     };
   });

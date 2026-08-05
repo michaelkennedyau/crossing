@@ -44,6 +44,41 @@ export async function completeJson<T>(
 }
 
 /**
+ * Web-search brief — Claude with the server-side search tool, free text out. Kept separate
+ * from completeJson so structured outputs never collide with search citation blocks: the
+ * pass watch runs search → brief → completeJson(structure the brief).
+ */
+export async function searchBrief(
+  apiKey: string,
+  opts: { system: string; user: string; maxUses?: number; model?: string; maxTokens?: number },
+): Promise<string> {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: opts.model ?? MODEL,
+      max_tokens: opts.maxTokens ?? 6000,
+      system: opts.system,
+      messages: [{ role: 'user', content: opts.user }],
+      tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: opts.maxUses ?? 5 }],
+    }),
+  });
+  if (!res.ok) throw new Error(`anthropic search ${res.status}`);
+  const msg = (await res.json()) as { stop_reason?: string; content?: { type: string; text?: string }[] };
+  if (msg.stop_reason === 'refusal') throw new Error('anthropic refusal');
+  const text = (msg.content ?? [])
+    .filter((b) => b.type === 'text' && b.text)
+    .map((b) => b.text)
+    .join('\n');
+  if (!text.trim()) throw new Error('anthropic empty search brief');
+  return text;
+}
+
+/**
  * Stream from the Anthropic Messages API and relay it to the client as simple SSE text events.
  * Mirrors brain/src/lib/curator-ai.ts (raw fetch, anthropic-version 2023-06-01) but streamed — the
  * concierge is the one place we want token-by-token output, which brain doesn't do.

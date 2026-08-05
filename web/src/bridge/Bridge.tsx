@@ -7,6 +7,8 @@ import { Concierge } from './Concierge';
 import { RouteChart } from './RouteChart';
 import { Passage } from './Passage';
 import { ChartKey } from './ChartKey';
+import { PassWatch } from './PassWatch';
+import { SouthIntel } from './SouthIntel';
 
 interface Enso { oni: number; season?: string; year?: string; fallback?: boolean }
 interface WxNode { node: string; temp: number | null; snow: number | null; freezing: number | null; status: 'clear' | 'storm' }
@@ -34,10 +36,10 @@ function ShipClock(): JSX.Element {
   const txt = ms <= 0 ? 'launched' : `${d}d ${pad(Math.floor((sTot % 86400) / 3600))}:${pad(Math.floor((sTot % 3600) / 60))}:${pad(sTot % 60)}`;
   return (
     <div className="card">
-      <p className="card-eyebrow">Ship's clock · QF527 · BNE 22 Aug 12:15</p>
+      <p className="card-eyebrow">Ship's clock · the pivot window · QF27 SYD Sun 16 Aug 12:20</p>
       <div className="clock-val">{txt}</div>
-      <div className="clock-sub">days · hrs · min · sec to wheels-up</div>
-      <div className="clock-syd">↗ Sydney overnight · then QF27, the launch · 23 Aug</div>
+      <div className="clock-sub">days · hrs · min · sec to the pivot window</div>
+      <div className="clock-syd">↗ lands Santiago 10:50 the same day — if the mountain says yes; the pass watch decides</div>
     </div>
   );
 }
@@ -197,6 +199,8 @@ export function Bridge(): JSX.Element | null {
         </div>
 
         <div className="grid2">
+          <SouthIntel />
+          <PassWatch />
           <ShipClock />
           <EnsoGauge enso={enso} />
         </div>

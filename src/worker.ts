@@ -6,6 +6,7 @@ import { cached } from './lib/kv-cache';
 import { completeJson } from './lib/anthropic';
 import { EU_NODES } from './lib/north-weather';
 import { EVENTS_SCHEMA, EVENTS_TTL_SECONDS, buildEventsPrompt, eventsKvKey, sanitizeEvents } from './lib/north-events';
+import { checkPasses } from './routes/south-passes';
 
 /**
  * Worker entry (mirrors travel/app/src/worker/index.ts). The Worker owns the SSR shell ("/") and
@@ -38,13 +39,21 @@ export default {
   async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
     const apiKey = env.ANTHROPIC_API_KEY;
     if (!apiKey) return;
+    // one slow web search must never starve the rest of the cycle — race, log, move on
+    const bounded = async (label: string, work: () => Promise<unknown>, ms = 240_000): Promise<void> => {
+      try {
+        await Promise.race([
+          work(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('timed out')), ms)),
+        ]);
+      } catch (err) {
+        console.error(`cron ${label} failed`, err instanceof Error ? err.message : String(err));
+      }
+    };
     ctx.waitUntil(
       (async () => {
-        try {
-          await produceOutlook(env, apiKey);
-        } catch (err) {
-          console.error('cron outlook failed', err instanceof Error ? err.message : String(err));
-        }
+        await bounded('outlook', () => produceOutlook(env, apiKey));
+        await bounded('pass watch', () => checkPasses(env, apiKey));
         for (const node of EU_NODES) {
           try {
             await cached(env.KV, eventsKvKey(node.id), EVENTS_TTL_SECONDS, async () => {

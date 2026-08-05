@@ -27,7 +27,7 @@ const LEGS: Leg[] = [
     eyebrow: 'A maiden voyage · winter · the Andes by water',
     head: 'il varo', headClass: 'hero',
     hand: 'The launch — a hull meeting water for the first time, and the held breath before the first note.',
-    telemetry: 'QF527 · BNE → SYD · SAT 22 AUG 12:15 · T− <span data-countdown>—</span><br><span class="syd-note">then Sydney overnight · QF27 · SYD 12:20 → SCL 10:50 · 23 Aug</span>',
+    telemetry: 'THE PIVOT WINDOW · QF27 · SYD SUN 16 AUG 12:20 · T− <span data-countdown>—</span><br><span class="syd-note">lands Santiago 10:50 the same day — if the mountain says yes; the pass watch on the bridge decides</span>',
   },
   {
     n: '00', label: 'The vessel',
@@ -259,9 +259,9 @@ body{margin:0;background:var(--void);color:var(--snow);font-family:var(--font-bo
 // The ember rides the crossing portion as you scroll (positioned by minimap.ts).
 function renderMinimap(): string {
   const tl: [string, string, boolean][] = [
-    ['22 Aug', 'QF527 · BNE→SYD', false],
-    ['22 Aug', 'Sydney · overnight', false],
-    ['23 Aug', 'QF27 · SYD 12:20', true],
+    ['15 Aug', 'SIN → SYD · QF2', false],
+    ['16 Aug', 'QF27 · SYD 12:20', true],
+    ['1 Sep', 'QF28 · home 2 Sep', false],
   ];
   return `<aside id="minimap" aria-hidden="true">
   <svg viewBox="0 0 220 96" width="100%" height="100%">
@@ -328,7 +328,7 @@ export function renderAndes(env: Env): string {
 ${LEGS.map(renderLeg).join('\n')}
 </main>
 
-<p class="readout"><b data-readout-leg>Cold open</b> · QF527 T− <span data-readout-countdown>—</span></p>
+<p class="readout"><b data-readout-leg>Cold open</b> · QF27 T− <span data-readout-countdown>—</span></p>
 ${renderMinimap()}
 <div id="bridge-root"></div>
 <script type="module" src="/assets/engine.js"></script>
