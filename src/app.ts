@@ -3,6 +3,7 @@ import type { Env } from './env';
 import { renderThreshold } from './threshold';
 import { renderAndes } from './shell';
 import { renderNorth } from './north-shell';
+import { renderPlan } from './north-plan';
 import { ensoRouter } from './routes/enso';
 import { weatherRouter } from './routes/weather';
 import { countdownRouter } from './routes/countdown';
@@ -56,5 +57,6 @@ app.route('/api/south/intel', southIntelRouter);
 app.get('/', async (c) => c.html(await renderThreshold(c.env)));
 app.get('/andes', (c) => c.html(renderAndes(c.env)));
 app.get('/north', (c) => c.html(renderNorth(c.env)));
+app.get('/north/plan', async (c) => c.html(await renderPlan(c.env)));
 
 export default app;

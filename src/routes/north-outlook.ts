@@ -81,8 +81,8 @@ export async function produceOutlook(env: Env, apiKey: string): Promise<OutlookP
   return payload;
 }
 
-/** last stored read: KV latest first, D1 log as the durable fallback */
-async function lastStored(env: Env): Promise<OutlookPayloadStored | null> {
+/** last stored read: KV latest first, D1 log as the durable fallback (also feeds /north/plan) */
+export async function lastStored(env: Env): Promise<OutlookPayloadStored | null> {
   const kv = await env.KV.get<OutlookPayloadStored>(OUTLOOK_KV_KEY, 'json').catch(() => null);
   if (kv?.outlook) return kv;
   const row = await env.DB.prepare('SELECT json FROM north_outlook_log ORDER BY id DESC LIMIT 1')
