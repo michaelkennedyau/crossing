@@ -28,6 +28,8 @@ export const EU_NODES: Omit<NorthWxNode, 'temp' | 'code' | 'days'>[] = [
   { id: 'taormina', name: 'Taormina', country: 'Sicily', lat: 37.85, lon: 15.29 },
   { id: 'olbia', name: 'Costa Smeralda', country: 'Sardinia', lat: 40.92, lon: 9.5 },
   { id: 'milos', name: 'Milos', country: 'Greece', lat: 36.75, lon: 24.43 },
+  { id: 'sifnos', name: 'Sifnos', country: 'Greece', lat: 36.97, lon: 24.72 },
+  { id: 'athens', name: 'Athens Riviera', country: 'Greece', lat: 37.81, lon: 23.78 },
   { id: 'lisbon', name: 'Lisbon', country: 'Portugal', lat: 38.72, lon: -9.14 },
   { id: 'funchal', name: 'Funchal', country: 'Madeira', lat: 32.65, lon: -16.91 },
 ];

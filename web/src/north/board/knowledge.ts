@@ -107,6 +107,20 @@ export const KNOWLEDGE: Record<string, NodeKnowledge> = {
       { name: 'Salt Suites, Pollonia', tier: 'sane', note: 'white-on-white calm in the eating village' },
     ],
   },
+  sifnos: {
+    why: 'The Cyclades’ eating island — Tselementes’ birthplace, a hundred kilometres of walked paths, and the meltemi keeping the feels honest.',
+    hotels: [
+      { name: 'Verina Astra', tier: 'good', note: 'cliff-edge suites above Poulati; the Chrisopigi path at the door', url: 'https://www.verina.gr' },
+      { name: 'Elies Resort, Vathi', tier: 'sane', note: 'the flat, calm, full-service bay option', url: 'https://www.eliesresorts.com' },
+    ],
+  },
+  athens: {
+    why: 'The Riviera, not the city — Vouliagmeni’s pines and private coves, thirty minutes from the airport: the zero-risk buffer before any flight home.',
+    hotels: [
+      { name: 'Four Seasons Astir Palace', tier: 'good', note: 'the peninsula Athenians treat as the prize; three private beaches', url: 'https://www.fourseasons.com/athens' },
+      { name: 'The Margi, Vouliagmeni', tier: 'sane', note: 'boutique calm two streets from the lake, half the tariff' },
+    ],
+  },
   lisbon: {
     why: 'Atlantic light and a food city that never needs a booking war — the un-Med warm option.',
     hotels: [
