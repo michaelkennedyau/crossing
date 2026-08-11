@@ -52,7 +52,8 @@ export async function produceOutlook(env: Env, apiKey: string): Promise<OutlookP
     mergedCfg(env),
   ]);
   const { system, user } = buildOutlookPrompt(nodes, cfg, new Date().toISOString());
-  const raw = await completeJson<unknown>(apiKey, { system, user, schema: OUTLOOK_SCHEMA });
+  // 16 arcs ranked with feels-aware reasoning: thinking + JSON together need real headroom
+  const raw = await completeJson<unknown>(apiKey, { system, user, schema: OUTLOOK_SCHEMA, maxTokens: 12000 });
   const outlook = sanitizeOutlook(raw, Object.keys(cfg.arcs));
   if (!outlook) throw new Error('outlook failed sanitize');
   const generatedAt = new Date().toISOString();

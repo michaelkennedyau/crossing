@@ -38,6 +38,7 @@ export async function completeJson<T>(
     content?: { type: string; text?: string }[];
   };
   if (msg.stop_reason === 'refusal') throw new Error('anthropic refusal');
+  if (msg.stop_reason === 'max_tokens') throw new Error('anthropic max_tokens — JSON truncated, raise maxTokens');
   const text = msg.content?.find((b) => b.type === 'text')?.text;
   if (!text) throw new Error('anthropic empty response');
   return JSON.parse(text) as T;
