@@ -8,7 +8,7 @@ import { Spread } from './Spread';
 import { SkyMap } from './SkyMap';
 import { Planner } from './Planner';
 import { NorthChecklist } from './NorthChecklist';
-import { Outlook, type OutlookPayload } from './Outlook';
+import { Outlook, firedParts, type OutlookPayload } from './Outlook';
 import { Concierge } from '../../bridge/Concierge';
 import { nextOutlookRefresh } from '../board/clock';
 
@@ -48,9 +48,9 @@ function useCountdown(): string {
  * once, a laptop wants a deck. Anything can force a shutter open via north:open-shutter.
  */
 function Shutter({
-  id, eyebrow, hint, defaultOpen = false, className = '', children,
+  id, eyebrow, hint, stamp = null, defaultOpen = false, className = '', children,
 }: {
-  id: string; eyebrow: string; hint: string; defaultOpen?: boolean; className?: string; children: ReactNode;
+  id: string; eyebrow: string; hint: string; stamp?: ReactNode; defaultOpen?: boolean; className?: string; children: ReactNode;
 }): JSX.Element {
   const [open, setOpen] = useState<boolean>(() => {
     if (id === 'planner' && /arc=/.test(location.hash)) return true; // deep links land on the planner
@@ -70,6 +70,7 @@ function Shutter({
       <button type="button" className="shutter-head" aria-expanded={open} onClick={toggle}>
         <span className="shutter-eyebrow">{eyebrow}</span>
         <span className="shutter-hint">{hint}</span>
+        {stamp != null && <span className="shutter-stamp">{stamp}</span>}
         <em aria-hidden="true">{open ? '▾' : '▸'}</em>
       </button>
       <div className="shutter-body" hidden={!open}>{children}</div>
@@ -265,6 +266,7 @@ export function NorthBridge(): JSX.Element | null {
   const topPick = outlook
     ? ([...outlook.outlook.ranking].sort((a, b) => b.score - a.score)[0]?.arc as ArcId | undefined) ?? null
     : null;
+  const fired = outlook ? firedParts(outlook.generatedAt) : null;
   const topArc = topPick ? cfg.arcs[topPick] ?? null : null;
   const topPickSegIds = topArc ? topArc.segments.map((s) => s.id) : [];
 
@@ -293,7 +295,13 @@ export function NorthBridge(): JSX.Element | null {
           </Shutter>
         )}
         <Shutter id="outlook" className="s-outlook" eyebrow="The outlook"
-          hint={outlook ? outlook.outlook.headline : 'Claude reads the sky'}>
+          hint={outlook ? outlook.outlook.headline : 'Claude reads the sky'}
+          stamp={fired && (
+            <>
+              <b className={`ss-flag${outlook?.stale ? ' stale' : ''}`}>{outlook?.stale ? '△ stale' : 'fired'}</b>
+              <span className="ss-val">{fired.date} · {fired.time}</span>
+            </>
+          )}>
           <Outlook data={outlook} cfg={cfg} />
         </Shutter>
         <Shutter id="chart" className="s-chart" eyebrow="The chart room"

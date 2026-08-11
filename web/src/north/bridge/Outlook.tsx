@@ -45,6 +45,16 @@ export function stamp(iso: string): string {
   return d.toLocaleString('en-AU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 }
 
+/** the fired-stamp split for structured rendering: date and 24 h time as separate segments */
+export function firedParts(iso: string): { date: string; time: string } | null {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  return {
+    date: d.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' }),
+    time: d.toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit', hour12: false }),
+  };
+}
+
 export function Outlook({ data, cfg }: { data: OutlookPayload | null; cfg: Cfg }): JSX.Element | null {
   if (!data?.outlook) return null;
   const o = data.outlook;

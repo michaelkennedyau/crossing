@@ -2,7 +2,7 @@
  * The live curve — the /north page's real, moving visualisation. Where the hand-drawn crowd
  * curve argues the theory, this draws the actual sky: six days of max temperature from TODAY
  * forward for a cool→warm spread of board nodes, rain days as drops, and Claude's current
- * headline riding above it. It re-anchors itself every day the page is opened — the whole
+ * headline riding above it — stamped with when the outlook engine last fired. It re-anchors itself every day the page is opened — the whole
  * chart slides forward with the calendar. Lines draw in on load; the today-marker breathes.
  * Fails silent: no data, no chart, the static curve still carries the argument.
  */
@@ -27,6 +27,9 @@ const STYLE = `
 .curve--live .lc-rain{fill:rgba(139,196,232,.8)}
 .curve--live .lc-today{animation:lc-breathe 3s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
 .curve--live .lc-head{fill:var(--live);font-size:10px}
+.curve--live .lc-fired{font-size:9px;letter-spacing:.05em}
+.curve--live .lc-fired-l{font-size:8px;font-weight:600;letter-spacing:.14em;fill:var(--schist)}
+.curve--live .lc-fired-l.stale{fill:var(--ember)}
 @keyframes lc-draw{to{stroke-dashoffset:0}}
 @keyframes lc-breathe{0%,100%{opacity:.5}50%{opacity:1}}
 @media (prefers-reduced-motion: reduce){.curve--live .lc-line{animation:none;stroke-dashoffset:0}.curve--live .lc-today{animation:none;opacity:1}}
@@ -46,8 +49,8 @@ async function render(host: HTMLElement): Promise<void> {
     const [wx, ol] = await Promise.all([
       fetch('/api/north/weather').then((r) => r.json() as Promise<{ nodes?: WxNode[] }>),
       fetch('/api/north/outlook')
-        .then((r) => r.json() as Promise<{ outlook?: { headline?: string } | null }>)
-        .catch(() => ({ outlook: null })),
+        .then((r) => r.json() as Promise<{ outlook?: { headline?: string } | null; generatedAt?: string; stale?: boolean }>)
+        .catch(() => ({ outlook: null }) as { outlook: null; generatedAt?: string; stale?: boolean }),
     ]);
     const nodes = wx.nodes ?? [];
     const picked = PICK.map((p) => ({ ...p, n: nodes.find((n) => n.id === p.id) })).filter(
@@ -91,9 +94,14 @@ async function render(host: HTMLElement): Promise<void> {
       .join('');
 
     const head = ol.outlook?.headline ? String(ol.outlook.headline).slice(0, 78) : '';
+    const firedAt = ol.generatedAt ? new Date(ol.generatedAt) : null;
+    const fired = firedAt && !Number.isNaN(firedAt.getTime())
+      ? `${firedAt.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })} · ${firedAt.toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit', hour12: false })}`.toUpperCase()
+      : '';
     const svg = `<svg viewBox="0 0 ${W + 90} ${H}" role="img" aria-label="Six-day maximum temperatures from today for five board destinations">
       <rect x="${L}" y="26" width="${Rt - L}" height="${B - 26}" fill="rgba(237,243,248,.03)"/>
       ${head ? `<text class="lc-head" x="${L}" y="16">${esc(head)}</text>` : ''}
+      ${head && fired ? `<text class="lc-fired" x="${W + 86}" y="16" text-anchor="end"><tspan class="lc-fired-l${ol.stale ? ' stale' : ''}">${ol.stale ? '△ STALE' : 'FIRED'}</tspan><tspan dx="6">${esc(fired)}</tspan></text>` : ''}
       <line x1="${L}" y1="${B}" x2="${Rt}" y2="${B}" stroke="rgba(174,189,203,.35)" stroke-width="1"/>
       <text x="${L - 4}" y="${y(hi) + 3}" text-anchor="end">${hi}°</text>
       <text x="${L - 4}" y="${y(lo) + 3}" text-anchor="end">${lo}°</text>
