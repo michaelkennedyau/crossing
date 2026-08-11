@@ -13,7 +13,7 @@ import { type Arc } from '../planner/cfg';
  * stamped in the corner. Below: the heat strip — every node × six days — with its legend.
  * Clicking a node opens its card on the board.
  */
-interface WxDay { tmax: number; rain: number }
+interface WxDay { tmax: number; feels?: number; rain: number }
 interface WxNode {
   id: string; name: string; country: string; lat: number; lon: number;
   temp: number | null; code: number | null; days: WxDay[];
@@ -179,7 +179,7 @@ export function SkyMap({
           <div key={n.id} className="heat-row">
             <span className="heat-name">{n.name}</span>
             {n.days.slice(0, daysN).map((d, i) => {
-              const score = dayScore(d.tmax, d.rain);
+              const score = dayScore(d.tmax, d.rain, d.feels);
               const bg = view === 'temp' ? tempRamp(d.tmax) : scoreColor(score);
               const hotEdge = view === 'temp' ? ` heat-cell--b${tempBucket(d.tmax)}` : '';
               return (
@@ -213,7 +213,7 @@ export function SkyMap({
       </div>
       <p className="pt-sub" style={{ marginTop: 8 }}>
         {view === 'score'
-          ? 'the score is the judgement — heat above 31°, cold below 18° and rain all bleed points from 100'
+          ? 'the score is the judgement, on the feels-like — sticky, hot and gross above 31°, cold below 18° and rain all bleed points from 100'
           : "colour is today's ceiling · size is sun in the next five days"}
         {' '}· the dashed line is the arc Claude currently backs
       </p>

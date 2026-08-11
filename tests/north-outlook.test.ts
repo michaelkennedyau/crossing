@@ -9,12 +9,12 @@ const NODES: NorthWxNode[] = [
   {
     id: 'lofoten', name: 'Lofoten', country: 'Norway', lat: 68.15, lon: 13.61,
     temp: 11.2, code: 61,
-    days: [{ tmax: 12, rain: 6 }, { tmax: 13, rain: 2 }, { tmax: 11, rain: 8 }],
+    days: [{ tmax: 12, feels: 9, rain: 6 }, { tmax: 13, feels: 11, rain: 2 }, { tmax: 11, feels: 8, rain: 8 }],
   },
   {
     id: 'taormina', name: 'Taormina', country: 'Sicily', lat: 37.85, lon: 15.29,
     temp: 31.4, code: 0,
-    days: [{ tmax: 33, rain: 0 }, { tmax: 34, rain: 0 }, { tmax: 32, rain: 0 }],
+    days: [{ tmax: 33, feels: 38, rain: 0 }, { tmax: 34, feels: 39, rain: 0 }, { tmax: 32, feels: 36, rain: 0 }],
   },
 ];
 

@@ -10,7 +10,7 @@ import { type Cfg } from '../planner/cfg';
  * it can be pinned to the shared idea board by either traveller. Click an insight and it
  * stays at the top of the board until you let it go.
  */
-interface WxDay { tmax: number; rain: number }
+interface WxDay { tmax: number; feels?: number; rain: number }
 export interface WxNode {
   id: string; name: string; country: string; lat: number; lon: number;
   temp: number | null; code: number | null; days: WxDay[];

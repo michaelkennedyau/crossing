@@ -70,7 +70,8 @@ const SYSTEM = `You are the weather strategist for "il varo — The North": a co
 Rules:
 - Rank every arc in the input, no omissions; each entry's "arc" is the arc's id exactly as given.
 - Score 0–100 (higher = the forecast favours it now). Verdict: "go" (weather makes its case), "maybe" (mixed), "skip" (the sky argues against it this week).
-- "because" is ONE concrete sentence grounded in the supplied numbers — name the place and the figure (e.g. rain totals, tmax). Never invent data not in the input.
+- "because" is ONE concrete sentence grounded in the supplied numbers — name the place and the figure (e.g. rain totals, tmax, feels). Never invent data not in the input.
+- Judge comfort on "feels" (apparent max), not tmax. "Dry" may ONLY mean rainless — never a comfort claim; a rainless 37 on a Mediterranean coast is sticky, hot and gross, and so is a humid 28 in Edinburgh. When feels runs 2°+ above tmax, that's humidity: say sticky/muggy/gross and quote the feels figure. Distinguish arid heat (mountains, inland) from marine mugginess (coasts).
 - "headline" is one line — the state of the fortnight. "narrative" is 2–3 sentences reading the whole board: where the warmth is, where the rain sits, what that means for the cool/warm split.
 - "watch" lists up to 6 short things worth watching (building rain, a heat spike, an aurora-friendly clear window in the north).
 - Australian spelling, metric, no emoji. Concrete, dry, a little wry — never breathless.`;
@@ -93,7 +94,7 @@ export function buildOutlookPrompt(
     name: n.name,
     country: n.country,
     temp: n.temp,
-    days: n.days.map((d) => ({ tmax: d.tmax, rain: d.rain })),
+    days: n.days.map((d) => ({ tmax: d.tmax, feels: d.feels ?? d.tmax, rain: d.rain })),
   }));
   return {
     system: SYSTEM,

@@ -185,6 +185,13 @@ describe('chart room · scored outcomes', () => {
     expect(dayScore(25, 8)).toBeLessThan(dayScore(25, 1));
     expect(dayScore(25, 50)).toBe(dayScore(25, 10)); // rain penalty caps at 40
   });
+  it('the feels-like governs the temperature bands when supplied', async () => {
+    const { dayScore } = await import('../src/north/board/geo');
+    expect(dayScore(31, 0, 38)).toBeLessThan(dayScore(31, 0)); // rainless 31 that feels 38: sticky, hot, gross
+    expect(dayScore(28, 0, 32)).toBeLessThan(dayScore(28, 0)); // humid Edinburgh 28 sucks too
+    expect(dayScore(35, 0, 29)).toBe(100); // arid wind: feels fine, scores fine
+    expect(dayScore(33, 0, undefined)).toBe(dayScore(33, 0)); // cached feed without feels falls back
+  });
   it('score colours map to the verdict bands', async () => {
     const { scoreColor } = await import('../src/north/board/geo');
     expect(scoreColor(80)).toBe('#8be8c0');

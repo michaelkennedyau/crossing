@@ -88,10 +88,12 @@ function LiftOut({
 
         {fc && (
           <p className="lift-wx">
-            <em className="sd-score" style={{ background: scoreColor(dayScore(fc.tmax, fc.rain)) }}>
-              {dayScore(fc.tmax, fc.rain)}
+            <em className="sd-score" style={{ background: scoreColor(dayScore(fc.tmax, fc.rain, fc.feels)) }}>
+              {dayScore(fc.tmax, fc.rain, fc.feels)}
             </em>
-            {Math.round(fc.tmax)}° that day{fc.rain >= 2 ? ` · ${Math.round(fc.rain)}mm of rain` : ' · dry'} — live forecast
+            {Math.round(fc.tmax)}° that day
+            {typeof fc.feels === 'number' && Math.round(fc.feels) - Math.round(fc.tmax) >= 2 ? ` · feels ${Math.round(fc.feels)}` : ''}
+            {fc.rain >= 2 ? ` · ${Math.round(fc.rain)}mm of rain` : ' · rainless'} — live forecast
           </p>
         )}
 
@@ -219,7 +221,7 @@ export function Spread({ itin, wxNodes }: { itin: Itin; wxNodes: WxNode[] | null
                     <DayCard
                       key={d.offset}
                       day={d}
-                      score={fc ? dayScore(fc.tmax, fc.rain) : null}
+                      score={fc ? dayScore(fc.tmax, fc.rain, fc.feels) : null}
                       pinCount={pins.filter((p) => pinMatchesDay(p.title, d.offset)).length}
                       onOpen={() => openDay(d.offset, d.node)}
                       cardRef={(el) => { cardRefs.current[d.offset] = el; }}

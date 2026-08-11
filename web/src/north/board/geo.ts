@@ -43,13 +43,17 @@ export function tempRamp(tmax: number): string {
 
 /**
  * Scored outcome for one day at one place — the board's judgement, not just a temperature.
- * 100 is a perfect day for this couple; heat above 31° and cold below 18° bleed points at
- * 4/degree, rain at 4/mm capped at 40. Pure, clamped, honest.
+ * 100 is a perfect day for this couple; the temperature bands judge the feels-like, not the
+ * air temp — a rainless 37° on the Dalmatian coast is sticky, hot and gross, and 28° in
+ * Edinburgh with sea humidity sucks just the same. Feels above 31° and below 18° bleed
+ * points at 4/degree, rain at 4/mm capped at 40. Falls back to tmax while a cached feed
+ * still lacks feels. Pure, clamped, honest.
  */
-export function dayScore(tmax: number, rainMm: number): number {
+export function dayScore(tmax: number, rainMm: number, feels?: number): number {
+  const felt = typeof feels === 'number' ? feels : tmax;
   let s = 100;
-  if (tmax > 31) s -= (tmax - 31) * 4;
-  if (tmax < 18) s -= (18 - tmax) * 4;
+  if (felt > 31) s -= (felt - 31) * 4;
+  if (felt < 18) s -= (18 - felt) * 4;
   s -= Math.min(40, Math.max(0, rainMm) * 4);
   return Math.max(0, Math.min(100, Math.round(s)));
 }

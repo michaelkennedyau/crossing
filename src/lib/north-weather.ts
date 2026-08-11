@@ -11,7 +11,7 @@ export interface NorthWxNode {
   lon: number;
   temp: number | null;
   code: number | null; // WMO weather code, current
-  days: { tmax: number; rain: number }[]; // today + 5
+  days: { tmax: number; feels: number; rain: number }[]; // today + 5; feels = apparent max (humidity-honest)
 }
 
 export const EU_NODES: Omit<NorthWxNode, 'temp' | 'code' | 'days'>[] = [
@@ -37,7 +37,7 @@ export async function fetchNorthWeather(): Promise<NorthWxNode[]> {
   const lons = EU_NODES.map((n) => n.lon).join(',');
   const url =
     `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}` +
-    '&current=temperature_2m,weather_code&daily=temperature_2m_max,precipitation_sum' +
+    '&current=temperature_2m,weather_code&daily=temperature_2m_max,apparent_temperature_max,precipitation_sum' +
     '&forecast_days=6&timezone=auto';
   const res = await fetch(url);
   if (!res.ok) throw new Error(`open-meteo ${res.status}`);
@@ -46,15 +46,16 @@ export async function fetchNorthWeather(): Promise<NorthWxNode[]> {
   return EU_NODES.map((n, i) => {
     const d = arr[i] as {
       current?: { temperature_2m?: number; weather_code?: number };
-      daily?: { temperature_2m_max?: number[]; precipitation_sum?: number[] };
+      daily?: { temperature_2m_max?: number[]; apparent_temperature_max?: number[]; precipitation_sum?: number[] };
     } | undefined;
     const tmax = d?.daily?.temperature_2m_max ?? [];
+    const feels = d?.daily?.apparent_temperature_max ?? [];
     const rain = d?.daily?.precipitation_sum ?? [];
     return {
       ...n,
       temp: d?.current?.temperature_2m ?? null,
       code: d?.current?.weather_code ?? null,
-      days: tmax.map((t, j) => ({ tmax: t, rain: rain[j] ?? 0 })),
+      days: tmax.map((t, j) => ({ tmax: t, feels: feels[j] ?? t, rain: rain[j] ?? 0 })),
     };
   });
 }
