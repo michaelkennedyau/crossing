@@ -121,6 +121,20 @@ export const KNOWLEDGE: Record<string, NodeKnowledge> = {
       { name: 'The Margi, Vouliagmeni', tier: 'sane', note: 'boutique calm two streets from the lake, half the tariff' },
     ],
   },
+  kefalonia: {
+    why: 'The quiet Ionian at scale — Myrtos from the cliff road, Fiskardo’s Venetian harbour dinners, glassy no-meltemi seas bought with stiller, more humid air.',
+    hotels: [
+      { name: 'Emelisse Nature Resort, Fiskardo', tier: 'good', note: 'infinity terraces above the harbour village', url: 'https://www.emelisse.gr' },
+      { name: 'F Zeen Retreat, Lourdas', tier: 'sane', note: 'barefoot adults-only calm on the south coast' },
+    ],
+  },
+  corfu: {
+    why: 'Venetian old town plus the Durrells’ northeast corner — green, boaty, flat warm water, and a direct London flight home that skips Athens entirely.',
+    hotels: [
+      { name: 'Domes Miramare', tier: 'good', note: 'the adults-only grande dame on the Benitses water', url: 'https://www.domesresorts.com/domesmiramare' },
+      { name: 'The White House, Kalami', tier: 'sane', note: 'the Durrells’ actual villa — book the history, eat on its jetty' },
+    ],
+  },
   lisbon: {
     why: 'Atlantic light and a food city that never needs a booking war — the un-Med warm option.',
     hotels: [

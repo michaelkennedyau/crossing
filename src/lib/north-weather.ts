@@ -30,6 +30,8 @@ export const EU_NODES: Omit<NorthWxNode, 'temp' | 'code' | 'days'>[] = [
   { id: 'milos', name: 'Milos', country: 'Greece', lat: 36.75, lon: 24.43 },
   { id: 'sifnos', name: 'Sifnos', country: 'Greece', lat: 36.97, lon: 24.72 },
   { id: 'athens', name: 'Athens Riviera', country: 'Greece', lat: 37.81, lon: 23.78 },
+  { id: 'kefalonia', name: 'Kefalonia', country: 'Greece', lat: 38.18, lon: 20.49 },
+  { id: 'corfu', name: 'Corfu', country: 'Greece', lat: 39.62, lon: 19.92 },
   { id: 'lisbon', name: 'Lisbon', country: 'Portugal', lat: 38.72, lon: -9.14 },
   { id: 'funchal', name: 'Funchal', country: 'Madeira', lat: 32.65, lon: -16.91 },
 ];
