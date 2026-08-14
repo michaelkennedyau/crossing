@@ -142,6 +142,27 @@ export const KNOWLEDGE: Record<string, NodeKnowledge> = {
       { name: 'Georges Hotel Galata', tier: 'sane', note: 'rooftop rak\u0131, a third the tariff' },
     ],
   },
+  cesme: {
+    why: 'Turkey\u2019s Hamptons on a meltemi-raked peninsula \u2014 Ala\u00e7at\u0131\u2019s stone lanes, beach clubs at feels-below-air, and Ephesus an hour away. The wind Bodrum doesn\u2019t get.',
+    hotels: [
+      { name: 'Biblos Resort, Ala\u00e7at\u0131', tier: 'good', note: 'pools to the bay, the village ten minutes off', url: 'https://www.biblosresorts.com' },
+      { name: 'Alavya, Ala\u00e7at\u0131', tier: 'sane', note: 'six stone houses round a garden in the old town' },
+    ],
+  },
+  chamonix: {
+    why: 'The valley of trains at the foot of Mont Blanc \u2014 20\u201325\u00b0 while the Med burns, a cable car to 3,842m, and a rack railway to a glacier. The cool line, literally.',
+    hotels: [
+      { name: 'Hameau Albert 1er', tier: 'good', note: 'farmhouse-hamlet five-star with the valley\u2019s serious table', url: 'https://www.hameaualbert.fr' },
+      { name: 'H\u00f4tel Mont-Blanc', tier: 'sane', note: 'the 1849 grande dame, pool lawn facing the massif' },
+    ],
+  },
+  nice: {
+    why: 'The embarkation overture \u2014 one Promenade evening, socca in the old town, and quiet coves toward Cap Ferrat where French beach culture keeps its own counsel.',
+    hotels: [
+      { name: 'La P\u00e9rouse', tier: 'good', note: 'built into the rock at the Promenade\u2019s quiet end', url: 'https://www.hotel-la-perouse.com' },
+      { name: 'Villa Rivoli', tier: 'sane', note: 'belle-\u00e9poque pension two streets back' },
+    ],
+  },
   kefalonia: {
     why: 'The quiet Ionian at scale — Myrtos from the cliff road, Fiskardo’s Venetian harbour dinners, glassy no-meltemi seas bought with stiller, more humid air.',
     hotels: [
