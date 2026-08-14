@@ -18,7 +18,7 @@ interface PlanHotel { name?: string; why?: string; url?: string }
 interface PlanLeg { t?: string; what?: string; ref?: string; state?: 'booked' | 'todo' | 'info' }
 interface PlanDay { date?: string; title?: string; plan?: string; legs?: PlanLeg[] }
 interface PlanStop {
-  key?: string; name?: string; node?: string; dates?: string; nights?: number;
+  key?: string; name?: string; node?: string; dates?: string; nights?: number; icon?: string;
   hotel?: PlanHotel; altHotel?: PlanHotel; days?: PlanDay[];
   eat?: string[]; do?: string[]; events?: string[]; watchouts?: string[];
   wow?: string;
@@ -66,6 +66,13 @@ body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-
 .route span{white-space:nowrap;}
 .route em{font-style:normal;color:var(--schist);padding:0 6px;}
 .now{margin-top:26px;font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--live);}
+.tabs{margin-top:18px;font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;}
+.tabs a{color:var(--schist);text-decoration:none;margin-right:18px;}
+.tabs a.on{color:var(--live);border-bottom:1px solid var(--live);padding-bottom:2px;}
+.sum{margin-top:28px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px 0;}
+.sum div{display:flex;gap:12px;align-items:baseline;padding:5px 0;font-size:14.5px;}
+.sum .si{flex:0 0 26px;text-align:center;}
+.sum .sd{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;color:var(--schist);flex:0 0 118px;text-transform:uppercase;}
 .ch{margin-top:72px;}
 .ch .when{font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--schist);}
 .ch h2{font-family:var(--font-display);font-weight:400;font-size:clamp(24px,4.6vw,32px);line-height:1.15;
@@ -203,6 +210,18 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
     <p class="dates">14 August – 2 September 2026 · nineteen nights</p>
     ${doc?.manifesto?.paras?.length ? `<p class="lead">${esc(doc.manifesto.paras[0])}</p>` : doc?.sub ? `<p class="lead">${esc(doc.sub)}</p>` : ''}
     <p class="now">${inTrip ? `today${currentStop ? `: ${esc(currentStop.toLowerCase())}` : ''}` : todayOff < 0 ? 'it starts tomorrow' : 'home'}</p>
+    <nav class="tabs"><a class="on" href="/north/plan">itinerary</a><a href="/north/weather">weather</a></nav>
+    ${(() => {
+      let o = 0;
+      const rows = stops.map((s2) => {
+        const len = s2.days?.length ?? 0;
+        const past = o + len <= todayOff;
+        o += len;
+        if (past || !len) return '';
+        return `<div><span class="si">${esc(s2.icon ?? '')}</span><span class="sd">${esc((s2.dates ?? '').replace(' 2026', ''))}</span><span>${esc((s2.name ?? '').split(' — ')[0])}</span></div>`;
+      }).filter(Boolean).join('');
+      return rows ? `<div class="sum">${rows}</div>` : '';
+    })()}
   </header>
   ${body}
   <hr>

@@ -93,6 +93,13 @@ export const KNOWLEDGE: Record<string, NodeKnowledge> = {
       { name: 'Villa Ducale', tier: 'sane', note: 'family-run, Etna views, honest luxury' },
     ],
   },
+  palermo: {
+    why: 'The big, beautiful, slightly chaotic capital — Monreale\u2019s golden mosaics, markets at full voice, and the airport 35 minutes from the last hotel of the trip.',
+    hotels: [
+      { name: 'Villa Igiea', tier: 'good', note: 'the art-nouveau grande dame on the bay', url: 'https://www.roccofortehotels.com/hotels-and-resorts/villa-igiea' },
+      { name: 'Palazzo Brunaccini', tier: 'sane', note: 'charming palazzo in the old centre' },
+    ],
+  },
   olbia: {
     why: 'Europe’s clearest water — silly money in Ferragosto week, half price and warmer sea from the 22nd.',
     hotels: [

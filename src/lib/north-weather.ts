@@ -26,6 +26,7 @@ export const EU_NODES: Omit<NorthWxNode, 'temp' | 'code' | 'days'>[] = [
   { id: 'hvar', name: 'Hvar', country: 'Croatia', lat: 43.17, lon: 16.44 },
   { id: 'dubrovnik', name: 'Dubrovnik', country: 'Croatia', lat: 42.65, lon: 18.09 },
   { id: 'taormina', name: 'Taormina', country: 'Sicily', lat: 37.85, lon: 15.29 },
+  { id: 'palermo', name: 'Palermo', country: 'Sicily', lat: 38.12, lon: 13.36 },
   { id: 'olbia', name: 'Costa Smeralda', country: 'Sardinia', lat: 40.92, lon: 9.5 },
   { id: 'milos', name: 'Milos', country: 'Greece', lat: 36.75, lon: 24.43 },
   { id: 'sifnos', name: 'Sifnos', country: 'Greece', lat: 36.97, lon: 24.72 },

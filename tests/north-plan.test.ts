@@ -124,3 +124,30 @@ describe('north plan · the editorial itinerary', () => {
     expect(html).toContain('/north');
   });
 });
+
+// ── the weather tab ──
+import { renderWeatherGuide, guidance } from '../src/north-weather-page';
+
+describe('north weather · the guidance tab', () => {
+  it('guidance speaks in plain bands', () => {
+    expect(guidance(22, false)).toContain('cool');
+    expect(guidance(27, false)).toContain('Lovely');
+    expect(guidance(31, true)).toContain('rain layer');
+    expect(guidance(36, false)).toContain('Hot in the middle of the day');
+    expect(guidance(null, false)).toContain('Too far out');
+  });
+
+  it('renders remaining stops with day lines from the 16-day cache and explains the shape', async () => {
+    const wx16 = [{ id: 'taormina', days: Array.from({ length: 16 }, () => ({ tmax: 30, feels: 33, rain: 0 })) }];
+    const env = {
+      DB: { prepare: () => ({ bind: () => ({ first: async () => ({ json: JSON.stringify(DOC) }) }), first: async () => null }) },
+      KV: { get: async (k: string) => (k === 'north-wx16' ? wx16 : { offline: true }), put: async () => {} },
+    } as unknown as Env;
+    const html = await renderWeatherGuide(env, new Date('2026-08-15T10:00:00Z'));
+    expect(html).toContain('Aurora joins for lunch');
+    expect(html).toContain('Palermo for the final two nights');
+    expect(html).toContain('feels 33');
+    expect(html).toContain('Hot in the middle of the day');   // feels 33 is the hot band, and the page says so
+    expect(html).not.toContain('<h2>London</h2>'); // past stop gone here too
+  });
+});
