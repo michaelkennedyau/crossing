@@ -19,12 +19,14 @@ interface PlanStop {
   key?: string; name?: string; dates?: string; nights?: number;
   hotel?: PlanHotel; altHotel?: PlanHotel; days?: PlanDay[];
   eat?: string[]; do?: string[]; events?: string[]; watchouts?: string[];
+  wow?: string;
 }
 interface PlanBooking { item?: string; status?: string; est?: string }
 interface PlanDoc {
   title?: string; sub?: string; stops?: PlanStop[];
   bookings?: PlanBooking[];
   costs?: { committed?: string; envelope?: string; note?: string };
+  manifesto?: { kicker?: string; paras?: string[] };
 }
 
 const CSS = `
@@ -53,6 +55,15 @@ h1{font-family:var(--font-display);font-weight:340;font-size:clamp(28px,5vw,44px
 .print-btn:hover{border-color:var(--live);color:var(--live);}
 .print-btn:focus-visible{outline:2px solid var(--live);outline-offset:2px;}
 section{margin-top:44px;}
+.manifesto{border-top:1px solid var(--line);padding-top:26px;}
+.man-kicker{font-family:var(--font-display);font-weight:420;font-size:24px;line-height:1.25;letter-spacing:-.005em;
+  max-width:30ch;text-wrap:balance;}
+.man-p{font-size:15px;line-height:1.65;color:var(--ink-dim);max-width:64ch;margin-top:12px;text-wrap:pretty;}
+.wow{border-left:3px solid var(--ember);background:rgba(169,109,20,.05);border-radius:0 10px 10px 0;
+  padding:12px 16px;margin:14px 0 4px;break-inside:avoid;}
+.wow b{display:block;font-family:var(--font-mono);font-weight:600;font-size:9px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--ember);margin-bottom:4px;}
+.wow p{font-size:14px;line-height:1.6;color:var(--ink);}
 .sec-head{font-family:var(--font-mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;
   color:var(--live);border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:18px;}
 .stop{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-bottom:18px;
@@ -105,6 +116,7 @@ footer a{color:var(--live);text-decoration:none;}
   body{background:#fff;}
   .page{padding:0;max-width:none;}
   .stop,.read,.book,.total{border-color:#ccc;box-shadow:none;}
+  .wow{border-left-color:#999;background:#f6f6f6;}
   section{margin-top:28px;}
   a{color:inherit;}
   .bed a::after{content:' · ' attr(href);font-size:9px;color:#888;}
@@ -129,6 +141,7 @@ function listHtml(label: string, items: string[] | undefined, warn = false): str
 function stopHtml(s: PlanStop): string {
   return `<article class="stop">
     <div class="stop-head"><h2>${esc(s.name)}</h2><span class="stop-dates">${esc(s.dates)} · ${esc(s.nights)}n</span></div>
+    ${s.wow ? `<div class="wow"><b>the wow</b><p>${esc(s.wow)}</p></div>` : ''}
     <div class="beds">${bedHtml(s.hotel, false)}${bedHtml(s.altHotel, true)}</div>
     ${(s.days ?? []).map((d) => `<div class="day"><span class="d">${esc(d.date)}</span><div><b>${esc(d.title)}</b><p>${esc(d.plan)}</p></div></div>`).join('')}
     <div class="lists">
@@ -167,9 +180,17 @@ export async function renderPlan(env: Env): Promise<string> {
     : '';
   const top3 = outlook ? [...outlook.outlook.ranking].sort((a, b) => b.score - a.score).slice(0, 3) : [];
 
+  const manifesto = doc?.manifesto?.kicker || doc?.manifesto?.paras?.length
+    ? `<section class="manifesto">
+    ${doc?.manifesto?.kicker ? `<p class="man-kicker">${esc(doc.manifesto.kicker)}</p>` : ''}
+    ${(doc?.manifesto?.paras ?? []).map((p) => `<p class="man-p">${esc(p)}</p>`).join('')}
+  </section>`
+    : '';
+
   const body = !doc
     ? `<section><p class="sub">The plan document isn't published yet — the bridge at <a href="/north">/north</a> is still the live instrument.</p></section>`
     : `
+  ${manifesto}
   <section>
     <div class="sec-head">The committed week</div>
     ${committed.map(stopHtml).join('')}

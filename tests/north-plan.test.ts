@@ -92,4 +92,30 @@ describe('north plan · the printed document', () => {
     expect(html).toContain('</html>');
     expect(html).toContain('/north');
   });
+
+  it('renders the manifesto and wow strips when the doc carries them', async () => {
+    const sold = {
+      ...DOC,
+      manifesto: { kicker: 'The Grand Tour — the real one.', paras: ['Six countries, three seas.', 'You outflanked it.'] },
+      stops: [
+        { ...DOC.stops[0], wow: 'You built a machine to find the best swimming in Europe. It found this.' },
+        ...DOC.stops.slice(1),
+      ],
+    };
+    const html = await renderPlan(stubEnv({ json: JSON.stringify(sold), updated_at: 'x' }, null));
+    expect(html).toContain('The Grand Tour — the real one.');
+    expect(html).toContain('Six countries, three seas.');
+    expect(html).toContain('It found this.');
+    expect(html.match(/class="wow"/g)?.length).toBe(1); // only the wow-bearing stop gets a strip
+  });
+
+  it('a bare doc renders no manifesto or wow markup, and hostile wow text is escaped', async () => {
+    const bare = await renderPlan(stubEnv({ json: JSON.stringify(DOC), updated_at: 'x' }, null));
+    expect(bare).not.toContain('class="wow"');
+    expect(bare).not.toContain('class="manifesto"');
+    const evil = { ...DOC, stops: [{ ...DOC.stops[0], wow: '<script>alert(1)</script>' }, ...DOC.stops.slice(1)] };
+    const html = await renderPlan(stubEnv({ json: JSON.stringify(evil), updated_at: 'x' }, null));
+    expect(html).not.toContain('<script>alert');
+    expect(html).toContain('&lt;script&gt;');
+  });
 });
