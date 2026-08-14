@@ -110,10 +110,10 @@ footer a{color:var(--live);text-decoration:none;}
 function factLine(legs: PlanLeg[] | undefined): string {
   if (!legs?.length) return '';
   const bits = legs.map((l) => {
-    const t = l.t ? `${esc(l.t)} — ` : '';
+    // no per-day clock times — the prose carries the rhythm; facts carry only the what and the word
     const cleanRef = String(l.ref ?? '').replace(/^[✓✔]\s*/, '');
     const word = l.state === 'booked' ? `<span class="ok">${esc(cleanRef || 'booked')}</span>` : esc(cleanRef);
-    return `${t}${esc(l.what)}${l.ref || l.state === 'booked' ? ` · ${word}` : ''}`;
+    return `${esc(l.what)}${l.ref || l.state === 'booked' ? ` · ${word}` : ''}`;
   });
   return `<div class="facts">${bits.join('<br>')}</div>`;
 }
