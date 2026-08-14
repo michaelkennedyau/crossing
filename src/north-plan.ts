@@ -247,7 +247,6 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
   </section>` : ''}
   ${questions}
   <section>${timeline}</section>
-  <div class="held">held: QF2 LHR→BNE Wed 2 Sep 20:50 — the ending under negotiation (see the panel above)</div>
   ${doc.costs ? `<div class="costs">
     <div class="total"><b>Committed</b><div>${esc(doc.costs.committed)}</div></div>
     <div class="total"><b>Envelope</b><div>${esc(doc.costs.envelope)}</div></div>
@@ -279,12 +278,12 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
     </div>
     <div class="hud">
       <span class="dayn">${inTrip ? `Day ${todayOff + 1} of ${totalDays}${currentStop ? ` — ${esc(currentStop)}` : ''}` : todayOff < 0 ? `${-todayOff} day${todayOff === -1 ? '' : 's'} to wheels-up` : 'the trip, completed'}</span>
-      <div class="meter"><div class="bar"><div class="fill" style="width:${actionable ? Math.round((booked / actionable) * 100) : 0}%"></div></div>
-        <b>${booked} of ${actionable} legs booked</b></div>
+      ${actionable > 0 ? `<div class="meter"><div class="bar"><div class="fill" style="width:${Math.round((booked / actionable) * 100)}%"></div></div>
+        <b>${actionable > booked ? `${booked} of ${actionable} legs booked` : `${booked} legs — all confirmed`}</b></div>` : ''}
     </div>
   </header>
   ${body}
-  <footer>booked rows carry their real references; ember rows are being fleshed out · the bridge reads the sky every three hours · <a href="/north">/north</a></footer>
+  <footer>every reference on this page is a real booking · the bridge reads the sky every three hours · <a href="/north">/north</a></footer>
 </main>
 </body>
 </html>`;

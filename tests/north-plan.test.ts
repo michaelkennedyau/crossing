@@ -119,7 +119,7 @@ describe('north plan · the living itinerary', () => {
     const html = await renderPlan(stubEnv({ json: JSON.stringify(bare), updated_at: 'x' }), new Date('2026-08-13T10:00:00Z'));
     expect(html).toContain('</html>');
     expect(html).not.toContain('Still being fleshed out');
-    expect(html).toContain('0 of 0 legs booked');
+    expect(html).not.toContain('legs booked');   // no legs → no meter at all
   });
 
   it('escapes hostile leg and question content', async () => {
