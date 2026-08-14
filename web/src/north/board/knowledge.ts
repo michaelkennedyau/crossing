@@ -121,6 +121,27 @@ export const KNOWLEDGE: Record<string, NodeKnowledge> = {
       { name: 'The Margi, Vouliagmeni', tier: 'sane', note: 'boutique calm two streets from the lake, half the tariff' },
     ],
   },
+  naxos: {
+    why: 'The Cyclade with an interior — Portara sunsets, the Tragea\u2019s marble villages, kilometres of meltemi-combed sand, and the range a four-night eastbound base needs.',
+    hotels: [
+      { name: 'Naxian Collection, Stelida', tier: 'good', note: 'villas above Chora and the western sand', url: 'https://www.naxiancollection.com' },
+      { name: 'Nissaki Beach, Chora', tier: 'sane', note: 'on St George beach, walk everywhere' },
+    ],
+  },
+  samos: {
+    why: 'The Ephesus door — Pythagorio\u2019s ancient harbour, three-thousand-year muscat, and the daily hour-long ferry to Ku\u015fadas\u0131 that turns Greece into Turkey.',
+    hotels: [
+      { name: 'Proteas Blu, Pythagorio', tier: 'good', note: 'bays and pines by the Turkey ferry', url: 'https://www.proteasbluresort.gr' },
+      { name: 'Armonia Bay, Kokkari', tier: 'sane', note: 'the north-coast village version' },
+    ],
+  },
+  istanbul: {
+    why: 'The Bosphorus turn — Hagia Sophia at opening, the Kad\u0131k\u00f6y ferry to \u00c7iya for lunch on another continent, rooftop rak\u0131 over the world\u2019s best commute.',
+    hotels: [
+      { name: 'The Peninsula Istanbul, Karak\u00f6y', tier: 'good', note: 'the aircon benchmark, now with tankers gliding past breakfast', url: 'https://www.peninsula.com/en/istanbul' },
+      { name: 'Georges Hotel Galata', tier: 'sane', note: 'rooftop rak\u0131, a third the tariff' },
+    ],
+  },
   kefalonia: {
     why: 'The quiet Ionian at scale — Myrtos from the cliff road, Fiskardo’s Venetian harbour dinners, glassy no-meltemi seas bought with stiller, more humid air.',
     hotels: [
