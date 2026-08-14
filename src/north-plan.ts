@@ -1,16 +1,14 @@
 import type { Env } from './env';
-import { lastStored } from './routes/north-outlook';
-import { isStale } from './lib/north-outlook';
 import { cached } from './lib/kv-cache';
 import { fetchNorthWeather, type NorthWxNode } from './lib/north-weather';
 
 /**
- * The living itinerary — /north/plan. Once a plan document, now the trip's day-by-day
- * truth: every booked leg with its real reference (seat numbers, payment refs), every
- * unbooked one in honest ember, the open questions named with their owners, and the page
- * aware of today — lived days compress, today glows, the horizon days wear live feels
- * chips from the same weather doctrine as the bridge. Server-rendered from the doc +
- * KV weather at request time; zero scripts beyond the print button; refresh is the update.
+ * The itinerary as she reads it — /north/plan. Not a dashboard: an editorial, one-column
+ * story of a trip that is booked and moving. Each stop is a chapter — big display head,
+ * the wow as the lead paragraph, the days as prose stanzas — and the proof (seat numbers,
+ * payment refs) sits in quiet mono footnote lines, never chips. Today gets a small tick of
+ * presence, lived days soften, near days carry a gentle inline forecast. All decisions live
+ * on the bridge; this page only ever states what is certain. SSR, no scripts but print.
  */
 
 const esc = (s: unknown): string =>
@@ -25,16 +23,9 @@ interface PlanStop {
   eat?: string[]; do?: string[]; events?: string[]; watchouts?: string[];
   wow?: string;
 }
-interface PlanQuestion {
-  q?: string; owner?: string; decides?: string; status?: string;
-  imgs?: { src?: string; caption?: string }[];
-}
 interface PlanDoc {
   title?: string; sub?: string; stops?: PlanStop[];
-  bookings?: { item?: string; status?: string; est?: string }[];
-  costs?: { committed?: string; envelope?: string; note?: string };
   manifesto?: { kicker?: string; paras?: string[] };
-  questions?: PlanQuestion[];
 }
 
 /** trip epoch: the QF1 landing — offsets join day cards to real dates, same law as the spread */
@@ -52,108 +43,77 @@ export function tripDayOffset(now: Date): number {
 const CSS = `
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --paper:#FBFCFD; --card:#FFFFFF; --ink:#14212C; --ink-dim:#3D5468; --schist:#526579;
-  --ember:#A96D14; --live:#0E7C6B; --line:rgba(70,88,106,.22);
+  --paper:#FBFCFD; --ink:#14212C; --ink-dim:#43586C; --schist:#526579;
+  --ember:#A96D14; --live:#0E7C6B; --line:rgba(70,88,106,.18);
   --font-display:'Fraunces',Georgia,serif;
   --font-mono:'IBM Plex Mono',ui-monospace,monospace;
   --font-hand:'Instrument Serif',Georgia,serif;
   --font-body:'Outfit',system-ui,-apple-system,sans-serif;
 }
 body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-weight:400;
-  line-height:1.6;-webkit-font-smoothing:antialiased;}
-.page{max-width:880px;margin:0 auto;padding:48px 24px 80px;}
-.eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--live);}
-h1{font-family:var(--font-display);font-weight:340;font-size:clamp(26px,4.6vw,40px);line-height:1.12;
-  letter-spacing:-.01em;margin:10px 0 12px;max-width:26ch;text-wrap:balance;}
-.sub{font-size:15px;color:var(--ink-dim);max-width:66ch;text-wrap:pretty;}
-.stamps{display:flex;flex-wrap:wrap;gap:16px;margin-top:16px;font-family:var(--font-mono);font-size:10.5px;
-  letter-spacing:.05em;color:var(--schist);}
-.stamps b{font-weight:600;font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin-right:6px;}
-.stamps .stale{color:var(--ember);}
+  line-height:1.7;-webkit-font-smoothing:antialiased;}
+.page{max-width:660px;margin:0 auto;padding:64px 24px 96px;}
 .print-btn{position:fixed;top:18px;right:18px;font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;
-  padding:8px 16px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink-dim);cursor:pointer;z-index:5;}
+  padding:8px 16px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink-dim);cursor:pointer;z-index:5;}
 .print-btn:hover{border-color:var(--live);color:var(--live);}
 .print-btn:focus-visible{outline:2px solid var(--live);outline-offset:2px;}
-.hud{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:20px;}
-.hud .dayn{font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;color:var(--live);
-  border:1px solid rgba(14,124,107,.35);border-radius:999px;padding:6px 14px;background:rgba(14,124,107,.05);}
-.meter{flex:1;min-width:220px;display:flex;align-items:center;gap:10px;}
-.meter .bar{flex:1;height:8px;border-radius:4px;background:rgba(70,88,106,.15);overflow:hidden;}
-.meter .fill{height:100%;background:var(--live);}
-.meter b{font-family:var(--font-mono);font-size:10.5px;color:var(--schist);white-space:nowrap;font-weight:500;}
-section{margin-top:40px;}
-.manifesto{border-top:1px solid var(--line);padding-top:24px;}
-.man-kicker{font-family:var(--font-display);font-weight:420;font-size:22px;line-height:1.25;max-width:30ch;text-wrap:balance;}
-.man-p{font-size:14.5px;line-height:1.65;color:var(--ink-dim);max-width:66ch;margin-top:10px;text-wrap:pretty;}
-.qs{background:rgba(169,109,20,.05);border:1px solid rgba(169,109,20,.3);border-radius:14px;padding:20px 24px;break-inside:avoid;}
-.qs-h{font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ember);margin-bottom:8px;}
-.q1{padding:12px 0;border-top:1px dashed rgba(169,109,20,.3);}
-.q1:first-of-type{border-top:0;}
-.q1 b{font-size:14.5px;font-weight:600;}
-.q1 .qm{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ember);margin-left:8px;}
-.q1 p{font-size:13px;color:var(--ink-dim);margin-top:3px;}
-.q1 .qs-status{font-size:12.5px;color:var(--ink);margin-top:5px;}
-.figs{display:grid;gap:12px;margin-top:12px;}
-@media(min-width:700px){.figs{grid-template-columns:1fr 1fr 1fr;}}
-.figs figure{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card);}
-.figs img{width:100%;max-width:100%;display:block;}
-.figs figcaption{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.04em;color:var(--schist);padding:7px 10px;line-height:1.45;}
-.band{margin:34px 0 8px;padding:14px 18px;background:var(--card);border:1px solid var(--line);border-radius:12px;break-inside:avoid;}
-.band-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;}
-.band-head h2{font-family:var(--font-display);font-weight:420;font-size:19px;flex:1;min-width:0;}
-.band-dates{font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;color:var(--schist);white-space:nowrap;}
-.band .wow{font-size:12.5px;color:var(--ink-dim);margin-top:5px;max-width:70ch;}
-.band .beds{font-size:12px;color:var(--schist);margin-top:6px;}
-.band .beds a{color:var(--live);text-decoration:none;}
-.day{display:flex;gap:14px;padding:13px 6px;border-bottom:1px dashed var(--line);break-inside:avoid;}
-.day .d{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.03em;color:var(--schist);flex:0 0 78px;padding-top:3px;}
-.day .body{flex:1;min-width:0;}
-.day b.t{font-size:14px;font-weight:600;}
-.day p{font-size:13px;color:var(--ink-dim);margin-top:2px;}
-.day.lived{opacity:.55;}
-.day.lived p{display:none;}
-.day.lived .legs .todo-row{display:none;}
-.day.today{border-left:3px solid var(--live);padding-left:12px;background:rgba(14,124,107,.045);border-radius:0 10px 10px 0;opacity:1;}
-.day.today .d{color:var(--live);font-weight:600;}
-.wx{display:inline-block;font-family:var(--font-mono);font-size:10px;letter-spacing:.04em;color:var(--schist);
-  border:1px solid var(--line);border-radius:999px;padding:1px 9px;margin-left:8px;vertical-align:2px;font-variant-numeric:tabular-nums;}
-.day.today .wx{color:var(--live);border-color:rgba(14,124,107,.4);}
-.legs{margin-top:7px;display:grid;gap:4px;}
-.leg{display:flex;gap:10px;align-items:baseline;font-size:12.5px;}
-.leg .lt{font-family:var(--font-mono);font-size:10.5px;color:var(--schist);flex:0 0 52px;font-variant-numeric:tabular-nums;}
-.leg .lw{color:var(--ink);}
-.leg .chip{font-family:var(--font-mono);font-size:9px;letter-spacing:.06em;white-space:nowrap;border-radius:999px;padding:1px 8px;}
-.leg .chip.ok{color:var(--live);border:1px solid rgba(14,124,107,.4);background:rgba(14,124,107,.06);}
-.leg .chip.todo{color:var(--ember);border:1px solid rgba(169,109,20,.4);background:rgba(169,109,20,.06);}
-.leg .chip.info{color:var(--schist);border:1px solid var(--line);}
-.held{margin-top:34px;font-family:var(--font-mono);font-size:10.5px;color:var(--schist);border-top:1px solid var(--line);padding-top:14px;}
-.costs{display:grid;gap:12px;margin-top:26px;}
-@media(min-width:640px){.costs{grid-template-columns:1fr 1fr;}}
-.total{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 17px;}
-.total b{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--schist);}
-.total div{font-family:var(--font-mono);font-size:13.5px;color:var(--ink);margin-top:4px;}
-.cost-note{font-size:12px;color:var(--schist);margin-top:10px;}
-footer{margin-top:44px;font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;color:var(--schist);}
+.hero .over{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--live);}
+.hero h1{font-family:var(--font-display);font-weight:360;font-size:clamp(34px,7vw,52px);line-height:1.08;
+  letter-spacing:-.015em;margin:14px 0 0;text-wrap:balance;}
+.hero .dates{font-family:var(--font-hand);font-style:italic;font-size:19px;color:var(--ink-dim);margin-top:12px;}
+.hero .lead{font-size:17px;line-height:1.7;color:var(--ink-dim);margin-top:22px;text-wrap:pretty;}
+.route{margin-top:30px;font-family:var(--font-display);font-size:17px;line-height:1.8;color:var(--ink);}
+.route span{white-space:nowrap;}
+.route em{font-style:normal;color:var(--schist);padding:0 6px;}
+.now{margin-top:26px;font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--live);}
+.ch{margin-top:72px;}
+.ch .when{font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--schist);}
+.ch h2{font-family:var(--font-display);font-weight:400;font-size:clamp(24px,4.6vw,32px);line-height:1.15;
+  margin-top:8px;letter-spacing:-.01em;text-wrap:balance;}
+.ch .voice{font-family:var(--font-hand);font-style:italic;font-size:18px;color:var(--ink-dim);margin-top:6px;}
+.ch .lead{font-size:16px;color:var(--ink-dim);margin-top:16px;text-wrap:pretty;}
+.ch .bed{font-size:13.5px;color:var(--schist);margin-top:12px;}
+.ch .bed a{color:var(--live);text-decoration:none;}
+.stanza{margin-top:26px;}
+.stanza .dw{display:block;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--schist);}
+.stanza.today .dw{color:var(--live);}
+.stanza.today .dw::after{content:' — today';}
+.stanza h3{font-size:16.5px;font-weight:600;margin-top:4px;display:inline;}
+.stanza .wx{font-family:var(--font-mono);font-size:11px;color:var(--schist);margin-left:10px;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.stanza.today .wx{color:var(--live);}
+.stanza p{font-size:15px;color:var(--ink-dim);margin-top:6px;text-wrap:pretty;}
+.stanza.lived{opacity:.5;}
+.stanza.lived p{display:none;}
+.facts{margin-top:8px;font-family:var(--font-mono);font-size:11px;line-height:1.9;color:var(--schist);letter-spacing:.02em;}
+.facts .ok{color:var(--live);}
+hr{border:0;border-top:1px solid var(--line);margin-top:72px;}
+footer{margin-top:40px;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--schist);line-height:2;}
 footer a{color:var(--live);text-decoration:none;}
 @media print{
   .print-btn{display:none;}
   body{background:#fff;}
   .page{padding:0;max-width:none;}
-  .band,.qs,.total,.figs figure{border-color:#ccc;}
-  .day.lived{opacity:.8;}
-  .day.lived p{display:block;}
+  .stanza.lived{opacity:.85;}
+  .stanza.lived p{display:block;}
+  .ch{break-inside:avoid;margin-top:44px;}
   a{color:inherit;}
 }
 `;
 
-function legHtml(l: PlanLeg): string {
-  const cls = l.state === 'booked' ? 'ok' : l.state === 'todo' ? 'todo' : 'info';
-  const rowCls = l.state === 'todo' ? 'leg todo-row' : 'leg';
-  return `<div class="${rowCls}"><span class="lt">${esc(l.t)}</span><span class="lw">${esc(l.what)}</span>${
-    l.ref ? `<span class="chip ${cls}">${esc(l.ref)}</span>` : ''}</div>`;
+function factLine(legs: PlanLeg[] | undefined): string {
+  if (!legs?.length) return '';
+  const bits = legs.map((l) => {
+    const t = l.t ? `${esc(l.t)} ` : '';
+    const ref = l.ref ? String(l.ref).replace(/^✓\s*/, '') : '';
+    const tick = l.state === 'booked'
+      ? ` <span class="ok">✓${ref && ref !== 'booked' ? ` ${esc(ref)}` : ''}</span>`
+      : '';
+    return `${t}${esc(l.what)}${tick}`;
+  });
+  return `<div class="facts">${bits.join('<br>')}</div>`;
 }
 
-function wxChip(node: string | undefined, off: number, todayOff: number, wx: Map<string, NorthWxNode> | null): string {
+function wxText(node: string | undefined, off: number, todayOff: number, wx: Map<string, NorthWxNode> | null): string {
   if (!node || !wx) return '';
   const n = wx.get(node);
   const idx = off - todayOff;
@@ -173,7 +133,6 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
   } catch {
     doc = null;
   }
-  const outlook = await lastStored(env).catch(() => null);
   const wxNodes = await cached(env.KV, 'north-wx', 1800, fetchNorthWeather)
     .then((r) => (Array.isArray(r.value) ? new Map(r.value.map((n) => [n.id, n])) : null))
     .catch(() => null);
@@ -181,76 +140,49 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
   const todayOff = tripDayOffset(now);
   const stops = doc?.stops ?? [];
   const totalDays = stops.reduce((a, s) => a + (s.days?.length ?? 0), 0);
-
-  const allLegs = stops.flatMap((s) => s.days ?? []).flatMap((day) => day.legs ?? []);
-  const booked = allLegs.filter((l) => l.state === 'booked').length;
-  const actionable = booked + allLegs.filter((l) => l.state === 'todo').length;
-
-  const olStale = outlook ? isStale(outlook.generatedAt) : false;
-  const olStamp = outlook
-    ? new Date(outlook.generatedAt).toLocaleString('en-AU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
-    : '';
-
   const inTrip = todayOff >= 0 && todayOff < totalDays;
+
   let currentStop = '';
   {
-    let off = 0;
+    let o = 0;
     for (const s of stops) {
       const len = s.days?.length ?? 0;
-      if (todayOff >= off && todayOff < off + len) { currentStop = s.name ?? ''; break; }
-      off += len;
+      if (todayOff >= o && todayOff < o + len) { currentStop = (s.name ?? '').split(' — ')[0]; break; }
+      o += len;
     }
   }
 
+  const route = stops.map((s) => `<span>${esc((s.name ?? '').split(' — ')[0])}</span>`).join('<em>→</em>');
+
   let off = 0;
-  const timeline = stops.map((s) => {
-    const days = (s.days ?? []).map((day) => {
+  const chapters = stops.map((s) => {
+    const [main, subline] = (s.name ?? '').split(' — ');
+    const stanzas = (s.days ?? []).map((day) => {
       const state = off < todayOff ? 'lived' : off === todayOff ? 'today' : 'ahead';
-      const chip = wxChip(s.node, off, todayOff, wxNodes);
-      const html = `<div class="day ${state}">
-        <span class="d">${esc(day.date)}</span>
-        <div class="body">
-          <b class="t">${esc(day.title)}</b>${chip}
-          <p>${esc(day.plan)}</p>
-          ${day.legs?.length ? `<div class="legs">${day.legs.map(legHtml).join('')}</div>` : ''}
-        </div>
+      const wx = wxText(s.node, off, todayOff, wxNodes);
+      const html = `<div class="stanza ${state}">
+        <span class="dw">${esc(day.date)}</span>
+        <h3>${esc(day.title)}</h3>${wx}
+        <p>${esc(day.plan)}</p>
+        ${factLine(day.legs)}
       </div>`;
       off += 1;
       return html;
     }).join('');
-    return `<div class="band">
-      <div class="band-head"><h2>${esc(s.name)}</h2><span class="band-dates">${esc(s.dates)} · ${esc(s.nights)}n</span></div>
-      ${s.wow ? `<p class="wow">${esc(s.wow)}</p>` : ''}
-      ${s.hotel?.name ? `<p class="beds">bed: <b>${esc(s.hotel.name)}</b>${s.hotel.url ? ` <a href="${esc(s.hotel.url)}">↗</a>` : ''}${
-        s.altHotel?.name && s.altHotel.name !== '—' ? ` · alt: ${esc(s.altHotel.name)}` : ''}</p>` : ''}
-    </div>${days}`;
+    return `<section class="ch">
+      <div class="when">${esc(s.dates)} · ${esc(s.nights)} night${(s.nights ?? 0) === 1 ? '' : 's'}</div>
+      <h2>${esc(main)}</h2>
+      ${subline ? `<p class="voice">${esc(subline)}</p>` : ''}
+      ${s.wow ? `<p class="lead">${esc(s.wow)}</p>` : ''}
+      ${s.hotel?.name && s.hotel.name !== '—' ? `<p class="bed">sleeping at <b>${esc(s.hotel.name)}</b>${
+        s.hotel.url ? ` <a href="${esc(s.hotel.url)}">↗</a>` : ''}</p>` : ''}
+      ${stanzas}
+    </section>`;
   }).join('');
 
-  const questions = doc?.questions?.length
-    ? `<section class="qs">
-      <div class="qs-h">Still being fleshed out — five questions, five owners</div>
-      ${doc.questions.map((q) => `<div class="q1">
-        <b>${esc(q.q)}</b><span class="qm">${esc(q.owner)}</span>
-        <p>decides: ${esc(q.decides)}</p>
-        ${q.status ? `<p class="qs-status">${esc(q.status)}</p>` : ''}
-        ${q.imgs?.length ? `<div class="figs">${q.imgs.map((im) =>
-          `<figure><img src="${esc(im.src)}" alt="${esc(im.caption)}" loading="lazy"><figcaption>${esc(im.caption)}</figcaption></figure>`).join('')}</div>` : ''}
-      </div>`).join('')}
-    </section>` : '';
-
   const body = !doc
-    ? `<section><p class="sub">The itinerary isn't published yet — the bridge at <a href="/north">/north</a> is the live instrument.</p></section>`
-    : `
-  ${doc.manifesto?.kicker || doc.manifesto?.paras?.length ? `<section class="manifesto">
-    ${doc.manifesto?.kicker ? `<p class="man-kicker">${esc(doc.manifesto.kicker)}</p>` : ''}
-    ${(doc.manifesto?.paras ?? []).map((p) => `<p class="man-p">${esc(p)}</p>`).join('')}
-  </section>` : ''}
-  ${questions}
-  <section>${timeline}</section>
-  ${doc.costs ? `<div class="costs">
-    <div class="total"><b>Committed</b><div>${esc(doc.costs.committed)}</div></div>
-    <div class="total"><b>Envelope</b><div>${esc(doc.costs.envelope)}</div></div>
-  </div><p class="cost-note">${esc(doc.costs.note)}</p>` : ''}`;
+    ? `<p class="lead" style="margin-top:40px">The itinerary isn't published yet — the bridge at <a href="/north">/north</a> is the live instrument.</p>`
+    : chapters;
 
   return `<!doctype html>
 <html lang="en">
@@ -267,23 +199,17 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
 <body>
 <button type="button" class="print-btn" onclick="window.print()">print ⎙</button>
 <main class="page">
-  <header>
-    <p class="eyebrow">il varo · the north · the living itinerary</p>
-    <h1>${esc(doc?.title ?? 'The Cool Line to Claire’s Boat')}</h1>
-    <p class="sub">${esc(doc?.sub ?? '')}</p>
-    <div class="stamps">
-      ${row ? `<span><b>updated</b>${esc(row.updated_at)}Z</span>` : ''}
-      ${outlook ? `<span class="${olStale ? 'stale' : ''}"><b>${olStale ? '△ stale' : 'outlook fired'}</b>${esc(olStamp)}</span>` : ''}
-      <span><b>live board</b><a href="/north" style="color:var(--live);text-decoration:none">crossing.varo.au/north</a></span>
-    </div>
-    <div class="hud">
-      <span class="dayn">${inTrip ? `Day ${todayOff + 1} of ${totalDays}${currentStop ? ` — ${esc(currentStop)}` : ''}` : todayOff < 0 ? `${-todayOff} day${todayOff === -1 ? '' : 's'} to wheels-up` : 'the trip, completed'}</span>
-      ${actionable > 0 ? `<div class="meter"><div class="bar"><div class="fill" style="width:${Math.round((booked / actionable) * 100)}%"></div></div>
-        <b>${actionable > booked ? `${booked} of ${actionable} legs booked` : `${booked} legs — all confirmed`}</b></div>` : ''}
-    </div>
+  <header class="hero">
+    <p class="over">il varo · the itinerary</p>
+    <h1>${esc(doc?.manifesto?.kicker ?? 'His mountains. Her boat. Aurora’s table.')}</h1>
+    <p class="dates">14 August – 2 September 2026 · nineteen nights</p>
+    ${doc?.manifesto?.paras?.length ? `<p class="lead">${esc(doc.manifesto.paras[0])}</p>` : doc?.sub ? `<p class="lead">${esc(doc.sub)}</p>` : ''}
+    ${stops.length ? `<p class="route">${route}</p>` : ''}
+    <p class="now">${inTrip ? `day ${todayOff + 1} of ${totalDays}${currentStop ? ` · ${esc(currentStop)}` : ''}` : todayOff < 0 ? `${-todayOff} day${todayOff === -1 ? '' : 's'} to wheels-up` : 'home'}</p>
   </header>
   ${body}
-  <footer>every reference on this page is a real booking · the bridge reads the sky every three hours · <a href="/north">/north</a></footer>
+  <hr>
+  <footer>every ✓ on this page is a real booking · the sky is read every three hours at <a href="/north">the bridge</a> · printed copies travel well</footer>
 </main>
 </body>
 </html>`;
