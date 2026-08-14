@@ -25,7 +25,7 @@ function stubEnv(
 const DOC = {
   title: 'The Cool Line to Claire’s Boat',
   sub: 'Booked, paid, and rolling.',
-  manifesto: { kicker: 'His mountains. Her boat. Aurora’s table.', paras: ['It took eleven versions to land on the trip that was always there.'] },
+  manifesto: { kicker: 'His mountains. Her boat.', paras: [] },
   stops: [
     {
       key: 'london-in', name: 'London — the landing', node: 'london', dates: 'Fri 14 – Sat 15 Aug', nights: 1,
@@ -68,14 +68,15 @@ describe('north plan · the editorial itinerary', () => {
     expect(tripDayOffset(new Date('2026-08-14T23:30:00Z'))).toBe(1);
   });
 
-  it('reads as a story with quiet proof: kicker hero, route line, refs as ✓ facts', async () => {
+  it('reads as a story with quiet proof: kicker hero, refs as plain green words, no icons', async () => {
     const html = await renderPlan(stubEnv(ROW), new Date('2026-08-13T10:00:00Z'));
-    expect(html).toContain('His mountains. Her boat. Aurora’s table.');
-    expect(html).toContain('class="route"');
+    expect(html).toContain('His mountains. Her boat.');
     expect(html).toContain('coach 12, seats 47+48');
     expect(html).toContain('31966558');
     expect(html).toContain('class="ok"');
-    expect(html).toContain('1 day to wheels-up');
+    expect(html).toContain('it starts tomorrow');
+    for (const glyph of ['✓', '↗', '→', '⎙']) expect(html).not.toContain(glyph);
+    expect(html).not.toContain('class="route"');
   });
 
   it('splits stop names into display head + italic voice line', async () => {
@@ -84,11 +85,12 @@ describe('north plan · the editorial itinerary', () => {
     expect(html).toContain('paid, waiting, certain');
   });
 
-  it('is today-aware: lived stanzas soften, today is marked, day-N header', async () => {
+  it('starts from now: past days vanish, past stops vanish, today is named plainly', async () => {
     const html = await renderPlan(stubEnv(ROW), new Date('2026-08-15T10:00:00Z'));
-    expect(html).toContain('stanza lived');
+    expect(html).not.toContain('Pints and plans');          // Friday is gone
+    expect(html).not.toContain('<h2>London</h2>');          // whole past stop dropped
     expect(html).toContain('stanza today');
-    expect(html).toContain('day 2 of 3');
+    expect(html).toContain('today: the boat');
   });
 
   it('joins gentle inline weather for horizon days by stop node (offset law)', async () => {

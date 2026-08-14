@@ -52,13 +52,13 @@ const CSS = `
 }
 body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-weight:400;
   line-height:1.7;-webkit-font-smoothing:antialiased;}
-.page{max-width:660px;margin:0 auto;padding:64px 24px 96px;}
+.page{max-width:560px;margin:0 auto;padding:48px 22px 80px;}
 .print-btn{position:fixed;top:18px;right:18px;font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;
   padding:8px 16px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink-dim);cursor:pointer;z-index:5;}
 .print-btn:hover{border-color:var(--live);color:var(--live);}
 .print-btn:focus-visible{outline:2px solid var(--live);outline-offset:2px;}
 .hero .over{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--live);}
-.hero h1{font-family:var(--font-display);font-weight:360;font-size:clamp(34px,7vw,52px);line-height:1.08;
+.hero h1{font-family:var(--font-display);font-weight:360;font-size:clamp(32px,8.5vw,46px);line-height:1.08;
   letter-spacing:-.015em;margin:14px 0 0;text-wrap:balance;}
 .hero .dates{font-family:var(--font-hand);font-style:italic;font-size:19px;color:var(--ink-dim);margin-top:12px;}
 .hero .lead{font-size:17px;line-height:1.7;color:var(--ink-dim);margin-top:22px;text-wrap:pretty;}
@@ -81,10 +81,10 @@ body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-
 .stanza h3{font-size:16.5px;font-weight:600;margin-top:4px;display:inline;}
 .stanza .wx{font-family:var(--font-mono);font-size:11px;color:var(--schist);margin-left:10px;white-space:nowrap;font-variant-numeric:tabular-nums;}
 .stanza.today .wx{color:var(--live);}
-.stanza p{font-size:15px;color:var(--ink-dim);margin-top:6px;text-wrap:pretty;}
+.stanza p{font-size:15.5px;color:var(--ink-dim);margin-top:6px;text-wrap:pretty;}
 .stanza.lived{opacity:.5;}
 .stanza.lived p{display:none;}
-.facts{margin-top:8px;font-family:var(--font-mono);font-size:11px;line-height:1.9;color:var(--schist);letter-spacing:.02em;}
+.facts{margin-top:8px;font-size:13px;line-height:1.8;color:var(--schist);}
 .facts .ok{color:var(--live);}
 hr{border:0;border-top:1px solid var(--line);margin-top:72px;}
 footer{margin-top:40px;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--schist);line-height:2;}
@@ -103,12 +103,10 @@ footer a{color:var(--live);text-decoration:none;}
 function factLine(legs: PlanLeg[] | undefined): string {
   if (!legs?.length) return '';
   const bits = legs.map((l) => {
-    const t = l.t ? `${esc(l.t)} ` : '';
-    const ref = l.ref ? String(l.ref).replace(/^✓\s*/, '') : '';
-    const tick = l.state === 'booked'
-      ? ` <span class="ok">✓${ref && ref !== 'booked' ? ` ${esc(ref)}` : ''}</span>`
-      : '';
-    return `${t}${esc(l.what)}${tick}`;
+    const t = l.t ? `${esc(l.t)} — ` : '';
+    const cleanRef = String(l.ref ?? '').replace(/^[✓✔]\s*/, '');
+    const word = l.state === 'booked' ? `<span class="ok">${esc(cleanRef || 'booked')}</span>` : esc(cleanRef);
+    return `${t}${esc(l.what)}${l.ref || l.state === 'booked' ? ` · ${word}` : ''}`;
   });
   return `<div class="facts">${bits.join('<br>')}</div>`;
 }
@@ -152,15 +150,14 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
     }
   }
 
-  const route = stops.map((s) => `<span>${esc((s.name ?? '').split(' — ')[0])}</span>`).join('<em>→</em>');
-
   let off = 0;
   const chapters = stops.map((s) => {
     const [main, subline] = (s.name ?? '').split(' — ');
     const stanzas = (s.days ?? []).map((day) => {
-      const state = off < todayOff ? 'lived' : off === todayOff ? 'today' : 'ahead';
+      const past = off < todayOff;
+      const state = past ? 'lived' : off === todayOff ? 'today' : 'ahead';
       const wx = wxText(s.node, off, todayOff, wxNodes);
-      const html = `<div class="stanza ${state}">
+      const html = past ? '' : `<div class="stanza ${state}">
         <span class="dw">${esc(day.date)}</span>
         <h3>${esc(day.title)}</h3>${wx}
         <p>${esc(day.plan)}</p>
@@ -169,13 +166,14 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
       off += 1;
       return html;
     }).join('');
+    if (!stanzas) return '';
     return `<section class="ch">
       <div class="when">${esc(s.dates)} · ${esc(s.nights)} night${(s.nights ?? 0) === 1 ? '' : 's'}</div>
       <h2>${esc(main)}</h2>
       ${subline ? `<p class="voice">${esc(subline)}</p>` : ''}
       ${s.wow ? `<p class="lead">${esc(s.wow)}</p>` : ''}
-      ${s.hotel?.name && s.hotel.name !== '—' ? `<p class="bed">sleeping at <b>${esc(s.hotel.name)}</b>${
-        s.hotel.url ? ` <a href="${esc(s.hotel.url)}">↗</a>` : ''}</p>` : ''}
+      ${s.hotel?.name && s.hotel.name !== '—' ? `<p class="bed">sleeping at ${
+        s.hotel.url ? `<a href="${esc(s.hotel.url)}"><b>${esc(s.hotel.name)}</b></a>` : `<b>${esc(s.hotel.name)}</b>`}</p>` : ''}
       ${stanzas}
     </section>`;
   }).join('');
@@ -197,19 +195,18 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
 <style>${CSS}</style>
 </head>
 <body>
-<button type="button" class="print-btn" onclick="window.print()">print ⎙</button>
+<button type="button" class="print-btn" onclick="window.print()">print</button>
 <main class="page">
   <header class="hero">
     <p class="over">il varo · the itinerary</p>
     <h1>${esc(doc?.manifesto?.kicker ?? 'His mountains. Her boat. Aurora’s table.')}</h1>
     <p class="dates">14 August – 2 September 2026 · nineteen nights</p>
     ${doc?.manifesto?.paras?.length ? `<p class="lead">${esc(doc.manifesto.paras[0])}</p>` : doc?.sub ? `<p class="lead">${esc(doc.sub)}</p>` : ''}
-    ${stops.length ? `<p class="route">${route}</p>` : ''}
-    <p class="now">${inTrip ? `day ${todayOff + 1} of ${totalDays}${currentStop ? ` · ${esc(currentStop)}` : ''}` : todayOff < 0 ? `${-todayOff} day${todayOff === -1 ? '' : 's'} to wheels-up` : 'home'}</p>
+    <p class="now">${inTrip ? `today${currentStop ? `: ${esc(currentStop.toLowerCase())}` : ''}` : todayOff < 0 ? 'it starts tomorrow' : 'home'}</p>
   </header>
   ${body}
   <hr>
-  <footer>every ✓ on this page is a real booking · the sky is read every three hours at <a href="/north">the bridge</a> · printed copies travel well</footer>
+  <footer>everything marked booked or paid is confirmed</footer>
 </main>
 </body>
 </html>`;
