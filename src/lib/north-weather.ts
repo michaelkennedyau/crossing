@@ -36,6 +36,7 @@ export const EU_NODES: Omit<NorthWxNode, 'temp' | 'code' | 'days'>[] = [
   { id: 'istanbul', name: 'Istanbul', country: 'T\u00fcrkiye', lat: 41.03, lon: 28.98 },
   { id: 'cesme', name: '\u00c7e\u015fme', country: 'T\u00fcrkiye', lat: 38.32, lon: 26.30 },
   { id: 'chamonix', name: 'Chamonix', country: 'France', lat: 45.92, lon: 6.87 },
+  { id: 'lyon', name: 'Lyon', country: 'France', lat: 45.76, lon: 4.84 },
   { id: 'nice', name: 'Nice', country: 'France', lat: 43.70, lon: 7.27 },
   { id: 'kefalonia', name: 'Kefalonia', country: 'Greece', lat: 38.18, lon: 20.49 },
   { id: 'corfu', name: 'Corfu', country: 'Greece', lat: 39.62, lon: 19.92 },

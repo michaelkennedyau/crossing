@@ -163,6 +163,13 @@ export const KNOWLEDGE: Record<string, NodeKnowledge> = {
       { name: 'H\u00f4tel Mont-Blanc', tier: 'sane', note: 'the 1849 grande dame, pool lawn facing the massif' },
     ],
   },
+  lyon: {
+    why: 'The gastronomic capital, met by accident and kept on purpose \u2014 the Halles, the bouchons, the Rh\u00f4ne\u2019s cellars forty minutes south.',
+    hotels: [
+      { name: 'InterContinental Hotel Dieu', tier: 'good', note: 'an 18th-century hospital reborn on the Rh\u00f4ne', url: 'https://lyon.intercontinental.com' },
+      { name: 'H\u00f4tel de l\u2019Abbaye', tier: 'sane', note: 'quiet Ainay charm near Bellecour' },
+    ],
+  },
   nice: {
     why: 'The embarkation overture \u2014 one Promenade evening, socca in the old town, and quiet coves toward Cap Ferrat where French beach culture keeps its own counsel.',
     hotels: [
