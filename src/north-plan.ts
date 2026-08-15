@@ -19,6 +19,7 @@ interface PlanLeg { t?: string; what?: string; ref?: string; state?: 'booked' | 
 interface PlanDay { date?: string; title?: string; plan?: string; legs?: PlanLeg[] }
 interface PlanStop {
   key?: string; name?: string; node?: string; dates?: string; nights?: number; icon?: string;
+  img?: { src?: string; caption?: string }; notes?: string[];
   hotel?: PlanHotel; altHotel?: PlanHotel; days?: PlanDay[];
   eat?: string[]; do?: string[]; events?: string[]; watchouts?: string[];
   wow?: string;
@@ -81,6 +82,12 @@ body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-
 .ch .lead{font-size:16px;color:var(--ink-dim);margin-top:16px;text-wrap:pretty;}
 .ch .bed{font-size:13.5px;color:var(--schist);margin-top:12px;}
 .ch .bed a{color:var(--live);text-decoration:none;}
+.view{margin-top:16px;}
+.view img{width:100%;max-width:100%;display:block;border-radius:14px;}
+.view figcaption{font-family:var(--font-hand);font-style:italic;font-size:13.5px;color:var(--schist);margin-top:7px;}
+.tid{margin-top:18px;border-left:2px solid var(--line);padding-left:16px;}
+.tid p{font-size:14px;color:var(--ink-dim);margin-top:9px;text-wrap:pretty;}
+.tid p:first-child{margin-top:0;}
 .stanza{margin-top:26px;}
 .stanza .dw{display:block;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--schist);}
 .stanza.today .dw{color:var(--live);}
@@ -176,9 +183,12 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
     if (!stanzas) return '';
     return `<section class="ch">
       <div class="when">${esc(s.dates)} · ${esc(s.nights)} night${(s.nights ?? 0) === 1 ? '' : 's'}</div>
-      <h2>${esc(main)}</h2>
+      <h2>${s.icon ? `${esc(s.icon)} ` : ''}${esc(main)}</h2>
       ${subline ? `<p class="voice">${esc(subline)}</p>` : ''}
+      ${s.img?.src ? `<figure class="view"><img src="${esc(s.img.src)}" alt="${esc(s.img.caption)}" loading="lazy">${
+        s.img.caption ? `<figcaption>${esc(s.img.caption)}</figcaption>` : ''}</figure>` : ''}
       ${s.wow ? `<p class="lead">${esc(s.wow)}</p>` : ''}
+      ${s.notes?.length ? `<div class="tid">${s.notes.map((t) => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       ${s.hotel?.name && s.hotel.name !== '—' ? `<p class="bed">sleeping at ${
         s.hotel.url ? `<a href="${esc(s.hotel.url)}"><b>${esc(s.hotel.name)}</b></a>` : `<b>${esc(s.hotel.name)}</b>`}</p>` : ''}
       ${stanzas}

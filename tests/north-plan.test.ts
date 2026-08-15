@@ -151,3 +151,17 @@ describe('north weather · the guidance tab', () => {
     expect(html).not.toContain('<h2>London</h2>'); // past stop gone here too
   });
 });
+
+describe('north plan · views and tidbits', () => {
+  it('renders a stop image with caption, notes as tidbits, and the icon in the chapter head', async () => {
+    const rich = JSON.parse(JSON.stringify(DOC));
+    rich.stops[1].img = { src: '/img/arc-sardinia-1280.webp', caption: 'the water' };
+    rich.stops[1].notes = ['Named for the explorer who named Adélie Land after his wife.'];
+    rich.stops[1].icon = '🛳️';
+    const html = await renderPlan(stubEnv({ json: JSON.stringify(rich), updated_at: 'x' }), new Date('2026-08-13T10:00:00Z'));
+    expect(html).toContain('/img/arc-sardinia-1280.webp');
+    expect(html).toContain('the water');
+    expect(html).toContain('Adélie Land');
+    expect(html).toContain('🛳️ The boat');
+  });
+});
