@@ -75,7 +75,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-
 .sum div{display:flex;gap:12px;align-items:baseline;font-size:14.5px;background:#fff;
   border:1px solid var(--line);border-radius:12px;padding:11px 15px;}
 .sum .si{flex:0 0 26px;text-align:center;}
-.sum .sd{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;color:var(--schist);flex:0 0 118px;text-transform:uppercase;}
+.sum .sd{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;color:var(--schist);flex:0 0 auto;white-space:nowrap;text-transform:uppercase;}
 @media print{.sum div{border-color:#ccc;}}
 .ch{margin-top:72px;}
 .ch .when{font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--schist);}
@@ -202,7 +202,7 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
     }).join('');
     if (!stanzas) return null;
     const html = `<section class="ch">
-      <div class="when">${esc(s.dates)} · ${esc(s.nights)} night${(s.nights ?? 0) === 1 ? '' : 's'}</div>
+      <div class="when">${esc(s.dates)}${(s.nights ?? 0) > 0 ? ` · ${esc(s.nights)} night${s.nights === 1 ? '' : 's'}` : ''}</div>
       <h2>${s.icon ? `${esc(s.icon)} ` : ''}${esc(main)}</h2>
       ${subline ? `<p class="voice">${esc(subline)}</p>` : ''}
       ${s.img?.src ? `<figure class="view"><img src="${esc(s.img.src)}" alt="${esc(s.img.caption)}" loading="lazy">${
@@ -221,7 +221,7 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
   const livedChapters = rendered.filter((r) => r.past).map((r) => r.html).join('');
   const aheadChapters = rendered.filter((r) => !r.past).map((r) => r.html).join('');
   const chapters = `${livedChapters
-    ? `<details class="done"><summary>the story so far — already lived, tap to reread</summary>${livedChapters}</details>`
+    ? `<details class="done"><summary>the story so far</summary>${livedChapters}</details>`
     : ''}${aheadChapters}`;
 
   const body = !doc
@@ -257,7 +257,7 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
         const past = o + len <= todayOff;
         o += len;
         if (past || !len) return '';
-        return `<div><span class="si">${esc(s2.icon ?? '')}</span><span class="sd">${esc((s2.dates ?? '').replace(' 2026', ''))}</span><span>${esc(s2.short ?? (s2.name ?? '').split(' — ')[0])}</span></div>`;
+        return `<div><span class="si">${esc(s2.icon ?? '')}</span><span class="sd">${esc((s2.dates ?? '').replace(' 2026', '').replace(/\b(Mon|Tue|Wed|Thu|Fri|Sat|Sun) /g, ''))}</span><span>${esc(s2.short ?? (s2.name ?? '').split(' — ')[0])}</span></div>`;
       }).filter(Boolean).join('');
       return rows ? `<div class="sum">${rows}</div>` : '';
     })()}
