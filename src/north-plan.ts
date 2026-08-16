@@ -20,6 +20,7 @@ interface PlanDay { date?: string; title?: string; plan?: string; legs?: PlanLeg
 interface PlanStop {
   key?: string; name?: string; node?: string; dates?: string; nights?: number; icon?: string;
   img?: { src?: string; caption?: string }; notes?: string[];
+  stats?: { n?: string; label?: string }[]; ports?: { flag?: string; date?: string; name?: string }[];
   hotel?: PlanHotel; altHotel?: PlanHotel; days?: PlanDay[];
   eat?: string[]; do?: string[]; events?: string[]; watchouts?: string[];
   wow?: string;
@@ -88,6 +89,13 @@ body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-
 .tid{margin-top:18px;border-left:2px solid var(--line);padding-left:16px;}
 .tid p{font-size:14px;color:var(--ink-dim);margin-top:9px;text-wrap:pretty;}
 .tid p:first-child{margin-top:0;}
+.stats{display:flex;gap:26px;margin-top:16px;flex-wrap:wrap;}
+.stats div b{font-family:var(--font-display);font-weight:420;font-size:26px;display:block;line-height:1.1;}
+.stats div span{font-size:12px;color:var(--schist);}
+.ports{margin-top:16px;padding-left:14px;border-left:2px solid var(--line);}
+.ports div{display:flex;gap:10px;align-items:baseline;padding:3px 0;font-size:14px;}
+.ports .pf{flex:0 0 22px;}
+.ports .pd{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;color:var(--schist);flex:0 0 58px;text-transform:uppercase;}
 .stanza{margin-top:26px;}
 .stanza .dw{display:block;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--schist);}
 .stanza.today .dw{color:var(--live);}
@@ -188,6 +196,8 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
       ${s.img?.src ? `<figure class="view"><img src="${esc(s.img.src)}" alt="${esc(s.img.caption)}" loading="lazy">${
         s.img.caption ? `<figcaption>${esc(s.img.caption)}</figcaption>` : ''}</figure>` : ''}
       ${s.wow ? `<p class="lead">${esc(s.wow)}</p>` : ''}
+      ${s.stats?.length ? `<div class="stats">${s.stats.map((t) => `<div><b>${esc(t.n)}</b><span>${esc(t.label)}</span></div>`).join('')}</div>` : ''}
+      ${s.ports?.length ? `<div class="ports">${s.ports.map((p2) => `<div><span class="pf">${esc(p2.flag)}</span><span class="pd">${esc(p2.date)}</span><span>${esc(p2.name)}</span></div>`).join('')}</div>` : ''}
       ${s.notes?.length ? `<div class="tid">${s.notes.map((t) => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       ${s.hotel?.name && s.hotel.name !== '—' ? `<p class="bed">sleeping at ${
         s.hotel.url ? `<a href="${esc(s.hotel.url)}"><b>${esc(s.hotel.name)}</b></a>` : `<b>${esc(s.hotel.name)}</b>`}</p>` : ''}
