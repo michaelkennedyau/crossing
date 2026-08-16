@@ -71,10 +71,12 @@ body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-
 .tabs{margin-top:18px;font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;}
 .tabs a{color:var(--schist);text-decoration:none;margin-right:18px;}
 .tabs a.on{color:var(--live);border-bottom:1px solid var(--live);padding-bottom:2px;}
-.sum{margin-top:28px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px 0;}
-.sum div{display:flex;gap:12px;align-items:baseline;padding:5px 0;font-size:14.5px;}
+.sum{margin-top:28px;display:flex;flex-direction:column;gap:8px;}
+.sum div{display:flex;gap:12px;align-items:baseline;font-size:14.5px;background:#fff;
+  border:1px solid var(--line);border-radius:12px;padding:11px 15px;}
 .sum .si{flex:0 0 26px;text-align:center;}
 .sum .sd{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;color:var(--schist);flex:0 0 118px;text-transform:uppercase;}
+@media print{.sum div{border-color:#ccc;}}
 .ch{margin-top:72px;}
 .ch .when{font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--schist);}
 .ch h2{font-family:var(--font-display);font-weight:400;font-size:clamp(24px,4.6vw,32px);line-height:1.15;
