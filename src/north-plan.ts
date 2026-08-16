@@ -246,7 +246,7 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
   <header class="hero">
     <p class="over">il varo · the itinerary</p>
     <h1>${esc(doc?.manifesto?.kicker ?? 'His mountains. Her boat. Aurora’s table.')}</h1>
-    <p class="dates">14 August – 2 September 2026 · nineteen nights</p>
+    <p class="dates">14 August – 3 September 2026 · twenty nights</p>
     ${doc?.manifesto?.paras?.length ? `<p class="lead">${esc(doc.manifesto.paras[0])}</p>` : doc?.sub ? `<p class="lead">${esc(doc.sub)}</p>` : ''}
     <p class="now">${inTrip ? `today${currentStop ? `: ${esc(currentStop.toLowerCase())}` : ''}` : todayOff < 0 ? 'it starts tomorrow' : 'home'}</p>
     <nav class="tabs"><a class="on" href="/north/plan">itinerary</a><a href="/north/weather">weather</a></nav>

@@ -46,19 +46,19 @@ export function renderAurora(): string {
   <header>
     <p class="over">il varo · per Aurora</p>
     <h1>Ci vediamo a Palermo.</h1>
-    <p class="dates">31 agosto – 2 settembre 2026 · due notti a Palermo</p>
+    <p class="dates">31 agosto – 3 settembre 2026 · tre notti a Palermo</p>
     <p class="lead">Cara Aurora — questa pagina è per te, e per i tuoi genitori, se vorrai mostrargliela.</p>
   </header>
   <section class="story">
-    <p>Siamo Michael e Claire, la famiglia di Fraser. A fine agosto attraversiamo il Mediterraneo — dieci notti di nave, da Nizza fino a Malta — poi lunedì 31, all'alba, il traghetto per la Sicilia: arriviamo a Palermo in tempo per pranzo, due notti a Villa Igiea prima del lungo volo verso casa.</p>
-    <p>Lunedì 31 vorremmo invitarti a pranzo. Il tavolo lo scegli tu: è la tua città, e non ci sogneremmo mai di suggerire noi il posto a una palermitana.</p>
+    <p>Siamo Michael e Claire, la famiglia di Fraser. A fine agosto attraversiamo il Mediterraneo — dieci notti di nave, da Nizza fino a Malta — poi lunedì 31, all'alba, il traghetto per la Sicilia: tre notti a Villa Igiea prima del lungo volo verso casa.</p>
+    <p>Sappiamo che lunedì arrivi da Roma, a sera, dopo l'esame — in bocca al lupo! Il pranzo allora è martedì 1° settembre, con tutta la calma del mondo. Il tavolo lo scegli tu: è la tua città, e non ci sogneremmo mai di suggerire noi il posto a una palermitana.</p>
     <p class="ai-genitori">E a voi, genitori di Aurora: se vorrete unirvi, sarà un piacere avervi a tavola. Vostra figlia lavora con nostro figlio Fraser — le sue otto settimane in Australia quest'anno hanno contato davvero, e ci fa piacere poterlo dire di persona, a Palermo.</p>
     <p>Oltre il pranzo, nessun programma: i mercati, Monreale, il mare se chiama. Ci muoviamo con calma — le ferie servono a questo.</p>
   </section>
   <div class="facts">
     <div><span class="k">dove dormiamo</span><span><b>Villa Igiea</b> — Salita Belmonte 43</span></div>
-    <div><span class="k">il pranzo</span><span><b>lunedì 31 agosto</b> — dove dici tu</span></div>
-    <div><span class="k">ripartiamo</span><span><b>mercoledì 2 settembre</b>, di mattina</span></div>
+    <div><span class="k">il pranzo</span><span><b>martedì 1° settembre</b> — dove dici tu</span></div>
+    <div><span class="k">ripartiamo</span><span><b>giovedì 3 settembre</b>, a mezzogiorno</span></div>
   </div>
   <p class="sign">A presto — Michael e Claire</p>
   <footer>palermo · agosto 2026</footer>

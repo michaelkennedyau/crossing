@@ -181,7 +181,8 @@ describe('north aurora · la pagina per Aurora', () => {
     expect(html).toContain('Il tavolo lo scegli tu');
     expect(html).toContain('E a voi, genitori di Aurora');
     expect(html).toContain('Villa Igiea');
-    expect(html).toContain('lunedì 31 agosto');
+    expect(html).toContain('martedì 1° settembre');
+    expect(html).toContain('in bocca al lupo');
     expect(html).toContain('name="robots" content="noindex"');
     expect(html).not.toContain('booked');     // no proof-chips here — it's a letter, not an itinerary
   });
