@@ -5,6 +5,7 @@ import { renderAndes } from './shell';
 import { renderNorth } from './north-shell';
 import { renderPlan } from './north-plan';
 import { renderWeatherGuide } from './north-weather-page';
+import { renderAurora } from './north-aurora';
 import { ensoRouter } from './routes/enso';
 import { weatherRouter } from './routes/weather';
 import { countdownRouter } from './routes/countdown';
@@ -60,5 +61,6 @@ app.get('/andes', (c) => c.html(renderAndes(c.env)));
 app.get('/north', (c) => c.html(renderNorth(c.env)));
 app.get('/north/plan', async (c) => c.html(await renderPlan(c.env)));
 app.get('/north/weather', async (c) => c.html(await renderWeatherGuide(c.env)));
+app.get('/north/aurora', (c) => c.html(renderAurora()));
 
 export default app;

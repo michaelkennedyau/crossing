@@ -172,3 +172,18 @@ describe('north plan · views and tidbits', () => {
     expect(html).toContain('🛳️ The boat');
   });
 });
+
+describe('north aurora · la pagina per Aurora', () => {
+  it('renders the Italian page: lang, the lunch, voi for the parents, no decisions', async () => {
+    const { renderAurora } = await import('../src/north-aurora');
+    const html = renderAurora();
+    expect(html).toContain('<html lang="it">');
+    expect(html).toContain('Ci vediamo a Palermo');
+    expect(html).toContain('Il tavolo lo scegli tu');
+    expect(html).toContain('E a voi, genitori di Aurora');
+    expect(html).toContain('Villa Igiea');
+    expect(html).toContain('lunedì 31 agosto');
+    expect(html).toContain('name="robots" content="noindex"');
+    expect(html).not.toContain('booked');     // no proof-chips here — it's a letter, not an itinerary
+  });
+});
