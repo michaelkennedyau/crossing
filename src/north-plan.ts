@@ -19,7 +19,7 @@ interface PlanLeg { t?: string; what?: string; ref?: string; state?: 'booked' | 
 interface PlanDay { date?: string; title?: string; plan?: string; legs?: PlanLeg[] }
 interface PlanStop {
   key?: string; name?: string; node?: string; dates?: string; nights?: number; icon?: string;
-  img?: { src?: string; caption?: string }; notes?: string[];
+  img?: { src?: string; caption?: string }; notes?: string[]; short?: string;
   stats?: { n?: string; label?: string }[]; ports?: { flag?: string; date?: string; name?: string }[];
   hotel?: PlanHotel; altHotel?: PlanHotel; days?: PlanDay[];
   eat?: string[]; do?: string[]; events?: string[]; watchouts?: string[];
@@ -240,7 +240,7 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
         const past = o + len <= todayOff;
         o += len;
         if (past || !len) return '';
-        return `<div><span class="si">${esc(s2.icon ?? '')}</span><span class="sd">${esc((s2.dates ?? '').replace(' 2026', ''))}</span><span>${esc((s2.name ?? '').split(' — ')[0])}</span></div>`;
+        return `<div><span class="si">${esc(s2.icon ?? '')}</span><span class="sd">${esc((s2.dates ?? '').replace(' 2026', ''))}</span><span>${esc(s2.short ?? (s2.name ?? '').split(' — ')[0])}</span></div>`;
       }).filter(Boolean).join('');
       return rows ? `<div class="sum">${rows}</div>` : '';
     })()}
