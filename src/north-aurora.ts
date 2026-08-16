@@ -46,11 +46,11 @@ export function renderAurora(): string {
   <header>
     <p class="over">il varo · per Aurora</p>
     <h1>Ci vediamo a Palermo.</h1>
-    <p class="dates">30 agosto – 2 settembre 2026 · tre notti</p>
+    <p class="dates">31 agosto – 2 settembre 2026 · due notti a Palermo</p>
     <p class="lead">Cara Aurora — questa pagina è per te, e per i tuoi genitori, se vorrai mostrargliela.</p>
   </header>
   <section class="story">
-    <p>Siamo Michael e Claire, la famiglia di Fraser. A fine agosto attraversiamo il Mediterraneo — dieci notti di nave, da Nizza fino a Malta — e domenica 30 arriviamo a Palermo: tre notti a Villa Igiea, prima del lungo volo verso casa.</p>
+    <p>Siamo Michael e Claire, la famiglia di Fraser. A fine agosto attraversiamo il Mediterraneo — dieci notti di nave, da Nizza fino a Malta — poi lunedì 31, all'alba, il traghetto per la Sicilia: arriviamo a Palermo in tempo per pranzo, due notti a Villa Igiea prima del lungo volo verso casa.</p>
     <p>Lunedì 31 vorremmo invitarti a pranzo. Il tavolo lo scegli tu: è la tua città, e non ci sogneremmo mai di suggerire noi il posto a una palermitana.</p>
     <p class="ai-genitori">E a voi, genitori di Aurora: se vorrete unirvi, sarà un piacere avervi a tavola. Vostra figlia lavora con nostro figlio Fraser — le sue otto settimane in Australia quest'anno hanno contato davvero, e ci fa piacere poterlo dire di persona, a Palermo.</p>
     <p>Oltre il pranzo, nessun programma: i mercati, Monreale, il mare se chiama. Ci muoviamo con calma — le ferie servono a questo.</p>

@@ -150,9 +150,8 @@ describe('north weather · the guidance tab', () => {
       KV: { get: async (k: string) => (k === 'north-wx16' ? wx16 : { offline: true }), put: async () => {} },
     } as unknown as Env;
     const html = await renderWeatherGuide(env, new Date('2026-08-15T10:00:00Z'));
-    expect(html).toContain('Aurora joins for lunch');
-    expect(html).toContain('golden night inside the walls');
-    expect(html).toContain('Palermo for three Sicilian nights');
+    expect(html).toContain('golden weekend inside the walls');
+    expect(html).toContain('lunch with Aurora in Palermo');
     expect(html).toContain('feels 33');
     expect(html).toContain('Hot in the middle of the day');   // feels 33 is the hot band, and the page says so
     expect(html).not.toContain('<h2>London</h2>'); // past stop gone here too

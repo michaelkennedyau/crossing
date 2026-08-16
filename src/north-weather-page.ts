@@ -138,7 +138,7 @@ export async function renderWeatherGuide(env: Env, now: Date = new Date()): Prom
   <header>
     <p class="over">il varo · the weather</p>
     <h1>What each leg will feel like</h1>
-    <p class="lead">The confirmed shape: we ride the cruise to its last morning in Valletta, stay a golden night inside the walls, then cross to Palermo for three Sicilian nights — Aurora joins for lunch — and fly home on the day of the Sydney flight, with hours of slack built in. Below, the model's honest read for every remaining stop, refreshed through the day.</p>
+    <p class="lead">The confirmed shape: we ride the cruise to its last morning in Valletta, stay the golden weekend inside the walls, then the dawn ferry to Sicily on Monday — lunch with Aurora in Palermo, two nights at the grande dame — and fly home on the day of the Sydney flight, with hours of slack built in. Below, the model's honest read for every remaining stop, refreshed through the day.</p>
     <nav class="tabs"><a href="/north/plan">itinerary</a><a class="on" href="/north/weather">weather</a></nav>
   </header>
   ${chapters || '<p class="lead" style="margin-top:40px">Nothing left to forecast — welcome home.</p>'}
