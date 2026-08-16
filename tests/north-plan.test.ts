@@ -85,10 +85,16 @@ describe('north plan · the editorial itinerary', () => {
     expect(html).toContain('paid, waiting, certain');
   });
 
-  it('starts from now: past days vanish, past stops vanish, today is named plainly', async () => {
+  it('starts from now: the past folds into an auto-collapsed details, today is named plainly', async () => {
     const html = await renderPlan(stubEnv(ROW), new Date('2026-08-15T10:00:00Z'));
-    expect(html).not.toContain('Pints and plans');          // Friday is gone
-    expect(html).not.toContain('<h2>London</h2>');          // whole past stop dropped
+    expect(html).toContain('<details class="done">');       // the fold exists (collapsed: no open attr)
+    expect(html).not.toContain('<details class="done" open');
+    expect(html).toContain('the story so far');
+    const fold = html.slice(html.indexOf('<details class="done">'), html.indexOf('</details>'));
+    expect(fold).toContain('<h2>London</h2>');              // whole past stop lives inside the fold
+    expect(fold).toContain('Pints and plans');              // its days keep their prose
+    const after = html.slice(html.indexOf('</details>'));
+    expect(after).not.toContain('<h2>London</h2>');         // and only inside the fold
     expect(html).toContain('stanza today');
     expect(html).toContain('today: the boat');
   });

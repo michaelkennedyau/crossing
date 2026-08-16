@@ -110,6 +110,15 @@ body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-
 .stanza.lived p{display:none;}
 .facts{margin-top:8px;font-size:13px;line-height:1.8;color:var(--schist);}
 .facts .ok{color:var(--live);}
+details.done{margin-top:48px;border:1px solid var(--line);border-radius:12px;padding:0 18px;}
+details.done summary{cursor:pointer;font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--schist);padding:14px 0;list-style:none;}
+details.done summary::-webkit-details-marker{display:none;}
+details.done summary::before{content:'▸ ';color:var(--live);}
+details.done[open] summary::before{content:'▾ ';}
+details.done .ch{margin-top:28px;opacity:.8;}
+details.done .ch:last-child{padding-bottom:24px;}
+details.done .stanza.lived{opacity:.7;}
+details.done .stanza.lived p{display:block;}
 hr{border:0;border-top:1px solid var(--line);margin-top:72px;}
 footer{margin-top:40px;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--schist);line-height:2;}
 footer a{color:var(--live);text-decoration:none;}
@@ -175,13 +184,14 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
   }
 
   let off = 0;
-  const chapters = stops.map((s) => {
+  const rendered = stops.map((s) => {
+    const startOff = off;
     const [main, subline] = (s.name ?? '').split(' — ');
     const stanzas = (s.days ?? []).map((day) => {
       const past = off < todayOff;
       const state = past ? 'lived' : off === todayOff ? 'today' : 'ahead';
       const wx = wxText(s.node, off, todayOff, wxNodes);
-      const html = past ? '' : `<div class="stanza ${state}">
+      const html = `<div class="stanza ${state}">
         <span class="dw">${esc(day.date)}</span>
         <h3>${esc(day.title)}</h3>${wx}
         <p>${esc(day.plan)}</p>
@@ -190,8 +200,8 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
       off += 1;
       return html;
     }).join('');
-    if (!stanzas) return '';
-    return `<section class="ch">
+    if (!stanzas) return null;
+    const html = `<section class="ch">
       <div class="when">${esc(s.dates)} · ${esc(s.nights)} night${(s.nights ?? 0) === 1 ? '' : 's'}</div>
       <h2>${s.icon ? `${esc(s.icon)} ` : ''}${esc(main)}</h2>
       ${subline ? `<p class="voice">${esc(subline)}</p>` : ''}
@@ -205,7 +215,14 @@ export async function renderPlan(env: Env, now: Date = new Date()): Promise<stri
         s.hotel.url ? `<a href="${esc(s.hotel.url)}"><b>${esc(s.hotel.name)}</b></a>` : `<b>${esc(s.hotel.name)}</b>`}</p>` : ''}
       ${stanzas}
     </section>`;
-  }).join('');
+    return { html, past: (s.days?.length ?? 0) > 0 && startOff + (s.days?.length ?? 0) <= todayOff };
+  }).filter((r): r is { html: string; past: boolean } => r !== null);
+
+  const livedChapters = rendered.filter((r) => r.past).map((r) => r.html).join('');
+  const aheadChapters = rendered.filter((r) => !r.past).map((r) => r.html).join('');
+  const chapters = `${livedChapters
+    ? `<details class="done"><summary>the story so far — already lived, tap to reread</summary>${livedChapters}</details>`
+    : ''}${aheadChapters}`;
 
   const body = !doc
     ? `<p class="lead" style="margin-top:40px">The itinerary isn't published yet — the bridge at <a href="/north">/north</a> is the live instrument.</p>`
