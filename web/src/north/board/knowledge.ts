@@ -100,6 +100,13 @@ export const KNOWLEDGE: Record<string, NodeKnowledge> = {
       { name: 'Palazzo Brunaccini', tier: 'sane', note: 'charming palazzo in the old centre' },
     ],
   },
+  valletta: {
+    why: 'The Knights’ honey-stone capital, all of it walkable from the cruise berth — a Caravaggio, a noon gun over the Grand Harbour, and a night inside the walls beats a dawn sprint to the airport.',
+    hotels: [
+      { name: '1926 La Galerie Boutique Art Suites', tier: 'good', note: 'art suites on Old Theatre Street, in the walls', url: 'https://1926hotel.com' },
+      { name: 'The Phoenicia', tier: 'sane', note: 'the grande dame outside City Gate, harbour pool' },
+    ],
+  },
   olbia: {
     why: 'Europe’s clearest water — silly money in Ferragosto week, half price and warmer sea from the 22nd.',
     hotels: [

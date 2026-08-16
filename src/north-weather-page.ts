@@ -5,7 +5,8 @@ import { tripDayOffset } from './north-plan';
 
 /**
  * The weather tab — /north/weather. Guidance, not instruments: for the confirmed shape
- * (finish the cruise, lunch with Aurora, across to Palermo, home on the day of QF2) it
+ * (finish the cruise in Valletta, a night in the walls, Palermo with Aurora's lunch,
+ * home on the day of QF2) it
  * reads a 16-day model run for each remaining stop and says, in plain words, what each
  * leg will feel like and how to dress for it. Same voice and cloth as the itinerary page;
  * the bridge keeps the dials.
@@ -137,7 +138,7 @@ export async function renderWeatherGuide(env: Env, now: Date = new Date()): Prom
   <header>
     <p class="over">il varo · the weather</p>
     <h1>What each leg will feel like</h1>
-    <p class="lead">The confirmed shape: we ride the cruise to its last morning, have our Taormina days — Aurora joins for lunch — then cross to Palermo for the final two nights and fly home on the day of the Sydney flight, with hours of slack built in. Below, the model's honest read for every remaining stop, refreshed through the day.</p>
+    <p class="lead">The confirmed shape: we ride the cruise to its last morning in Valletta, stay a golden night inside the walls, then cross to Palermo for three Sicilian nights — Aurora joins for lunch — and fly home on the day of the Sydney flight, with hours of slack built in. Below, the model's honest read for every remaining stop, refreshed through the day.</p>
     <nav class="tabs"><a href="/north/plan">itinerary</a><a class="on" href="/north/weather">weather</a></nav>
   </header>
   ${chapters || '<p class="lead" style="margin-top:40px">Nothing left to forecast — welcome home.</p>'}
