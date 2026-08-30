@@ -9,15 +9,23 @@ sort: 150
 ---
 ::map taormina
 
-The tender put us in at Giardini Naxos, where the Greeks first landed in Sicily two and a half thousand years before us, so the anchorage at least came recommended, and from there the only direction on offer is up, Taormina having been built on a shelf of hill with a clear view of everything and a clear intention of not being easily visited, an intention we overruled.
+The Greeks aimed a theatre at a volcano. It's still in the cast.
 
-The theatre is what the climb is for. The Greeks cut it into the ridge and pointed the stage straight at Etna, which is to say they looked at the largest volcano in Europe, decided it could act, and wrote it into the show, and it is still in the cast, still on the bill, and by all accounts has never missed a performance. I would also note, for the benefit of certain members of the touring party, that the venue contains no screens, never has, and sold out for centuries regardless.
+The tender put us in at Giardini Naxos — first Greek landing in Sicily, two and a half thousand years before ours. So the anchorage came recommended. From there the only direction on offer is up.
+
+Taormina sits on a shelf of hill with a clear view of everything and a clear intention of not being easily visited. We overruled it.
+
+The theatre is what the climb is for. The Greeks cut it into the ridge and pointed the stage straight at Etna. The largest volcano in Europe, hired as scenery. Never missed a performance.
+
+One note for certain members of the touring party. The venue contains no screens. Never has. Sold out for centuries regardless.
 
 ::prompt Was Etna doing anything behind the stage?
 
-::drop They built the seats before they hired the actors, and aimed the whole thing at the scenery. What else were they pointing their buildings at?
+::drop They built the seats before they hired the actors. Aimed the whole thing at the scenery. What else were they pointing their buildings at?
 
-Down in the town the true institution is not the theatre, it is Bam Bar, which does granita and has correctly concluded that nothing further is required of it, and you don't need to read a review because the queue is the review, published daily on the footpath and rigorously refereed. We joined it, on the grounds that conditions were grim and only granita was going to address them.
+Down in the town the true institution is not the theatre. It is Bam Bar, which does granita and has correctly concluded that nothing further is required of it. You don't need to read a review — the queue is the review, published daily on the footpath, rigorously refereed.
+
+We joined it. Conditions were grim. Only granita was going to address them.
 
 ::prompt What granita, in what order?
 

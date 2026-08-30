@@ -69,6 +69,15 @@ border-left:2px solid var(--tint,var(--line));padding-left:6px;}
 .tonight .tl{font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--marine);}
 .tonight .tt{font-family:var(--font-display);font-size:19px;margin-top:2px;}
 .tonight .tq{font-family:var(--font-hand);font-style:italic;font-size:14px;color:var(--ink-dim);margin-top:2px;}
+.editday{display:inline-block;margin-top:12px;font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;color:var(--live);border:1px solid var(--live);border-radius:7px;padding:5px 12px;text-decoration:none;}
+.gstrip{display:flex;align-items:center;gap:14px;margin:10px 0 4px;font-family:var(--font-mono);font-size:11px;color:var(--schist);}
+.gstrip .garc{width:34px;height:34px;flex:0 0 34px;transform:rotate(-90deg);}
+.gstrip .garc circle{fill:none;stroke-width:3;}
+.gstrip .garc .gb{stroke:var(--line);}
+.gstrip .garc .gf{stroke:var(--live);stroke-dasharray:1;}
+.gstrip .gpct{font-variant-numeric:tabular-nums;color:var(--ink);}
+.gstrip .gm{color:var(--tint-m);}
+.gstrip .gc{color:var(--tint-c);}
 details.fold{border:1px solid var(--line);border-radius:10px;padding:0 16px;margin:12px 0;}
 details.fold summary{cursor:pointer;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--schist);padding:12px 0;list-style:none;}
 details.fold summary::-webkit-details-marker{display:none}
@@ -96,6 +105,7 @@ footer a{color:var(--live);text-decoration:none;}
 .doct p{font-family:var(--font-display);font-weight:400;font-size:18px;margin-top:2px;}
 .prompt{font-family:var(--font-hand);font-style:italic;font-size:18px;color:var(--ink-dim);text-align:center;margin:36px 0;}
 .prompt::before{content:'— ';color:var(--schist);}
+.dinkus{text-align:center;color:var(--gold);font-size:14px;letter-spacing:.4em;margin:26px 0;}
 .phint{text-align:center;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;margin-top:-26px;margin-bottom:30px;}
 .phint a{color:var(--gold);text-decoration:none;}
 .card{border:1px solid var(--line);border-radius:10px;padding:14px;margin:26px 0;display:flex;flex-direction:column;gap:4px;}
@@ -122,7 +132,9 @@ footer a{color:var(--live);text-decoration:none;}
 .m-draw{stroke-dasharray:1;stroke-dashoffset:1;animation:jdraw 1.6s cubic-bezier(.4,0,.2,1) .3s forwards;}
 @keyframes jdraw{to{stroke-dashoffset:0}}
 .spine-map svg{height:210px;width:auto;margin:28px auto 0;}
-.chp .told-stamp{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--live);margin-left:8px;}
+.chp .told-stamp,.told-stamp{display:inline-block;font-family:var(--font-mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--live);
+border:1px solid var(--live);box-shadow:0 0 0 2px var(--paper),0 0 0 3px var(--live);border-radius:2px;padding:1px 6px;margin-left:10px;
+transform:rotate(-3deg);mix-blend-mode:multiply;}
 .dots{display:inline-flex;gap:4px;margin-left:8px;vertical-align:1px;}
 .dots i{width:5px;height:5px;border-radius:50%;display:inline-block;}
 .dots .dm{background:var(--tint-m);}
@@ -253,20 +265,30 @@ export async function renderJournalHome(env: Env, tier: Tier, now: Date = new Da
   if (fam && rows.length) {
     let tonight: { id: string; title: string; voice: string; open: number } | null = null;
     let best = 101;
+    let scoreSum = 0, dayCount = 0, mw = 0, cw = 0;
     for (const r of rows) {
-      if (!r.day_date || r.day_date > today || r.body === undefined) continue;
-      const st = chapterStats(parseBody(r.body), photoMap.get(r.id) ?? 0, (promptsMap[r.id] ?? []).length);
-      if (st.score < best) { best = st.score; tonight = { id: r.id, title: r.title, voice: r.voice, open: st.promptsOpen }; }
+      if (r.body === undefined) continue;
+      const stAll = chapterStats(parseBody(r.body), photoMap.get(r.id) ?? 0, (promptsMap[r.id] ?? []).length);
+      mw += stAll.words.m; cw += stAll.words.c;
+      if (r.day_date) { scoreSum += stAll.score; dayCount++; }
+      if (!r.day_date || r.day_date > today) continue;
+      if (stAll.score < best) { best = stAll.score; tonight = { id: r.id, title: r.title, voice: r.voice, open: stAll.promptsOpen }; }
     }
-    famDeck = `${tonight ? `<a class="tonight" href="${base}/ch/${esc(tonight.id)}">
+    const pct = dayCount ? Math.round(scoreSum / dayCount) : 0;
+    const gstrip = `<div class="gstrip"><svg class="garc" viewBox="0 0 34 34" aria-hidden="true">
+      <circle class="gb" cx="17" cy="17" r="14"></circle>
+      <circle class="gf" cx="17" cy="17" r="14" pathLength="1" style="stroke-dashoffset:${(1 - pct / 100).toFixed(2)}"></circle></svg>
+      <span class="gpct">${pct}% told</span><span class="gm">his ${mw.toLocaleString()}</span><span class="gc">hers ${cw.toLocaleString()}</span>
+      <a href="${base}/admin#game" style="color:var(--live);text-decoration:none;margin-left:auto">score →</a></div>`;
+    famDeck = `${gstrip}${tonight ? `<a class="tonight" href="${base}/ch/${esc(tonight.id)}">
       <span class="tl">tonight's chapter</span>
       <p class="tt">${esc(tonight.title)}</p>
-      <p class="tq">${tonight.open ? `${tonight.open} question${tonight.open === 1 ? '' : 's'} waiting — answers go in via the pen, below` : esc(tonight.voice)}</p>
+      <p class="tq">${tonight.open ? `${tonight.open} question${tonight.open === 1 ? '' : 's'} waiting — tap ✎ edit inside` : esc(tonight.voice)}</p>
     </a>` : ''}
     <details class="fold"><summary>how this works</summary><div class="fb">
       <p><b>Reading:</b> every day of the crossing is a chapter, already written. Tap any knot on the cord.</p>
-      <p><b>Writing:</b> the <a href="${base}/admin#chapters">pen</a> opens every chapter as editable paragraphs — change anything, answer the italic questions, add your own lines. Edited words quietly take your colour: <i class="own om" style="width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--tint-m)"></i> his, <i style="width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--tint-c)"></i> hers.</p>
-      <p><b>Photos:</b> the <a href="${base}/admin#bench">bench</a> takes them straight from the camera roll and files them to the right day.</p>
+      <p><b>Writing:</b> every chapter has an <b>✎ edit this day</b> button — it opens the day as editable paragraphs in <a href="${base}/admin#chapters">write</a> — change anything, answer the italic questions, add your own lines. Edited words quietly take your colour: <i class="own om" style="width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--tint-m)"></i> his, <i style="width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--tint-c)"></i> hers.</p>
+      <p><b>Photos:</b> <a href="${base}/admin#bench">photos</a> takes them straight from the camera roll and files them to the right day.</p>
       <p><b>The game:</b> a chapter you've made yours crosses <b>told</b> and its knot fills. <a href="${base}/admin#game">The scoreboard</a> keeps the marriage honest.</p>
     </div></details>
     <details class="fold"><summary>the house phrases — it is obligatory not to smile</summary><div class="fb"><dl>

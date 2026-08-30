@@ -62,7 +62,7 @@ function renderBlock(b: Block, ctx: RenderCtx): string {
     case 'map': return renderChapterMap(ctx.slug, b.focus);
     case 'prompt': {
       if (ctx.tier === 'public') return '';
-      const hint = ctx.firstPrompt.done ? '' : `<p class="phint"><a href="${ctx.base}/admin#ch/${esc(ctx.slug)}">answer these in the pen →</a></p>`;
+      const hint = ctx.firstPrompt.done ? '' : `<p class="phint"><a href="${ctx.base}/admin#ch/${esc(ctx.slug)}">answer these →</a></p>`;
       ctx.firstPrompt.done = true;
       return `<p class="prompt"${mark}>${esc(b.q)}</p>${hint}`;
     }
@@ -116,7 +116,17 @@ export async function renderChapterPage(env: Env, tier: Tier, slug: string, base
     ordered.splice(at + 1, 0, mapBlock);
   }
   const ctx: RenderCtx = { tier, slug, assets, used: new Set<number>(), firstImg: { done: false }, firstPrompt: { done: false }, base };
-  const bodyHtml = ordered.map((b) => renderBlock(b, ctx)).join('\n');
+  // the dinkus law (design board, plate 02): a reader who bounced can land at any
+  // asterisk and resume without shame — one every three consecutive paragraphs
+  let run = 0;
+  const bodyHtml = ordered.map((b, i) => {
+    const html = renderBlock(b, ctx);
+    if (b.t === 'p') {
+      run++;
+      if (run === 3 && ordered[i + 1]?.t === 'p') { run = 0; return html + '\n<p class="dinkus" aria-hidden="true">*&emsp;*&emsp;*</p>'; }
+    } else run = 0;
+    return html;
+  }).join('\n');
 
   const unplaced = assets
     .map((a, idx) => ({ a, idx }))
@@ -130,6 +140,7 @@ export async function renderChapterPage(env: Env, tier: Tier, slug: string, base
     <h1>${esc(row.title)}</h1>
     ${row.voice ? `<p class="sub">${esc(row.voice)}</p>` : ''}
     ${chipRow(row.threads)}
+    ${tier !== 'public' ? `<a class="editday" href="${base}/admin#ch/${esc(slug)}">✎ edit this day</a>` : ''}
     <div class="dbl" aria-hidden="true"></div>
   </header>
   <article class="chbody">

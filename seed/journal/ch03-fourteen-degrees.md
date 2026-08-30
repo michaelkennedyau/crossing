@@ -9,17 +9,23 @@ sort: 40
 ---
 ::map lyon
 
-We had a driver for the day, which is the correct way to do the northern Rhône, since somebody has to stay sober and it was not going to be either of us. South of Lyon the valley narrows and the vineyards stop pretending to be agriculture, terraces stacked up slopes you would want a rope for in any other context, Côte-Rôtie above Ampuis on one side and Condrieu a few bends further on, the whole arrangement run this way for about two thousand years on the theory that if the hill faces the sun hard enough, the wine will forgive you the labour.
+Fourteen degrees. The coolest room in France that week was a wine cellar, and we were in it.
+
+We had a driver for the day. Somebody has to stay sober in the northern Rhône, and it was not going to be either of us.
+
+South of Lyon the valley narrows and the vineyards stop pretending to be agriculture. Terraces stacked up slopes you would want a rope for in any other context. Côte-Rôtie above Ampuis on one side, Condrieu a few bends further on. It has run this way for about two thousand years. The theory: face the hill at the sun hard enough and the wine forgives the labour.
 
 ::drop The roasted slope, named by people who stood on it in August and knew exactly what they were describing. Who carried the first stones up?
 
-Guigal's Caveau du Château sits at fourteen degrees, which in a normal year is a technical note about storage and in that particular week made it, by a wide margin, the coolest room in France. Conditions were grim. There is a version of this day where I explain what Viognier does at cellar temperature and a version where I just tell you we went quiet in there, and I am going with the second. We stayed as long as the tasting could reasonably be stretched, then a bit longer, and bottles were involved by the exit.
+Guigal's Caveau du Château holds fourteen degrees. In a normal year that is a technical note about storage. That week it was the main event, by a wide margin. Conditions were grim.
+
+There is a version of this day where I explain what Viognier does at cellar temperature. Instead: we went quiet in there. We stayed as long as the tasting could reasonably be stretched, then a bit longer, and bottles were involved by the exit.
 
 ::prompt Which bottle came back from the Caveau?
 
 ::ledger — bottles from the Caveau, count unrecorded
 
-Mont Blanc had been sitting at the end of the plan the way it sits at the end of every plan in that part of the world, and somewhere in that day it came off the sheet. Not cancelled. Deferred, which in this family is a different word entirely, with its own file.
+Mont Blanc had been sitting at the end of the plan, the way it sits at the end of every plan in that part of the world. Somewhere in that day it came off the sheet. Not cancelled. Deferred. In this family that is a different word entirely, with its own file.
 
 ::prompt Where exactly were we standing when Mont Blanc got deferred?
 
@@ -27,4 +33,4 @@ Mont Blanc had been sitting at the end of the plan the way it sits at the end of
 
 ::prompt What was the 70mm line a reply to?
 
-The mountain is not going anywhere, and the driver took us back up the valley into the August, which had not improved.
+The mountain is not going anywhere. The driver took us back up the valley into the August, which had not improved.

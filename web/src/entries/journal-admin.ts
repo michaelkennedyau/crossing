@@ -172,7 +172,7 @@ button.primary{background:#0E7C6B;border-color:#0E7C6B;color:#fff;padding:8px 16
 .tonight{border:1px solid #E4E9EE;border-radius:10px;padding:12px;margin-top:14px;font-size:13px}
 .tonight .q{font-style:italic;color:#43586C;margin-top:4px}
 </style>
-<nav class="tabs"><a href="#bench" data-tab="bench">bench</a><a href="#chapters" data-tab="chapters">chapters</a><a href="#game" data-tab="game">the game</a></nav>
+<nav class="tabs"><a href="#bench" data-tab="bench">photos</a><a href="#chapters" data-tab="chapters">write</a><a href="#game" data-tab="game">score</a></nav>
 <div class="pane" id="pane-bench">
   <label class="drop">tap to add photos — iphone or exported Z9 jpegs
     <input type="file" accept="image/jpeg,image/png,image/webp,image/heic" multiple>

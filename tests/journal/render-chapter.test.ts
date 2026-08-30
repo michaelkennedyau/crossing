@@ -170,6 +170,8 @@ describe('journal · self-instruction', () => {
     expect(fam).toContain("tonight's chapter");
     expect(fam).toContain('how this works');
     expect(fam).toContain('obligatory not to smile');
+    expect(fam).toContain('% told');                            // the live game strip
+    expect(fam).toContain('score →');
     expect(fam).toContain('A smile voids the sentence');
   });
 
@@ -181,14 +183,17 @@ describe('journal · self-instruction', () => {
     expect(html).not.toContain('how this works');
     expect(html).not.toContain("tonight's chapter");
     expect(html).not.toContain('the house phrases');
+    expect(html).not.toContain('% told');
   });
 
   it('the first prompt on a chapter carries the pen affordance, family only', async () => {
     const { env } = journalEnv({ chapters: [CH], assets: ASSETS });
     const fam = await (await fetchCh(env, 'ch06-calvi', R)).text();
-    expect((fam.match(/answer these in the pen/g) ?? []).length).toBe(1);
+    expect((fam.match(/answer these →/g) ?? []).length).toBe(1);
     expect(fam).toContain('/admin#ch/ch06-calvi');
+    expect(fam).toContain('✎ edit this day');
     const pub = await (await fetchCh(env, 'ch06-calvi')).text();
-    expect(pub).not.toContain('answer these in the pen');
+    expect(pub).not.toContain('answer these →');
+    expect(pub).not.toContain('edit this day');
   });
 });
