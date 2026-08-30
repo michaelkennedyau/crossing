@@ -18,6 +18,8 @@ export interface Env {
   // Both unset ⇒ the journal answers 503 — fail closed, never open.
   JOURNAL_READ_KEY?: string;
   JOURNAL_ADMIN_KEY?: string;
+  // Claire's writer key — optional; without it she reads via the family link but can't write.
+  JOURNAL_CLAIRE_KEY?: string;
   // var — QF27 launch instant, used by the countdown.
   DEPART_ISO: string;
   // var — the north launch instant (QF BNE→SYD, Sat 8 Aug), used by the north countdown.

@@ -1,6 +1,8 @@
 import { Hono } from 'hono';
 import type { Env } from '../env';
-import { journalHeaders, resolveTier, rigged, type Tier } from '../journal/auth';
+import { journalHeaders, resolveAuth, rigged, type JournalAuth } from '../journal/auth';
+import { parseBody, parseGrammar, isBlockLike, type Block } from '../journal/blocks';
+import { bumpStreak, chapterStats, diffBlocks, journalProgress, romeDate as progressRomeDate, streakLine, type ChapterInput, type Streak } from '../journal/progress';
 
 /**
  * /api/journal/* — the journal's write surface. Unlike the rest of the site's open APIs,
@@ -9,7 +11,7 @@ import { journalHeaders, resolveTier, rigged, type Tier } from '../journal/auth'
  * limits are plan-tied). Bound params + size caps everywhere: the D1 is the shared brain.
  */
 
-type Vars = { tier: Tier };
+type Vars = { tier: JournalAuth['tier']; auth: JournalAuth };
 export const journalApiApp = new Hono<{ Bindings: Env; Variables: Vars }>();
 
 const VARIANTS = new Set(['1280', '1920', 'orig']);
@@ -19,10 +21,11 @@ const MAX_LQIP = 2_000;                    // a 28px data URI is ~600B; anything
 
 journalApiApp.use('*', async (c, next) => {
   if (!rigged(c.env)) return c.json({ error: 'not rigged' }, 503);
-  const tier = await resolveTier(c.env, c.req.header('cookie') ?? null);
-  if (tier === 'public') return c.json({ error: 'family only' }, 401);
-  if (c.req.method !== 'GET' && tier !== 'admin') return c.json({ error: 'admin only' }, 403);
-  c.set('tier', tier);
+  const auth = await resolveAuth(c.env, c.req.header('cookie') ?? null);
+  if (auth.tier === 'public') return c.json({ error: 'family only' }, 401);
+  if (c.req.method !== 'GET' && auth.author === null) return c.json({ error: 'writers only' }, 403);
+  c.set('auth', auth);
+  c.set('tier', auth.tier);
   await next();
 });
 
@@ -112,13 +115,165 @@ journalApiApp.patch('/assets/:id', async (c) => {
   return c.json({ ok: true });
 });
 
-// ── chapters (thin PR2 versions; the grammar-parsing PUT lands in PR3) ──
+// ── chapters ──
+
+const SLUG_RE = /^[a-z0-9-]{1,64}$/;
+const MAX_BLOCKS = 200;
+const MAX_BLOCK_CHARS = 5_000;
+
+async function metaDoc<T>(env: Env, id: string): Promise<T | null> {
+  const row = await env.DB.prepare('SELECT json FROM journal_meta WHERE id=?').bind(id)
+    .first<{ json: string }>().catch(() => null);
+  if (!row) return null;
+  try { return JSON.parse(row.json) as T; } catch { return null; }
+}
+
+async function promptCounts(env: Env): Promise<Record<string, string[]>> {
+  return (await metaDoc<Record<string, string[]>>(env, 'prompts')) ?? {};
+}
+
+async function photoCounts(env: Env): Promise<Map<string, number>> {
+  const rows = await env.DB.prepare(
+    'SELECT chapter_id, COUNT(*) AS n FROM journal_assets WHERE enabled=1 GROUP BY chapter_id',
+  ).all<{ chapter_id: string; n: number }>().then((r) => r.results ?? []).catch(() => []);
+  return new Map(rows.map((r) => [r.chapter_id, r.n]));
+}
 
 journalApiApp.get('/chapters', async (c) => {
   const rows = await c.env.DB.prepare(
     'SELECT id, day_date, title, voice, threads, closer, public, sort FROM journal_chapters WHERE enabled=1 ORDER BY sort, day_date, id',
   ).all().then((r) => r.results ?? []).catch(() => []);
   return c.json({ chapters: rows });
+});
+
+journalApiApp.get('/chapters/:slug', async (c) => {
+  const slug = c.req.param('slug');
+  if (!SLUG_RE.test(slug)) return c.json({ error: 'bad slug' }, 400);
+  const row = await c.env.DB.prepare(
+    'SELECT id, day_date, title, voice, body, threads, closer, public, sort FROM journal_chapters WHERE id=? AND enabled=1',
+  ).bind(slug).first<{ id: string; day_date: string; title: string; voice: string; body: string; threads: string; closer: string; public: number; sort: number }>().catch(() => null);
+  if (!row) return c.json({ error: 'unknown chapter' }, 404);
+  const blocks = parseBody(row.body);
+  const prompts = (await promptCounts(c.env))[slug] ?? [];
+  const photos = (await photoCounts(c.env)).get(slug) ?? 0;
+  const stats = chapterStats(blocks, photos, prompts.length);
+  const { body: _b, ...meta } = row;
+  return c.json({ chapter: meta, blocks, prompts, score: stats.score, told: stats.told, photoCount: photos });
+});
+
+journalApiApp.put('/chapters/:slug', async (c) => {
+  const slug = c.req.param('slug');
+  if (!SLUG_RE.test(slug)) return c.json({ error: 'bad slug' }, 400);
+  const author = c.get('auth').author;
+  if (!author) return c.json({ error: 'writers only' }, 403);
+
+  let body: { title?: string; voice?: string; closer?: string; threads?: unknown; public?: unknown; sort?: number; blocks?: unknown; text?: string };
+  try { body = await c.req.json(); } catch { return c.json({ error: 'bad json' }, 400); }
+
+  // incoming blocks: editor path (author-blind — any client `by` is discarded) or grammar path
+  let incoming: Block[] | null = null;
+  if (Array.isArray(body.blocks)) {
+    const cleaned = (body.blocks as unknown[])
+      .map((b) => (b && typeof b === 'object' ? { ...(b as Record<string, unknown>), by: 'seed' } : b))
+      .filter(isBlockLike);
+    if (cleaned.length > MAX_BLOCKS) return c.json({ error: 'too many blocks' }, 413);
+    for (const b of cleaned) {
+      const textLen = 'text' in b ? b.text.length : 'q' in b ? b.q.length : 0;
+      if (textLen > MAX_BLOCK_CHARS) return c.json({ error: 'block too long' }, 413);
+    }
+    incoming = cleaned.filter((b) => !('text' in b) || b.text.trim() !== '');
+  } else if (typeof body.text === 'string') {
+    if (body.text.length > 120_000) return c.json({ error: 'too long' }, 413);
+    incoming = parseGrammar(body.text, 'seed');
+  }
+
+  const existing = await c.env.DB.prepare('SELECT body FROM journal_chapters WHERE id=?')
+    .bind(slug).first<{ body: string }>().catch(() => null);
+
+  let finalBlocks: Block[] | null = null;
+  if (incoming) {
+    const stored = existing ? parseBody(existing.body) : [];
+    // the grammar path seeds; the editor path diffs. A grammar PUT on an EXISTING chapter
+    // still diffs (protects edits); on a new chapter everything lands as 'seed'.
+    finalBlocks = existing ? diffBlocks(stored, incoming, author) : incoming;
+  }
+
+  const threads = Array.isArray(body.threads) ? JSON.stringify((body.threads as unknown[]).filter((t) => typeof t === 'string').slice(0, 12)) : null;
+  const pub = body.public === 1 || body.public === true ? 1 : body.public === 0 || body.public === false ? 0 : null;
+
+  const sets: string[] = [];
+  const args: (string | number)[] = [];
+  if (typeof body.title === 'string' && body.title.trim()) { sets.push('title=?'); args.push(body.title.slice(0, 200)); }
+  if (typeof body.voice === 'string') { sets.push('voice=?'); args.push(body.voice.slice(0, 300)); }
+  if (typeof body.closer === 'string') { sets.push('closer=?'); args.push(body.closer.slice(0, 200)); }
+  if (threads !== null) { sets.push('threads=?'); args.push(threads); }
+  if (pub !== null) { sets.push('public=?'); args.push(pub); }
+  if (typeof body.sort === 'number' && Number.isFinite(body.sort)) { sets.push('sort=?'); args.push(Math.round(body.sort)); }
+  if (finalBlocks) { sets.push('body=?'); args.push(JSON.stringify(finalBlocks)); }
+
+  if (existing) {
+    if (!sets.length) return c.json({ error: 'nothing to set' }, 400);
+    sets.push("updated_at=datetime('now')");
+    await c.env.DB.prepare(`UPDATE journal_chapters SET ${sets.join(', ')} WHERE id=?`).bind(...args, slug).run();
+  } else {
+    if (typeof body.title !== 'string' || !body.title.trim()) return c.json({ error: 'title required for a new chapter' }, 400);
+    await c.env.DB.prepare(
+      'INSERT INTO journal_chapters (id, day_date, title, voice, body, threads, closer, public, sort) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    ).bind(
+      slug,
+      typeof (body as { day_date?: string }).day_date === 'string' ? (body as { day_date?: string }).day_date! .slice(0, 10) : '',
+      body.title.slice(0, 200),
+      (body.voice ?? '').slice(0, 300),
+      JSON.stringify(finalBlocks ?? []),
+      threads ?? '[]',
+      (body.closer ?? '').slice(0, 200),
+      pub ?? 0,
+      typeof body.sort === 'number' ? Math.round(body.sort) : 0,
+    ).run();
+  }
+
+  // scoring + told-crossing + streak (either author's save counts, Europe/Rome day)
+  const today = progressRomeDate(new Date());
+  const prompts = (await promptCounts(c.env))[slug] ?? [];
+  const photos = (await photoCounts(c.env)).get(slug) ?? 0;
+  const beforeStats = existing ? chapterStats(parseBody(existing.body), photos, prompts.length) : null;
+  const blocksNow = finalBlocks ?? (existing ? parseBody(existing.body) : []);
+  const stats = chapterStats(blocksNow, photos, prompts.length);
+  const crossed = !!(stats.told && beforeStats && !beforeStats.told);
+
+  const streak = bumpStreak((await metaDoc<Streak>(c.env, 'streak')), today);
+  await c.env.DB.prepare(
+    "INSERT INTO journal_meta (id, json, updated_at) VALUES ('streak', ?, datetime('now')) ON CONFLICT(id) DO UPDATE SET json=excluded.json, updated_at=excluded.updated_at",
+  ).bind(JSON.stringify(streak)).run().catch(() => {});
+
+  return c.json({ ok: true, blocks: blocksNow, score: stats.score, told: stats.told, crossed, streak: streakLine(streak, today) });
+});
+
+journalApiApp.delete('/chapters/:slug', async (c) => {
+  const slug = c.req.param('slug');
+  if (!SLUG_RE.test(slug)) return c.json({ error: 'bad slug' }, 400);
+  await c.env.DB.prepare('UPDATE journal_chapters SET enabled=0 WHERE id=?').bind(slug).run();
+  return c.json({ ok: true });
+});
+
+// ── the game state, one fetch ──
+
+journalApiApp.get('/progress', async (c) => {
+  const rows = await c.env.DB.prepare(
+    'SELECT id, day_date, title, body FROM journal_chapters WHERE enabled=1 ORDER BY sort, day_date, id',
+  ).all<{ id: string; day_date: string; title: string; body: string }>().then((r) => r.results ?? []).catch(() => []);
+  const prompts = await promptCounts(c.env);
+  const photos = await photoCounts(c.env);
+  const inputs: ChapterInput[] = rows.map((r) => ({
+    id: r.id, day_date: r.day_date, title: r.title,
+    blocks: parseBody(r.body),
+    photoCount: photos.get(r.id) ?? 0,
+    seedPromptCount: (prompts[r.id] ?? []).length,
+  }));
+  const today = progressRomeDate(new Date());
+  const prog = journalProgress(inputs, today);
+  const streak = await metaDoc<Streak>(c.env, 'streak');
+  return c.json({ ...prog, streak: streakLine(streak, today) });
 });
 
 export { journalHeaders };

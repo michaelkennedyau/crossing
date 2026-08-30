@@ -12,6 +12,8 @@ import type { Env } from '../env';
  */
 
 export type Tier = 'admin' | 'reader' | 'public';
+export type WriterId = 'm' | 'c' | null;
+export interface JournalAuth { tier: Tier; author: WriterId }
 
 const enc = new TextEncoder();
 
@@ -41,12 +43,22 @@ export function parseCookies(header: string | null): Record<string, string> {
 export const cookieFor = (name: string, token: string): string =>
   `${name}=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=31536000`;
 
-/** the request's tier, from cookies against the live secrets; admin implies reader */
-export async function resolveTier(env: Env, cookieHeader: string | null): Promise<Tier> {
+/**
+ * The request's identity: tier + writer id. Both writer keys resolve to tier 'admin' —
+ * they differ only in who the words belong to. Precedence ja > jc > jr (deterministic if
+ * one phone somehow holds both writer cookies).
+ */
+export async function resolveAuth(env: Env, cookieHeader: string | null): Promise<JournalAuth> {
   const c = parseCookies(cookieHeader);
-  if (env.JOURNAL_ADMIN_KEY && c.ja && (await tokenEquals(c.ja, env.JOURNAL_ADMIN_KEY))) return 'admin';
-  if (env.JOURNAL_READ_KEY && c.jr && (await tokenEquals(c.jr, env.JOURNAL_READ_KEY))) return 'reader';
-  return 'public';
+  if (env.JOURNAL_ADMIN_KEY && c.ja && (await tokenEquals(c.ja, env.JOURNAL_ADMIN_KEY))) return { tier: 'admin', author: 'm' };
+  if (env.JOURNAL_CLAIRE_KEY && c.jc && (await tokenEquals(c.jc, env.JOURNAL_CLAIRE_KEY))) return { tier: 'admin', author: 'c' };
+  if (env.JOURNAL_READ_KEY && c.jr && (await tokenEquals(c.jr, env.JOURNAL_READ_KEY))) return { tier: 'reader', author: null };
+  return { tier: 'public', author: null };
+}
+
+/** back-compat wrapper for tier-only call sites */
+export async function resolveTier(env: Env, cookieHeader: string | null): Promise<Tier> {
+  return (await resolveAuth(env, cookieHeader)).tier;
 }
 
 export const rigged = (env: Env): boolean => !!(env.JOURNAL_READ_KEY && env.JOURNAL_ADMIN_KEY);

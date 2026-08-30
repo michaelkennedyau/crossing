@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import type { Env } from '../env';
-import { cookieFor, journalHeaders, resolveTier, rigged, tokenEquals, type Tier } from './auth';
+import { cookieFor, journalHeaders, resolveAuth, rigged, tokenEquals, type JournalAuth } from './auth';
 import { renderGate, renderJournalHome } from './render-home';
 import { renderAdminShell } from './render-admin';
 import { serveJournalImage } from './render-img';
@@ -12,12 +12,14 @@ import { serveJournalImage } from './render-img';
  * duplicated page family. Secrets unset ⇒ quiet 503 (fail closed, never open).
  */
 
-type Vars = { tier: Tier };
+type Vars = { tier: JournalAuth['tier']; auth: JournalAuth };
 export const journalApp = new Hono<{ Bindings: Env; Variables: Vars }>();
 
 journalApp.use('*', async (c, next) => {
   if (!rigged(c.env)) return c.text('the journal isn’t rigged yet', 503);
-  c.set('tier', await resolveTier(c.env, c.req.header('cookie') ?? null));
+  const auth = await resolveAuth(c.env, c.req.header('cookie') ?? null);
+  c.set('auth', auth);
+  c.set('tier', auth.tier);
   await next();
 });
 
@@ -27,6 +29,13 @@ journalApp.get('/k/:token', async (c) => {
   if (!ok) return c.html(renderGate(), 200, journalHeaders(true));
   c.header('set-cookie', cookieFor('jr', c.req.param('token')));
   return c.redirect('/journal', 302);
+});
+
+journalApp.get('/c/:token', async (c) => {
+  const ok = c.env.JOURNAL_CLAIRE_KEY && (await tokenEquals(c.req.param('token'), c.env.JOURNAL_CLAIRE_KEY));
+  if (!ok) return c.html(renderGate(), 200, journalHeaders(true));
+  c.header('set-cookie', cookieFor('jc', c.req.param('token')));
+  return c.redirect('/journal/admin', 302);
 });
 
 journalApp.get('/a/:token', async (c) => {
