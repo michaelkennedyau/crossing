@@ -64,7 +64,8 @@ describe('journal · chapter page', () => {
     const mapAt = html.indexOf('class="jmap"');
     expect(voiceAt).toBeGreaterThan(-1);
     expect(mapAt).toBeGreaterThan(voiceAt);                     // map after the first p
-    expect(html).toContain('Thu 20 Aug · the journal');         // humanised overline
+    expect(html).toContain('Thu 20 Aug');                        // humanised date in the eyerow
+    expect(html).toContain('I · LONDON &amp; FRANCE');           // movement eyebrow (fixture sort 0)
   });
 
   it('unplaced photos append after a hairline; overflow img is invisible to readers, a debt for admin', async () => {

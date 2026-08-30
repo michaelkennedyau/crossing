@@ -3,7 +3,7 @@ import type { Tier } from './auth';
 import { parseBody, type Block } from './blocks';
 import { fmtAmount, fmtDay } from './map-geo';
 import { renderChapterMap } from './render-map';
-import { chipRow, esc, journalShell } from './render-home';
+import { chipRow, esc, journalShell, movementOf } from './render-home';
 
 /**
  * /journal/ch/:slug — the chapter page. Blocks render in the paper register; photos go
@@ -108,6 +108,7 @@ export async function renderChapterPage(env: Env, tier: Tier, slug: string, base
   const next = i >= 0 && i < spine.length - 1 ? spine[i + 1] : null;
 
   const blocks = parseBody(row.body);
+  const movement = movementOf(row.sort ?? 0);
   // mobile-first layout law: the voice opens the page — a map that leads the doc floats
   // to just after the first prose block (data untouched; this is a layout decision)
   const firstP = blocks.findIndex((b) => b.t === 'p');
@@ -122,14 +123,17 @@ export async function renderChapterPage(env: Env, tier: Tier, slug: string, base
   // the dinkus law (design board, plate 02): a reader who bounced can land at any
   // asterisk and resume without shame — one every three consecutive paragraphs
   let run = 0;
-  const bodyHtml = ordered.map((b, i) => {
+  const rendered = ordered.map((b, i) => {
     const html = renderBlock(b, ctx);
     if (b.t === 'p') {
       run++;
       if (run === 3 && ordered[i + 1]?.t === 'p') { run = 0; return html + '\n<p class="dinkus" aria-hidden="true">*&emsp;*&emsp;*</p>'; }
     } else run = 0;
     return html;
-  }).join('\n');
+  });
+  // the hook leads the plate; everything after it is the body
+  const hookHtml = rendered[0] ?? '';
+  const bodyHtml = rendered.slice(1).join('\n');
 
   const unplaced = assets
     .map((a, idx) => ({ a, idx }))
@@ -139,19 +143,21 @@ export async function renderChapterPage(env: Env, tier: Tier, slug: string, base
 
   return journalShell(row.title, `
   <header>
-    <p class="over">${esc(row.day_date ? fmtDay(row.day_date) : 'il varo')} · the journal</p>
+    <div class="eyerow"><span class="over">${esc(movement)}</span><span class="ed2">${esc(row.day_date ? fmtDay(row.day_date) : '')}</span></div>
     <h1 class="et">${esc(row.title)}</h1>
     ${row.voice ? `<p class="sub">${esc(row.voice)}</p>` : ''}
-    ${chipRow(row.threads)}
-    ${tier !== 'public' ? `<a class="editday" href="${base}/admin#ch/${esc(slug)}">✎ edit this day</a>` : ''}
     <div class="dbl" aria-hidden="true"></div>
   </header>
-  <article class="chbody">
+  <section class="plate">
+    ${hookHtml}
+    <div class="metarow">${chipRow(row.threads)}${tier !== 'public' ? `<a class="editday" href="${base}/admin#ch/${esc(slug)}">✎ edit this day</a>` : ''}</div>
+    <article class="chbody">
 ${bodyHtml}
 ${strip}
-  </article>
-  ${row.closer ? `<p class="closer">${esc(row.closer)}</p>` : ''}
-  <nav class="pn">${prev ? `<a href="${base}/ch/${esc(prev.id)}">‹ ${esc(prev.title)}</a>` : '<span></span>'}${
-    next ? `<a href="${base}/ch/${esc(next.id)}">${esc(next.title)} ›</a>` : '<span></span>'}</nav>
+    </article>
+    ${row.closer ? `<p class="closer">${esc(row.closer)}</p>` : ''}
+    <nav class="pn">${prev ? `<a href="${base}/ch/${esc(prev.id)}">‹ ${esc(prev.title)}</a>` : '<span></span>'}${
+      next ? `<a href="${base}/ch/${esc(next.id)}">${esc(next.title)} ›</a>` : '<span></span>'}</nav>
+  </section>
   <footer>back to <a href="${base || '/journal'}">the spine</a></footer>`);
 }

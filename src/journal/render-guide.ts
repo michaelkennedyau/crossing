@@ -32,8 +32,8 @@ export function renderGuide(): string {
     <p class="sub">five days, two authors, one table</p>
     <div class="dbl" aria-hidden="true"></div>
   </header>
-
-  <h2 style="font-family:var(--font-display);font-weight:400;font-size:22px;margin-top:34px">Still missing</h2>
+  <section class="plate">
+  <h2 style="font-family:var(--font-display);font-weight:400;font-size:22px;margin-top:0">Still missing</h2>
   <div class="chk">
     <div>${BOTH} <b>Sign in once with Google</b> — journal.varo.au, your varo.au accounts. If Google mutters about an unverified app: Advanced → continue. After this, no more key links, ever.</div>
     <div>${HIS} <b>Tonight:</b> confirm the Pozzallo driver for the 09:15 arrival · book the 06:25 cab to Pinto Wharf · <b>buy BA619 for Thursday</b> — it still says "to be booked" on the plan.</div>
@@ -64,5 +64,6 @@ export function renderGuide(): string {
   <div class="day"><p class="dh">Saturday 5 · the belt</p><p>${HIS} The kids' mode goes to the six of them before the belt — the pepper-grinder re-enactment is contractual. ${BOTH} Mum's mode and the mates' mode ship when you're ready; each already knows its room.</p></div>
   <div class="day"><p class="dh">After</p><p>${HIS} Z9 selects from the laptop through the same bench. ${BOTH} Decide the public face, or don't — private is a complete answer. The journal stays; the game retires undefeated.</p></div>
 
+  </section>
   <footer>the guide is done when it's no longer needed · <a href="/journal">the spine</a></footer>`);
 }
