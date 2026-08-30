@@ -4,8 +4,8 @@ import { tokenEquals, parseCookies, resolveTier } from '../../src/journal/auth';
 import { journalEnv } from './stub-env';
 
 const CHAPTERS = [
-  { id: 'ch03-portofino', day_date: '2026-08-23', title: 'Portofino', voice: 'arrival by water', threads: '["water","doctrine"]', closer: 'conditions remain grim', public: 1, sort: 3, enabled: 1 },
-  { id: 'ch08-etna', day_date: '2026-08-28', title: 'Etna', voice: 'the mountain read from the deck', threads: '["screens","ledger"]', closer: 'the hardship continues', public: 0, sort: 8, enabled: 1 },
+  { id: 'ch03-portofino', day_date: '2026-08-23', title: 'Portofino', voice: 'arrival by water', threads: '["water","doctrine"]', closer: 'conditions remain superb', public: 1, sort: 3, enabled: 1 },
+  { id: 'ch08-etna', day_date: '2026-08-28', title: 'Etna', voice: 'the mountain read from the deck', threads: '["screens","ledger"]', closer: 'as arranged', public: 0, sort: 8, enabled: 1 },
 ];
 
 describe('journal · token mechanics', () => {

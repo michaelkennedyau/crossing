@@ -3,8 +3,8 @@ slug: ch18-lunch-at-one
 day_date: 2026-09-01
 title: Lunch at One
 voice: her city, her table, possibly her parents
-closer: conditions remain grim
-threads: trade-channel, screens, hardship
+closer: conditions remain superb
+threads: trade-channel, screens, conditions
 sort: 190
 ---
 ::map palermo
@@ -27,7 +27,7 @@ The register said possibly her parents. That is the kind of possibly you iron a 
 
 ::prompt Were the parents there — and what was that like?
 
-The bookings could only give me the shape of it. A table filled at one, Sicily, September, conditions presumably grim. The afternoon cancelled in advance with nothing scheduled against it — which cost me more discipline than it cost Claire.
+The bookings could only give me the shape of it. A table filled at one, Sicily, September, conditions presumably superb. The afternoon cancelled in advance with nothing scheduled against it — which cost me more discipline than it cost Claire.
 
 Past one o'clock the record goes quiet. It does not pick up again until well into the afternoon. That is how you know it was a proper table.
 

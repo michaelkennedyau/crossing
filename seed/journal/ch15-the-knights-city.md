@@ -3,8 +3,8 @@ slug: ch15-the-knights-city
 day_date: 2026-08-29
 title: The Knights' City
 voice: disembark 08:00; the only painting he ever signed
-closer: the siege continues
-threads: drops, ledger, hardship
+closer: the siege was catered
+threads: drops, ledger, conditions
 sort: 160
 ---
 ::map valletta
@@ -35,4 +35,4 @@ $ 1926 La Galerie Art Suites — conf 73521701309804
 
 ::prompt What was the room like after ten nights afloat?
 
-Conditions ashore, it was agreed, remained grim.
+Conditions ashore, it was agreed, remained superb.

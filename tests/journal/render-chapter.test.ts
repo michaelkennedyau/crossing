@@ -22,7 +22,7 @@ const BLOCKS: Block[] = [
 
 const CH = {
   id: 'ch06-calvi', day_date: '2026-08-20', title: 'The Citadel from the Water',
-  voice: 'first tender, first walking tour', closer: 'still no rescue',
+  voice: 'first tender, first walking tour', closer: 'no rescue required',
   threads: '["water","drops"]', body: JSON.stringify(BLOCKS), public: 0,
 };
 const ASSETS = [
@@ -49,7 +49,7 @@ describe('journal · chapter page', () => {
     expect(html).toContain('CALVI');                            // the map rendered
     expect(html).toContain('What did the guide say');           // prompt visible to family
     expect(html).toContain('card unwritten');                   // Claire's empty card invitation
-    expect(html).toContain('still no rescue');                  // the closer
+    expect(html).toContain('no rescue required');                  // the closer
     expect(html).toContain('data:image/webp;base64,xx');        // LQIP inline background
     expect(html).toContain('srcset');
     expect(html).toContain('back to');
@@ -165,24 +165,24 @@ describe('journal · the run-sheet', () => {
 });
 
 describe('journal · self-instruction', () => {
-  it('family home teaches itself: the grim key, tonight card, how-it-works, house phrases', async () => {
+  it('family home teaches itself: the superb key, tonight card, how-it-works, house phrases', async () => {
     const lived = { ...CH, day_date: '2026-08-20', public: 0 };
     const { env } = journalEnv({ chapters: [lived] });
     const fam = await (await app.fetch(new Request('http://x/journal', { headers: R }), env)).text();
-    expect(fam).toContain('everything is wonderful. house usage');
+    expect(fam).toContain('filed daily, delivered without smiling');
     expect(fam).toContain("tonight's chapter");
     expect(fam).toContain('how this works');
     expect(fam).toContain('obligatory not to smile');
     expect(fam).toContain('the cord holds the ink');            // the barometer line (plate 6.1)
     expect(fam).toContain('--told-depth');
-    expect(fam).toContain('A smile voids the sentence');
+    expect(fam).toContain('The daily report, filed without smiling');
   });
 
-  it('public home gets the grim key but never the family deck', async () => {
+  it('public home gets the superb key but never the family deck', async () => {
     const pub = { ...CH, public: 1 };
     const { env } = journalEnv({ chapters: [pub] });
     const html = await (await app.fetch(new Request('http://x/journal'), env)).text();
-    expect(html).toContain('everything is wonderful. house usage');
+    expect(html).toContain('filed daily, delivered without smiling');
     expect(html).not.toContain('how this works');
     expect(html).not.toContain("tonight's chapter");
     expect(html).not.toContain('the house phrases');

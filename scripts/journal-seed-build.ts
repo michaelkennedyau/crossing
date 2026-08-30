@@ -60,7 +60,7 @@ for (const f of files) {
 
 const META_V1 = {
   title: 'The Crossing',
-  sub: 'conditions remain grim',
+  sub: 'conditions remain superb',
   hero: 'Twenty-one days, four countries, one attempted robbery, one unplanned city, the last berth on a small French ship, and a table in Palermo that could not be booked, only offered.',
   indexable: false,
   threads: {
@@ -70,7 +70,7 @@ const META_V1 = {
     water: 'arrival by water, swims with stories in them',
     drops: 'one image, one question, filed by site',
     ledger: 'every price and what it actually bought',
-    hardship: 'the family register. conditions remain grim.',
+    conditions: 'the family register. conditions remain superb.',
   },
   cast: [
     'Michael & Claire — the leads',

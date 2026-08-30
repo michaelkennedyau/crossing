@@ -3,7 +3,7 @@ slug: ch10-the-lily
 day_date: 2026-08-24
 title: The Lily
 voice: granita in the port, the Giannutri question
-closer: the hardship continues
+closer: as arranged
 threads: water, drops, doctrine
 sort: 110
 ---

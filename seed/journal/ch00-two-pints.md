@@ -3,8 +3,8 @@ slug: ch00-two-pints
 day_date: 2026-08-14
 title: The Upgrade Text
 voice: the weather vane finally boards a plane
-closer: conditions remain grim
-threads: doctrine, ledger, hardship
+closer: conditions remain superb
+threads: doctrine, ledger, conditions
 sort: 10
 ---
 ::map london

@@ -3,8 +3,8 @@ slug: ch19-gold-in-the-morning
 day_date: 2026-09-02
 title: Gold in the Morning
 voice: mosaics before the heat, Ballarò before lunch, the pool before the last dinner
-closer: the ordeal nears its end
-threads: drops, water, hardship
+closer: gold, as arranged
+threads: drops, water, conditions
 sort: 200
 ---
 ::map palermo
@@ -25,7 +25,7 @@ The afternoon was assigned to the Villa Igiea pool. I want it minuted that we en
 
 Hour after hour, we bore it. Nobody packed so much as a sock — the flight wasn't until Thursday midday, and a bag half-zipped on a Wednesday is a sign of weakness.
 
-Conditions, in short, remained grim to the end.
+Conditions, in short, remained superb to the end.
 
 There was one last dinner. The grand kind, the sort Sicily had been auditioning for all fortnight. It went long, as the last one is contractually required to.
 

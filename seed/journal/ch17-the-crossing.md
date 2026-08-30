@@ -3,7 +3,7 @@ slug: ch17-the-crossing
 day_date: 2026-08-31
 title: The Crossing
 voice: the biggest fast cat in the Med, then 230 kilometres of Sicily
-closer: the hardship continues
+closer: as arranged
 threads: trade-channel, ledger, water
 sort: 180
 ---

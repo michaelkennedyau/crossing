@@ -3,8 +3,8 @@ slug: ch12-at-sea
 day_date: 2026-08-26
 title: At Sea
 voice: no port, no plan, a volcano possibly at dinner
-closer: we soldier on
-threads: doctrine, drops, hardship
+closer: nothing was required of anyone
+threads: doctrine, drops, conditions
 sort: 130
 ---
 ::map porto-ercole--lipari
@@ -13,7 +13,7 @@ We woke to nothing. No port, no tender times, no meeting point, no man with a cl
 
 Overnight out of Porto Ercole, and the first day of the whole run with nothing on it. The day just stood there, empty, asking what I intended to do about it.
 
-So the ship stopped carrying us between places and became the place. Same decks, same rotation, the sea going past at a speed nobody could verify. No plan to execute, no way to fall behind one — which, for a man who runs on a schedule, was grim.
+So the ship stopped carrying us between places and became the place. Same decks, same rotation, the sea going past at a speed nobody could verify. No plan to execute, no way to fall behind one — which, for a man who runs on a schedule, turned out to be superb.
 
 ::drop The wake was the only evidence we were getting anywhere. How fast does a ship need to go before you stop checking?
 

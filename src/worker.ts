@@ -8,6 +8,7 @@ import { EU_NODES } from './lib/north-weather';
 import { EVENTS_SCHEMA, EVENTS_TTL_SECONDS, buildEventsPrompt, eventsKvKey, sanitizeEvents } from './lib/north-events';
 import { checkPasses } from './routes/south-passes';
 import { getMode, producersOff } from './lib/windup';
+import { regenerateTraversata } from './journal/traversata-gen';
 
 /**
  * Worker entry (mirrors travel/app/src/worker/index.ts). The Worker owns the SSR shell ("/") and
@@ -53,7 +54,12 @@ export default {
   async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
     const apiKey = env.ANTHROPIC_API_KEY;
     if (!apiKey) return;
-    // windup insurance: even if the cron trigger is ever restored, producers only run in 'live'
+    // journal lane — independent of windup: the weather intelligence sleeps, the journal
+    // lives on. Burns real API only once the corpus has crossed the content threshold.
+    ctx.waitUntil(regenerateTraversata(env).then((r) => {
+      if (r.ran) console.log('traversata regen', JSON.stringify({ ok: r.ok, failed: r.failed, delta: r.delta }));
+    }).catch((err) => console.error('traversata regen failed', err instanceof Error ? err.message : String(err))));
+    // windup insurance: even if the cron trigger is ever restored, weather producers only run in 'live'
     if (producersOff(await getMode(env.KV))) return;
     // one slow web search must never starve the rest of the cycle — race, log, move on
     const bounded = async (label: string, work: () => Promise<unknown>, ms = 240_000): Promise<void> => {

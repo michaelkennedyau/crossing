@@ -3,8 +3,8 @@ slug: ch05-the-last-berth
 day_date: 2026-08-19
 title: The Last Berth
 voice: booked Monday, boarded Wednesday, sailed at six
-closer: morale remains low
-threads: ledger, doctrine, hardship
+closer: morale remains unreasonably high
+threads: ledger, doctrine, conditions
 sort: 60
 ---
 ::map nice
@@ -13,7 +13,7 @@ The water had no business being that colour.
 
 Last morning ashore, so we spent it at the beach. Claire progressed the tan. I conducted a full review of the sand — ordinary sand, doing ordinary sand things.
 
-Conditions overall remained grim. Sun, salt, nothing required of anyone until four.
+Conditions overall remained superb. Sun, salt, nothing required of anyone until four.
 
 The ship had been booked two days out, on one of the last berths going. Not the recommended run-up to ten nights at sea. Exactly the run-up we used.
 

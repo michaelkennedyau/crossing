@@ -28,7 +28,7 @@ export interface JournalMeta {
 // one muted accent per thread — the single idea stolen from the fraser-style option
 export const THREAD_TINT: Record<string, string> = {
   doctrine: '#0E7C6B', screens: '#A96D14', 'trade-channel': '#8A5A83', water: '#2E6E8E',
-  drops: '#8A5A83', ledger: '#A96D14', hardship: '#526579',
+  drops: '#8A5A83', ledger: '#A96D14', conditions: '#526579',
 };
 
 export const JOURNAL_CSS = `
@@ -297,8 +297,8 @@ export async function renderJournalHome(env: Env, tier: Tier, now: Date = new Da
       <p><b>The game:</b> a chapter you've made yours crosses <b>told</b> and its knot fills. <a href="${base}/admin#game">The scoreboard</a> keeps the marriage honest.</p>
     </div></details>
     <details class="fold"><summary>the house phrases — it is obligatory not to smile</summary><div class="fb"><dl>
-      <dt>Conditions remain grim.</dt><dd>Everything is wonderful. A smile voids the sentence.</dd>
-      <dt>The hardship continues.</dt><dd>See above; for when conditions have improved further.</dd>
+      <dt>Conditions remain superb.</dt><dd>The daily report, filed without smiling. Also true.</dd>
+      <dt>As arranged.</dt><dd>Everything went to plan, including the parts that were never planned.</dd>
       <dt>included</dt><dd>Already paid for, therefore attending. No appeals are heard.</dd>
       <dt>deferred</dt><dd>Better than done, when done would be worse. See: Mont Blanc.</dd>
       <dt>one rule</dt><dd>Claire's daily law. One per day, correct by evening.</dd>
@@ -324,8 +324,8 @@ export async function renderJournalHome(env: Env, tier: Tier, now: Date = new Da
   <header>
     <p class="over">il varo · the journal</p>
     <h1>${esc(meta.title ?? 'The Crossing')}</h1>
-    <p class="sub">${esc(meta.sub ?? 'conditions remain grim')}<span class="fn">*</span></p>
-    <p class="keyline"><span class="fn">*</span>&nbsp;meaning: everything is wonderful. house usage; delivered without smiling.</p>
+    <p class="sub">${esc(meta.sub ?? 'conditions remain superb')}<span class="fn">*</span></p>
+    <p class="keyline"><span class="fn">*</span>&nbsp;the house report, filed daily, delivered without smiling.</p>
     ${meta.hero ? `<p class="lead">${esc(meta.hero)}</p>` : ''}
     <div class="dbl" aria-hidden="true"></div>
   </header>

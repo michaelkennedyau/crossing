@@ -4,7 +4,7 @@ day_date: 2026-08-22
 title: Three Hundred Days
 voice: the emperor's villa, included
 closer: no word from Paris
-threads: drops, doctrine, hardship
+threads: drops, doctrine, conditions
 sort: 90
 ---
 ::map portoferraio
@@ -37,7 +37,7 @@ He kept the full ceremony going while he was here. The household, the receptions
 
 ::drop 26 February 1815. Out of this exact harbour, back towards the whole catastrophe, entirely of his own accord. How long had he been watching the water?
 
-The afternoon was ours once the villa was done. Elba in the afternoon is the kind of hardship it would be indelicate to describe to people back home.
+The afternoon was ours once the villa was done. Elba in the afternoon is the kind of luxury it would be indelicate to describe to people back home.
 
 ::prompt Did we swim on Elba, and where?
 

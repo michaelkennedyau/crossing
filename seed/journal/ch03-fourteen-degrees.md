@@ -17,7 +17,7 @@ South of Lyon the valley narrows and the vineyards stop pretending to be agricul
 
 ::drop The roasted slope, named by people who stood on it in August and knew exactly what they were describing. Who carried the first stones up?
 
-Guigal's Caveau du Château holds fourteen degrees. In a normal year that is a technical note about storage. That week it was the main event, by a wide margin. Conditions were grim.
+Guigal's Caveau du Château holds fourteen degrees. In a normal year that is a technical note about storage. That week it was the main event, by a wide margin. Conditions were superb.
 
 There is a version of this day where I explain what Viognier does at cellar temperature. Instead: we went quiet in there. We stayed as long as the tasting could reasonably be stretched, then a bit longer, and bottles were involved by the exit.
 

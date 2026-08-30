@@ -4,6 +4,7 @@ import { journalHeaders, resolveAuth, rigged, type JournalAuth } from '../journa
 import { parseBody, parseGrammar, isBlockLike, type Block } from '../journal/blocks';
 import { bumpStreak, chapterStats, diffBlocks, journalProgress, romeDate as progressRomeDate, streakLine, type ChapterInput, type Streak } from '../journal/progress';
 import { TRAVERSATA_HOST } from '../journal/traversata-app';
+import { corpusDrift, regenerateTraversata } from '../journal/traversata-gen';
 
 /**
  * /api/journal/* — the journal's write surface. Unlike the rest of the site's open APIs,
@@ -302,6 +303,17 @@ journalApiApp.post('/traversata/:key/rotate', async (c) => {
   await c.env.DB.prepare("UPDATE traversata_modes SET token=?, updated_at=datetime('now') WHERE key=?")
     .bind(token, key).run();
   return c.json({ ok: true, token, url: `https://${TRAVERSATA_HOST}/${token}` });
+});
+
+// the rooms rewritten from the corpus — the desk's button (always forced; the cron
+// respects the threshold on its own). Runs in the background; the page says so.
+journalApiApp.post('/traversata/regenerate', async (c) => {
+  if (c.get('tier') !== 'admin') return c.json({ error: 'the desk is admin-only' }, 403);
+  const drift = await corpusDrift(c.env).catch(() => null);
+  c.executionCtx.waitUntil(regenerateTraversata(c.env, { force: true })
+    .then((r) => console.log('traversata regen (manual)', JSON.stringify({ ok: r.ok, failed: r.failed })))
+    .catch((err) => console.error('traversata regen failed', err instanceof Error ? err.message : String(err))));
+  return c.json({ ok: true, started: true, drift });
 });
 
 // guest links — one minted per SEND from the dispatch desk's dropdown. Softly counted

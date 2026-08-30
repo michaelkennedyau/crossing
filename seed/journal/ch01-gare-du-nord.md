@@ -3,8 +3,8 @@ slug: ch01-gare-du-nord
 day_date: 2026-08-15
 title: Missed It by a Minute
 voice: three men, one lanyard, and the 17:56 leaving without us
-closer: for a minute there, conditions were grim
-threads: screens, ledger, hardship
+closer: for a minute there, conditions were merely good
+threads: screens, ledger, conditions
 sort: 20
 ---
 ::map paris

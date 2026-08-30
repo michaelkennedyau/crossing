@@ -3,8 +3,8 @@ slug: ch06-calvi
 day_date: 2026-08-20
 title: The Citadel from the Water
 voice: first tender, first walking tour, Nelson's worst day
-closer: still no rescue
-threads: drops, water, hardship
+closer: no rescue required
+threads: drops, water, conditions
 sort: 70
 ---
 ::map calvi
@@ -17,7 +17,7 @@ First tender of the trip. The ship anchors off. Everyone files down to sea level
 
 Ashore, the included walking tour. Included in the sense that we had already paid for it and were therefore going. A guide took us up into the citadel on cobbles worn somewhere past marble, under a sun also included at no additional cost.
 
-Conditions, in short, remained grim. We soldiered up through the gateways with the rest of the tender, single file where the walls insisted on it.
+Conditions, in short, remained superb. We strolled up through the gateways with the rest of the tender, single file where the walls insisted on it.
 
 ::prompt What did the guide say that survived the day?
 

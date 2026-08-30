@@ -3,8 +3,8 @@ slug: ch14-the-volcano-upstage
 day_date: 2026-08-28
 title: The Volcano Upstage
 voice: Giardini Naxos in, granita at Bam Bar, the last night at sea
-closer: grim, as forecast
-threads: drops, screens, hardship
+closer: superb, as forecast
+threads: drops, screens, conditions
 sort: 150
 ---
 ::map taormina
@@ -25,7 +25,7 @@ One note for certain members of the touring party. The venue contains no screens
 
 Down in the town the true institution is not the theatre. It is Bam Bar, which does granita and has correctly concluded that nothing further is required of it. You don't need to read a review — the queue is the review, published daily on the footpath, rigorously refereed.
 
-We joined it. Conditions were grim. Only granita was going to address them.
+We joined it. Conditions were superb. Only granita could have improved them.
 
 ::prompt What granita, in what order?
 

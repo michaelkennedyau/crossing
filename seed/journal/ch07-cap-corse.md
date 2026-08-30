@@ -3,8 +3,8 @@ slug: ch07-cap-corse
 day_date: 2026-08-21
 title: Around Cap Corse
 voice: the gulf, the cap, the wine nobody planned
-closer: rations holding
-threads: water, drops, hardship
+closer: the rations exemplary
+threads: water, drops, conditions
 sort: 80
 ---
 ::map saint-florent
@@ -13,7 +13,7 @@ No lanyards. Not one, all day. Saint-Florent was the day the paperwork ran out.
 
 No connections to defend. No barriers to hold. Just the town around its little port, and the gulf lying there all morning, entirely unsupervised.
 
-Conditions in the gulf remained grim.
+Conditions in the gulf remained superb.
 
 ::prompt What colour was the gulf, honestly?
 

@@ -3,8 +3,8 @@ slug: ch11-where-the-painter-stopped
 day_date: 2026-08-25
 title: Where the Painter Stopped
 voice: the Spanish built the forts; a painter died running past them
-closer: no improvement to report
-threads: drops, water, hardship
+closer: no improvement possible
+threads: drops, water, conditions
 sort: 120
 ---
 ::map porto-ercole
@@ -15,11 +15,11 @@ This coast was the Presidi once, and the forts tell you what the Spaniards thoug
 
 ::prompt Which fort got climbed and which got skipped?
 
-Below all that defence: the usual Argentario blue. The kind that makes hardship reporting difficult to file with a straight face. There was also a beach, which is the whole problem with this stretch of Italy.
+Below all that defence: the usual Argentario blue. The kind that files the daily report itself: superb, again. There was also a beach, which is the whole problem with this stretch of Italy.
 
 ::prompt Any swim, or was the beach the view?
 
-::doctrine Conditions remain grim.
+::doctrine Conditions remain superb.
 
 Somewhere in the middle there was lunch. There always is. The paperwork on it is thin.
 

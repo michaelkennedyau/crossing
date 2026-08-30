@@ -7,6 +7,7 @@ import { renderChapterPage, renderMissing } from './render-chapter';
 import { googleRigged, handleCallback, loginRedirect } from './google-auth';
 import { esc, journalShell } from './render-home';
 import { TRAVERSATA_HOST } from './traversata-app';
+import { corpusDrift } from './traversata-gen';
 import { renderGuide } from './render-guide';
 import { serveJournalImage } from './render-img';
 
@@ -30,7 +31,7 @@ const doorPage = (rigged: boolean): string => `<!doctype html>
 <style>body{font-family:Georgia,serif;background:#FBFCFD;color:#14212C;display:grid;place-items:center;min-height:100vh;margin:0}
 main{text-align:center;padding:24px}h1{font-weight:400;font-size:28px}p{color:#43586C;font-style:italic}
 a{display:inline-block;margin-top:18px;padding:10px 22px;border:1px solid #0E7C6B;border-radius:8px;color:#0E7C6B;text-decoration:none;font-style:normal;font-family:system-ui,sans-serif;font-size:14px}</style>
-</head><body><main><h1>The Crossing</h1><p>a family journal · conditions remain grim</p>
+</head><body><main><h1>The Crossing</h1><p>a family journal · conditions remain superb</p>
 ${rigged ? '<a href="/auth/login">sign in with Google</a>' : '<p style="font-size:13px">the Google door isn\u2019t rigged yet \u2014 use your key link</p>'}
 </main></body></html>`;
 
@@ -138,6 +139,7 @@ journalApp.get('/traversata', async (c) => {
 
   let desk = '';
   if (tier === 'admin') {
+    const drift = await corpusDrift(c.env).catch(() => null);
     const grants = await c.env.DB.prepare(
       'SELECT token, mode_key, note, opened_count, last_opened, enabled, created_at FROM traversata_grants ORDER BY created_at DESC LIMIT 100',
     ).all<{ token: string; mode_key: string; note: string; opened_count: number; last_opened: string; enabled: number; created_at: string }>()
@@ -150,7 +152,17 @@ journalApp.get('/traversata', async (c) => {
       <span class="t-url">https://${TRAVERSATA_HOST}/${esc(g.token)}</span>
       ${g.enabled ? `<button class="t-x" type="button" data-cancel="${esc(g.token)}">cancel this link</button>` : ''}
     </div>`).join('');
+    const driftLine = drift
+      ? `since the last telling: <b>+${drift.delta.words} words</b> · ${drift.delta.edited} edits · ${drift.delta.told} newly told${drift.due ? ' — <b>enough to matter</b>' : ''}`
+      : 'the corpus is unreadable just now';
     desk = `<section class="plate">
+    <p class="plate-eye">the corpus</p>
+    <p class="t-drift">${driftLine}</p>
+    <p class="t-drift2">rooms last written ${drift?.at ? esc(fmtStamp(drift.at)) : 'at the seeding'} · the cron re-writes on its own once the threshold is crossed</p>
+    <div class="t-form"><button id="t-regen" type="button">re-write the rooms from the corpus</button></div>
+    <p class="t-share" id="t-regen-out" hidden></p>
+  </section>
+  <section class="plate">
     <p class="plate-eye">send an edition</p>
     <div class="t-form">
       <select id="t-mode" aria-label="which edition">${options}</select>
@@ -174,6 +186,12 @@ journalApp.get('/traversata', async (c) => {
       .then(function(j){out.hidden=false;out.textContent=j.url?j.url:'no luck — try again';})
       .catch(function(){out.hidden=false;out.textContent='no luck — try again';});
   });
+  var regen=document.getElementById('t-regen');
+  if(regen) regen.addEventListener('click', function(){
+    var out=document.getElementById('t-regen-out');
+    out.hidden=false; out.textContent='the rooms are being rewritten from the corpus — give it two minutes, then refresh';
+    fetch('/api/journal/traversata/regenerate',{method:'POST'}).catch(function(){ out.textContent='no luck — try again'; });
+  });
   Array.prototype.forEach.call(document.querySelectorAll('[data-cancel]'),function(b){
     b.addEventListener('click',function(){
       fetch('/api/journal/traversata/grants/'+b.getAttribute('data-cancel')+'/cancel',{method:'POST'})
@@ -186,6 +204,8 @@ journalApp.get('/traversata', async (c) => {
   return c.html(journalShell('La Traversata · dispatch', `
 <style>
 .t-ded{font-family:var(--font-hand);font-style:italic;color:var(--ink-dim);margin:2px 0 12px}
+.t-drift{font-size:14.5px;margin-top:2px}
+.t-drift2{font-size:12.5px;color:var(--ink-dim);margin:6px 0 12px}
 .t-go{margin-top:4px;font-size:14px}
 .t-form{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
 .t-form select,.t-form input{font:14px var(--font-body);color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:9px 10px}

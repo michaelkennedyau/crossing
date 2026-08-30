@@ -3,8 +3,8 @@ slug: ch02-lyon-caught-us
 day_date: 2026-08-16
 title: The City That Caught Us
 voice: nobody had planned any of this, which is why it worked
-closer: the hardship continues
-threads: drops, doctrine, hardship
+closer: as arranged
+threads: drops, doctrine, conditions
 sort: 30
 ---
 ::map lyon
@@ -23,7 +23,7 @@ Towards evening we took la ficelle up to Fourvière. The funicular. Two minutes 
 
 At the top: terraces, the whole city laid out under them, both rivers, the roofs going pink. Also a bottle of champagne that was not going to survive another day of that heat. It had to be dealt with on the spot, and we would like it minuted that we objected.
 
-Sunset was 20:46 and it ran on time — more than can be said for the service that delivered us here in the first place. Conditions, in short, remained grim.
+Sunset was 20:46 and it ran on time — more than can be said for the service that delivered us here in the first place. Conditions, in short, remained superb.
 
 ::prompt What was the champagne on the Fourvière terrace?
 

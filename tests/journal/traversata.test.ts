@@ -9,7 +9,7 @@ import { traversataMd } from '../../src/journal/render-traversata';
  * lifecycle: minted from the dispatch desk, softly counted, individually cancellable.
  */
 
-const DAVI = { label: 'per la famiglia Daví', star: 'PALERMO', dedication: 'For the Daví family — the English original.', summary: 'DAVIMARK the marina at forty-five', long: 'the long road, Palermo only', glossary: [{ term: 'Conditions remain grim.', def: 'everything is wonderful' }], programme: 'PROGRAMME DU JOUR — Palermo' };
+const DAVI = { label: 'per la famiglia Daví', star: 'PALERMO', dedication: 'For the Daví family — the English original.', summary: 'DAVIMARK the marina at forty-five', long: 'the long road, Palermo only', glossary: [{ term: 'Conditions remain superb.', def: 'everything is wonderful' }], programme: 'PROGRAMME DU JOUR — Palermo' };
 const KIDS = { label: 'for the six of you', star: 'BRISBANE', dedication: 'Nicholas · Sarah · Emily', summary: 'KIDSMARK before the belt', long: 'kids long road', glossary: [], programme: 'kids programme' };
 const US = { label: 'for the two of us', star: 'THE BERTH', dedication: 'For us — the one room with no audience.', intimate: true, summary: 'USMARK no audience', long: 'us long road', glossary: [], programme: 'us programme' };
 

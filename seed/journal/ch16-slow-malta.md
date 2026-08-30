@@ -3,7 +3,7 @@ slug: ch16-slow-malta
 day_date: 2026-08-30
 title: Slow Malta
 voice: Mdina says nothing; St Peter's Pool asks one question
-closer: conditions remain grim
+closer: conditions remain superb
 threads: water, drops, trade-channel
 sort: 170
 ---

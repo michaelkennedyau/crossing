@@ -386,7 +386,7 @@ async function loadEditor(slug: string): Promise<void> {
       return r.json() as Promise<{ chapter: { id: string; title: string; voice: string; closer: string; threads: string; public: number; day_date: string }; blocks: AnyBlock[]; prompts: string[]; score: number }>;
     });
     const threads: string[] = JSON.parse(data.chapter.threads || '[]');
-    const ALL_THREADS = ['doctrine', 'screens', 'trade-channel', 'water', 'drops', 'ledger', 'hardship'];
+    const ALL_THREADS = ['doctrine', 'screens', 'trade-channel', 'water', 'drops', 'ledger', 'conditions'];
     const blockTexts = new Set(data.blocks.map((b) => (b.t === 'prompt' ? b.q : b.text) ?? ''));
     pane.innerHTML = `<div class="ed">
       <a href="#chapters" style="font-size:12px;color:#526579">‹ chapters</a>
@@ -399,7 +399,7 @@ async function loadEditor(slug: string): Promise<void> {
       ${data.prompts.length ? `<div class="pr">${data.prompts.map((p) => `<button data-q="${esc(p)}"${blockTexts.has(p) ? ' class="spent"' : ''}>${esc(p)}</button>`).join('')}</div>` : ''}
       <div id="e-blocks"></div>
       <button id="e-add">+ a paragraph</button>
-      <div class="savebar"><button class="primary" id="e-save">save</button><span class="savemsg" id="e-msg"></span><span class="crossed" id="e-crossed">told. the hardship continues.</span></div>
+      <div class="savebar"><button class="primary" id="e-save">save</button><span class="savemsg" id="e-msg"></span><span class="crossed" id="e-crossed">told. as arranged.</span></div>
     </div>`;
     const blocksEl = $('#e-blocks');
     for (const b of data.blocks) addBlockTextarea(blocksEl, toGrammar(b), b.by ?? 'seed');

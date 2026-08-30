@@ -31,6 +31,10 @@ export function traversataMd(text: string): string {
       out.push(`<table class="rate">${rows.join('')}</table>`);
       continue;
     }
+    if (lines.length === 1 && lines[0].trim().startsWith('## ')) {
+      out.push(`<h2 class="act">${esc(lines[0].trim().slice(3))}</h2>`);
+      continue;
+    }
     let p = esc(lines.map((l) => l.trim()).join(' '));
     p = p.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     p = p.replace(/\*(.+?)\*/g, '<em>$1</em>');
@@ -91,6 +95,7 @@ h1{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:44px
 .longroad[open]>summary::after{content:' ▴'}
 .longroad p{margin-top:14px}
 .longroad strong{font-family:'Cormorant Garamond',Georgia,serif;font-size:19px;color:#00304D}
+.act{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;font-size:24px;color:#00304D;margin-top:28px;border-bottom:1px solid #D8CDB8;padding-bottom:6px}
 .cue{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;color:#B8912B}
 .rate{border-collapse:collapse;margin:14px auto;font-family:'IBM Plex Mono',monospace;font-size:12px}
 .rate td{border:1px solid #D8CDB8;padding:5px 10px}
@@ -107,7 +112,7 @@ footer{text-align:center;margin-top:40px;font-family:'Cormorant Garamond',Georgi
 <header>
   <p class="mast">LA TRAVERSATA · MMXXVI</p>
   <h1>The Crossing</h1>
-  <p class="sub">three weeks and change · conditions remain grim</p>
+  <p class="sub">three weeks and change · conditions remain superb</p>
 ${edition ? `<p class="edn">${esc(edition)}</p>` : ''}
 </header>
 ${body}
@@ -137,7 +142,7 @@ export function renderTraversataMode(doc: TraversataDoc): string {
     </div>
   </details>
 </main>
-<footer>— Michael &amp; Claire · the hardship continues</footer>`, doc.label);
+<footer>— Michael &amp; Claire · as arranged</footer>`, doc.label);
 }
 
 /** the bare host root — nothing listed, ever */
