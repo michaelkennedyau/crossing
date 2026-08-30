@@ -63,6 +63,22 @@ h1{font-family:var(--font-display);font-weight:360;font-size:clamp(30px,8vw,42px
 .chip{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:lowercase;color:var(--schist);
 border-left:2px solid var(--tint,var(--line));padding-left:6px;}
 .gate{margin-top:60px;font-size:15.5px;color:var(--ink-dim);}
+.fn{color:var(--gold);font-style:normal;}
+.keyline{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;color:var(--schist);margin-top:6px;}
+.tonight{border:1px solid var(--marine);border-radius:10px;padding:14px 16px;margin:26px 0 4px;display:block;text-decoration:none;color:inherit;}
+.tonight .tl{font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--marine);}
+.tonight .tt{font-family:var(--font-display);font-size:19px;margin-top:2px;}
+.tonight .tq{font-family:var(--font-hand);font-style:italic;font-size:14px;color:var(--ink-dim);margin-top:2px;}
+details.fold{border:1px solid var(--line);border-radius:10px;padding:0 16px;margin:12px 0;}
+details.fold summary{cursor:pointer;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--schist);padding:12px 0;list-style:none;}
+details.fold summary::-webkit-details-marker{display:none}
+details.fold summary::before{content:'▸ ';color:var(--gold)}
+details.fold[open] summary::before{content:'▾ '}
+details.fold .fb{padding-bottom:14px;font-size:14px;color:var(--ink-dim);}
+details.fold .fb p{margin-top:8px;}
+details.fold .fb b{color:var(--ink);font-weight:600;}
+details.fold dt{font-family:var(--font-display);font-weight:600;font-size:15px;color:var(--marine);margin-top:8px;}
+details.fold dd{font-size:13.5px;color:var(--schist);}
 footer{margin-top:64px;border-top:1px solid var(--line);padding-top:16px;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--schist);line-height:2;}
 footer a{color:var(--live);text-decoration:none;}
 :root{--tint-m:#4A6B8A;--tint-c:#A05E6E;}
@@ -80,6 +96,8 @@ footer a{color:var(--live);text-decoration:none;}
 .doct p{font-family:var(--font-display);font-weight:400;font-size:18px;margin-top:2px;}
 .prompt{font-family:var(--font-hand);font-style:italic;font-size:18px;color:var(--ink-dim);text-align:center;margin:36px 0;}
 .prompt::before{content:'— ';color:var(--schist);}
+.phint{text-align:center;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;margin-top:-26px;margin-bottom:30px;}
+.phint a{color:var(--gold);text-decoration:none;}
 .card{border:1px solid var(--line);border-radius:10px;padding:14px;margin:26px 0;display:flex;flex-direction:column;gap:4px;}
 .card .c-eye{font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--schist);}
 .card .c-star{font-family:var(--font-display);font-size:16px;}
@@ -230,6 +248,37 @@ export async function renderJournalHome(env: Env, tier: Tier, now: Date = new Da
     return eyebrow + rowHtml(r);
   }).join('');
 
+  // family self-instruction: tonight's chapter (thinnest lived day), how it works, the house phrases
+  let famDeck = '';
+  if (fam && rows.length) {
+    let tonight: { id: string; title: string; voice: string; open: number } | null = null;
+    let best = 101;
+    for (const r of rows) {
+      if (!r.day_date || r.day_date > today || r.body === undefined) continue;
+      const st = chapterStats(parseBody(r.body), photoMap.get(r.id) ?? 0, (promptsMap[r.id] ?? []).length);
+      if (st.score < best) { best = st.score; tonight = { id: r.id, title: r.title, voice: r.voice, open: st.promptsOpen }; }
+    }
+    famDeck = `${tonight ? `<a class="tonight" href="${base}/ch/${esc(tonight.id)}">
+      <span class="tl">tonight's chapter</span>
+      <p class="tt">${esc(tonight.title)}</p>
+      <p class="tq">${tonight.open ? `${tonight.open} question${tonight.open === 1 ? '' : 's'} waiting — answers go in via the pen, below` : esc(tonight.voice)}</p>
+    </a>` : ''}
+    <details class="fold"><summary>how this works</summary><div class="fb">
+      <p><b>Reading:</b> every day of the crossing is a chapter, already written. Tap any knot on the cord.</p>
+      <p><b>Writing:</b> the <a href="${base}/admin#chapters">pen</a> opens every chapter as editable paragraphs — change anything, answer the italic questions, add your own lines. Edited words quietly take your colour: <i class="own om" style="width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--tint-m)"></i> his, <i style="width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--tint-c)"></i> hers.</p>
+      <p><b>Photos:</b> the <a href="${base}/admin#bench">bench</a> takes them straight from the camera roll and files them to the right day.</p>
+      <p><b>The game:</b> a chapter you've made yours crosses <b>told</b> and its knot fills. <a href="${base}/admin#game">The scoreboard</a> keeps the marriage honest.</p>
+    </div></details>
+    <details class="fold"><summary>the house phrases — it is obligatory not to smile</summary><div class="fb"><dl>
+      <dt>Conditions remain grim.</dt><dd>Everything is wonderful. A smile voids the sentence.</dd>
+      <dt>The hardship continues.</dt><dd>See above; for when conditions have improved further.</dd>
+      <dt>included</dt><dd>Already paid for, therefore attending. No appeals are heard.</dd>
+      <dt>deferred</dt><dd>Better than done, when done would be worse. See: Mont Blanc.</dd>
+      <dt>one rule</dt><dd>Claire's daily law. One per day, correct by evening.</dd>
+      <dt>told</dt><dd>A chapter that has stopped being the plan and become the memory.</dd>
+    </dl></div></details>`;
+  }
+
   const spine = rows.length
     ? `<nav class="spine">${spineRows}</nav>`
     : `<p class="gate">${tier === 'public' ? 'Nothing has been made public yet.' : 'Nothing lived yet — the first chapter lands when it lands.'}</p>`;
@@ -238,11 +287,13 @@ export async function renderJournalHome(env: Env, tier: Tier, now: Date = new Da
   <header>
     <p class="over">il varo · the journal</p>
     <h1>${esc(meta.title ?? 'The Crossing')}</h1>
-    <p class="sub">${esc(meta.sub ?? 'conditions remain grim')}</p>
+    <p class="sub">${esc(meta.sub ?? 'conditions remain grim')}<span class="fn">*</span></p>
+    <p class="keyline"><span class="fn">*</span>&nbsp;meaning: everything is wonderful. house usage; delivered without smiling.</p>
     ${meta.hero ? `<p class="lead">${esc(meta.hero)}</p>` : ''}
     <div class="dbl" aria-hidden="true"></div>
     ${rows.length ? renderChapterMap(null, undefined, 'overview', progressPort) : ''}
   </header>
+  ${famDeck}
   ${spine}
   <footer>a journal of the august crossing${tier !== 'public' ? ` · <a href="${base}/guide">the run-sheet</a> · <a href="${base}/traversata">la traversata</a>` : ''}</footer>`);
 }

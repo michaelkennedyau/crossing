@@ -160,3 +160,35 @@ describe('journal · the run-sheet', () => {
     expect(pub).not.toContain('crepi il lupo');
   });
 });
+
+describe('journal · self-instruction', () => {
+  it('family home teaches itself: the grim key, tonight card, how-it-works, house phrases', async () => {
+    const lived = { ...CH, day_date: '2026-08-20', public: 0 };
+    const { env } = journalEnv({ chapters: [lived] });
+    const fam = await (await app.fetch(new Request('http://x/journal', { headers: R }), env)).text();
+    expect(fam).toContain('everything is wonderful. house usage');
+    expect(fam).toContain("tonight's chapter");
+    expect(fam).toContain('how this works');
+    expect(fam).toContain('obligatory not to smile');
+    expect(fam).toContain('A smile voids the sentence');
+  });
+
+  it('public home gets the grim key but never the family deck', async () => {
+    const pub = { ...CH, public: 1 };
+    const { env } = journalEnv({ chapters: [pub] });
+    const html = await (await app.fetch(new Request('http://x/journal'), env)).text();
+    expect(html).toContain('everything is wonderful. house usage');
+    expect(html).not.toContain('how this works');
+    expect(html).not.toContain("tonight's chapter");
+    expect(html).not.toContain('the house phrases');
+  });
+
+  it('the first prompt on a chapter carries the pen affordance, family only', async () => {
+    const { env } = journalEnv({ chapters: [CH], assets: ASSETS });
+    const fam = await (await fetchCh(env, 'ch06-calvi', R)).text();
+    expect((fam.match(/answer these in the pen/g) ?? []).length).toBe(1);
+    expect(fam).toContain('/admin#ch/ch06-calvi');
+    const pub = await (await fetchCh(env, 'ch06-calvi')).text();
+    expect(pub).not.toContain('answer these in the pen');
+  });
+});

@@ -14,7 +14,7 @@ import { chipRow, esc, journalShell } from './render-home';
 
 interface AssetRow { id: string; w: number; h: number; lqip: string; caption: string; fmt: string }
 
-type RenderCtx = { tier: Tier; slug: string; assets: AssetRow[]; used: Set<number>; firstImg: { done: boolean }; base: string };
+type RenderCtx = { tier: Tier; slug: string; assets: AssetRow[]; used: Set<number>; firstImg: { done: boolean }; firstPrompt: { done: boolean }; base: string };
 
 interface ChapterRow {
   id: string; day_date: string; title: string; voice: string; body: string;
@@ -60,7 +60,12 @@ function renderBlock(b: Block, ctx: RenderCtx): string {
     case 'ledger': return `<div class="ledger"${mark}><span class="amt">${esc(fmtAmount(b.amount))}</span><span class="lt">${esc(b.text)}</span></div>`;
     case 'doctrine': return `<div class="doct"${mark}><span class="d-eye">the doctrine</span><p>${esc(b.text)}</p></div>`;
     case 'map': return renderChapterMap(ctx.slug, b.focus);
-    case 'prompt': return ctx.tier === 'public' ? '' : `<p class="prompt"${mark}>${esc(b.q)}</p>`;
+    case 'prompt': {
+      if (ctx.tier === 'public') return '';
+      const hint = ctx.firstPrompt.done ? '' : `<p class="phint"><a href="${ctx.base}/admin#ch/${esc(ctx.slug)}">answer these in the pen →</a></p>`;
+      ctx.firstPrompt.done = true;
+      return `<p class="prompt"${mark}>${esc(b.q)}</p>${hint}`;
+    }
     case 'card': {
       const unwritten = !b.lines.length && !b.rule;
       return `<div class="card"${mark}><span class="c-eye">claire</span><span class="c-star"><span class="star">★</span> ${esc(b.star)}</span>${
@@ -110,7 +115,7 @@ export async function renderChapterPage(env: Env, tier: Tier, slug: string, base
     const at = ordered.findIndex((b) => b.t === 'p');
     ordered.splice(at + 1, 0, mapBlock);
   }
-  const ctx: RenderCtx = { tier, slug, assets, used: new Set<number>(), firstImg: { done: false }, base };
+  const ctx: RenderCtx = { tier, slug, assets, used: new Set<number>(), firstImg: { done: false }, firstPrompt: { done: false }, base };
   const bodyHtml = ordered.map((b) => renderBlock(b, ctx)).join('\n');
 
   const unplaced = assets
