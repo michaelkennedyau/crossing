@@ -146,3 +146,17 @@ describe('journal · home spine dynamics', () => {
     expect(pub).not.toContain('Around Cap Corse');
   });
 });
+
+describe('journal · the run-sheet', () => {
+  it('family sees the guide; public gets the gate; the ritual is taught', async () => {
+    const { env } = journalEnv();
+    const fam = await (await app.fetch(new Request('http://x/journal/guide', { headers: R }), env)).text();
+    expect(fam).toContain('What we do now.');
+    expect(fam).toContain('crepi il lupo');
+    expect(fam).toContain('in bocca al lupo');
+    expect(fam).toContain('BA619');
+    const pub = await (await app.fetch(new Request('http://x/journal/guide'), env)).text();
+    expect(pub).toContain('family-only');
+    expect(pub).not.toContain('crepi il lupo');
+  });
+});

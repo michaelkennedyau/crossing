@@ -244,7 +244,7 @@ export async function renderJournalHome(env: Env, tier: Tier, now: Date = new Da
     ${rows.length ? renderChapterMap(null, undefined, 'overview', progressPort) : ''}
   </header>
   ${spine}
-  <footer>a journal of the august crossing${tier !== 'public' ? ` · <a href="${base}/doctrine">the doctrine</a> · <a href="${base}/cast">the cast</a>` : ''}</footer>`);
+  <footer>a journal of the august crossing${tier !== 'public' ? ` · <a href="${base}/guide">the run-sheet</a> · <a href="${base}/traversata">la traversata</a>` : ''}</footer>`);
 }
 
 /** the quiet gate — no existence hints */
