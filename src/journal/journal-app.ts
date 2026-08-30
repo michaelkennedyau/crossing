@@ -5,7 +5,8 @@ import { renderGate, renderJournalHome } from './render-home';
 import { renderAdminShell } from './render-admin';
 import { renderChapterPage, renderMissing } from './render-chapter';
 import { googleRigged, handleCallback, loginRedirect } from './google-auth';
-import { TRAVERSATA_HTML } from './traversata-doc';
+import { esc, journalShell } from './render-home';
+import { TRAVERSATA_HOST } from './traversata-app';
 import { renderGuide } from './render-guide';
 import { serveJournalImage } from './render-img';
 
@@ -107,10 +108,111 @@ journalApp.get('/guide', async (c) => {
   return c.html(renderGuide(), 200, journalHeaders(true));
 });
 
-// the gift document — family eyes; shipped onward by Michael through the connectors
+// the gift's dispatch desk — family eyes; SENDING is admin-only (the two of them).
+// Every send mints a guest link via the dropdown: softly counted in D1 (a tally and a
+// timestamp, never the viewer), individually cancellable. Master tokens stay as
+// untracked previews; the intimate room is never listed below admin tier.
+const fmtStamp = (iso: string): string => {
+  if (!iso) return '';
+  const t = Date.parse(iso.replace(' ', 'T') + 'Z');
+  if (Number.isNaN(t)) return iso;
+  return new Intl.DateTimeFormat('en-AU', { timeZone: 'Europe/Rome', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(t));
+};
+
 journalApp.get('/traversata', async (c) => {
-  if (c.get('tier') === 'public') return c.html(renderGate(), 200, journalHeaders(true));
-  return c.html(TRAVERSATA_HTML, 200, journalHeaders(true));
+  const tier = c.get('tier');
+  if (tier === 'public') return c.html(renderGate(), 200, journalHeaders(true));
+  const rows = await c.env.DB.prepare('SELECT key, token, json FROM traversata_modes WHERE enabled=1 ORDER BY rowid')
+    .all<{ key: string; token: string; json: string }>().then((r) => r.results ?? []).catch(() => []);
+  const modes = rows.map((r) => {
+    let doc: { label?: string; dedication?: string; intimate?: boolean } = {};
+    try { doc = JSON.parse(r.json) as typeof doc; } catch { /* an unreadable row still lists */ }
+    return { key: r.key, token: r.token, label: doc.label ?? r.key, dedication: doc.dedication ?? '', intimate: !!doc.intimate };
+  }).filter((m) => !m.intimate || tier === 'admin');   // the room with no audience stays unlisted
+
+  const plates = modes.map((m) => `<section class="plate">
+    <p class="plate-eye">${esc(m.label)}</p>
+    <p class="t-ded">${esc(m.dedication)}</p>
+    <p class="t-go"><a href="https://${TRAVERSATA_HOST}/${esc(m.token)}">step into the room →</a></p>
+  </section>`).join('\n');
+
+  let desk = '';
+  if (tier === 'admin') {
+    const grants = await c.env.DB.prepare(
+      'SELECT token, mode_key, note, opened_count, last_opened, enabled, created_at FROM traversata_grants ORDER BY created_at DESC LIMIT 100',
+    ).all<{ token: string; mode_key: string; note: string; opened_count: number; last_opened: string; enabled: number; created_at: string }>()
+      .then((r) => r.results ?? []).catch(() => []);
+    const labelOf = new Map(modes.map((m) => [m.key, m.label]));
+    const options = modes.map((m) => `<option value="${esc(m.key)}">${esc(m.label)}</option>`).join('');
+    const ledger = grants.map((g) => `<div class="t-row${g.enabled ? '' : ' t-dead'}">
+      <span class="t-who">${esc(g.note || '—')}<span class="t-room"> · ${esc(labelOf.get(g.mode_key) ?? g.mode_key)}</span></span>
+      <span class="t-open">${g.enabled ? (g.opened_count ? `opened ×${g.opened_count} · ${esc(fmtStamp(g.last_opened))}` : 'not opened yet') : 'cancelled'}</span>
+      <span class="t-url">https://${TRAVERSATA_HOST}/${esc(g.token)}</span>
+      ${g.enabled ? `<button class="t-x" type="button" data-cancel="${esc(g.token)}">cancel this link</button>` : ''}
+    </div>`).join('');
+    desk = `<section class="plate">
+    <p class="plate-eye">send an edition</p>
+    <div class="t-form">
+      <select id="t-mode" aria-label="which edition">${options}</select>
+      <input id="t-note" maxlength="80" placeholder="who it's for — Aurora, Mum, the chat" aria-label="who it's for">
+      <button id="t-mint" type="button">mint their link</button>
+    </div>
+    <p class="t-share" id="t-out" hidden></p>
+    ${ledger ? `<div class="t-ledger">${ledger}</div>` : '<p class="t-none">nothing sent yet — every send gets its own link, softly counted, cancellable</p>'}
+  </section>`;
+  }
+
+  const script = tier === 'admin' ? `<script>
+(function(){
+  var mint=document.getElementById('t-mint');
+  if(!mint) return;
+  mint.addEventListener('click', function(){
+    var out=document.getElementById('t-out');
+    fetch('/api/journal/traversata/grants',{method:'POST',headers:{'content-type':'application/json'},
+      body:JSON.stringify({mode:document.getElementById('t-mode').value,note:document.getElementById('t-note').value})})
+      .then(function(r){return r.json();})
+      .then(function(j){out.hidden=false;out.textContent=j.url?j.url:'no luck — try again';})
+      .catch(function(){out.hidden=false;out.textContent='no luck — try again';});
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-cancel]'),function(b){
+    b.addEventListener('click',function(){
+      fetch('/api/journal/traversata/grants/'+b.getAttribute('data-cancel')+'/cancel',{method:'POST'})
+        .then(function(){location.reload();});
+    });
+  });
+})();
+</script>` : '';
+
+  return c.html(journalShell('La Traversata · dispatch', `
+<style>
+.t-ded{font-family:var(--font-hand);font-style:italic;color:var(--ink-dim);margin:2px 0 12px}
+.t-go{margin-top:4px;font-size:14px}
+.t-form{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.t-form select,.t-form input{font:14px var(--font-body);color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:9px 10px}
+.t-form input{flex:1;min-width:160px}
+.t-form button{font:500 13px var(--font-body);color:var(--paper);background:var(--marine);border:0;border-radius:8px;padding:9px 16px;cursor:pointer}
+.t-share{font-family:var(--font-mono);font-size:12.5px;word-break:break-all;user-select:all;background:var(--paper);border:1px dashed var(--gold);border-radius:8px;padding:10px 12px;margin-top:12px}
+.t-ledger{margin-top:18px;border-top:1px solid var(--line)}
+.t-row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:13.5px;align-items:baseline}
+.t-who{font-weight:600}
+.t-room{font-weight:400;color:var(--ink-dim)}
+.t-open{font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;color:var(--ink-dim)}
+.t-url{grid-column:1/-1;font-family:var(--font-mono);font-size:11.5px;word-break:break-all;color:var(--ink-dim);user-select:all}
+.t-x{grid-column:1/-1;justify-self:start;font:11px var(--font-mono);color:var(--terra);background:none;border:1px solid var(--line);border-radius:6px;padding:4px 10px;cursor:pointer}
+.t-dead{opacity:.45}
+.t-dead .t-who{text-decoration:line-through}
+.t-none{font-size:14px;color:var(--ink-dim);margin-top:12px}
+</style>
+  <header>
+    <p class="over">il varo · la traversata</p>
+    <h1 class="et">The dispatch desk.</h1>
+    <p class="sub">choose a room, name the guest, mint their link — each opens one room only</p>
+    <div class="dbl" aria-hidden="true"></div>
+  </header>
+  ${desk}
+  ${plates || '<section class="plate"><p>the rooms aren’t seeded yet — run npm run db:seed:traversata</p></section>'}
+  <footer>a cancelled link dies mid-air; the room never knows · <a href="${c.get('base') || '/journal'}/guide">the run-sheet</a> · <a href="${c.get('base') || '/journal'}">the spine</a></footer>
+  ${script}`), 200, journalHeaders(true));
 });
 
 journalApp.get('/admin', async (c) => {

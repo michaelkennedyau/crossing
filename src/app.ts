@@ -28,6 +28,7 @@ import { southPassesRouter } from './routes/south-passes';
 import { southIntelRouter } from './routes/south-intel';
 import { journalApp } from './journal/journal-app';
 import { journalApiApp } from './routes/journal-api';
+import { traversataApp } from './journal/traversata-app';
 
 export const app = new Hono<{ Bindings: Env }>();
 
@@ -67,5 +68,6 @@ app.get('/north/weather', async (c) => c.html(await renderWeatherGuide(c.env)));
 app.get('/north/aurora', (c) => c.html(renderAurora()));
 app.route('/journal', journalApp);
 app.route('/api/journal', journalApiApp);
+app.route('/t', traversataApp);
 
 export default app;

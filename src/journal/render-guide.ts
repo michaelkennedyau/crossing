@@ -45,7 +45,7 @@ export function renderGuide(): string {
 
   <h2 style="font-family:var(--font-display);font-weight:400;font-size:22px;margin-top:34px">The in bocca al lupo play</h2>
   <div class="rit">
-    <p>The gift never travels direct — it goes <b>through Aurora</b>, and her forwarding it is part of the gift. Monday evening, once she's off the train and past the exam, send her the Daví mode with one line:</p>
+    <p>The gift never travels direct — it goes <b>through Aurora</b>, and her forwarding it is part of the gift. Monday evening, once she's off the train and past the exam, send her the Daví link — every room's own link lives on <a href="/journal/traversata">the dispatch page</a>, and each opens only its room — with one line:</p>
     <p class="copy">Aurora — com'è andato l'esame? Questa è per i tuoi, se vorrai passargliela stasera. C'è una riga che è tua da leggere ad alta voce. A domani — in bocca al lupo l'abbiamo già speso per te, ora tocca a noi.</p>
     <p>She reads first — there's a ✻ line inside that belongs to her. She forwards to her parents that evening, and it lands the night before the table, which is the whole doctrine.</p>
     <p>${HERS} <span class="it">Claire — the ritual: when anyone wishes you</span> in bocca al lupo <span class="it">(into the wolf's mouth), the only correct reply is</span> <b>crepi il lupo</b> <span class="it">— may the wolf die. Deadpan. You will get the chance on Tuesday.</span></p>
@@ -61,7 +61,7 @@ export function renderGuide(): string {
   <div class="day"><p class="dh">Tuesday 1 · the table</p><p>Nothing scheduled but lunch, which is the point. ${BOTH} Afterwards, while it's fresh: <b>Lunch at One</b> wants to know which dish the table went quiet for. Write it the same day or lose it.</p></div>
   <div class="day"><p class="dh">Wednesday 2 · gold in the morning</p><p>Monreale at nine, Ballarò, the pool. ${BOTH} The chapter in the evening; pack nothing until after dinner — the flight is at noon, not dawn.</p></div>
   <div class="day"><p class="dh">Thursday 3 · the long way home</p><p>BA619 at 12:05, the lounge from mid-afternoon, QF2 at 20:50. ${BOTH} Five lounge hours is the best writing window of the whole trip — <b>The Long Way Home</b> plus any chapter still thin. Say <b>"landed"</b> when you're down; the freeze runs itself.</p></div>
-  <div class="day"><p class="dh">Saturday 5 · the belt</p><p>${HIS} The kids' mode goes to the six of them before the belt — the pepper-grinder re-enactment is contractual. ${BOTH} Mum's mode and the mates' mode ship when you're ready; each already knows its room.</p></div>
+  <div class="day"><p class="dh">Saturday 5 · the belt</p><p>${HIS} The kids' mode goes to the six of them before the belt — the pepper-grinder re-enactment is contractual. ${BOTH} Mum's mode and the mates' mode ship when you're ready; each has its own link on the dispatch page, and each opens only its room.</p></div>
   <div class="day"><p class="dh">After</p><p>${HIS} Z9 selects from the laptop through the same bench. ${BOTH} Decide the public face, or don't — private is a complete answer. The journal stays; the game retires undefeated.</p></div>
 
   </section>

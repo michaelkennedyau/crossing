@@ -22,7 +22,9 @@
     "db:apply:journal": "wrangler d1 execute varo-family-brain --remote --file=sql/journal_schema.sql",
     "db:apply:journal:local": "wrangler d1 execute varo-family-brain --local --file=sql/journal_schema.sql",
     "db:seed:journal": "node --experimental-strip-types scripts/journal-seed-build.ts && wrangler d1 execute varo-family-brain --remote --file=sql/journal_seed.sql",
-    "db:seed:journal:local": "node --experimental-strip-types scripts/journal-seed-build.ts && wrangler d1 execute varo-family-brain --local --file=sql/journal_seed.sql"
+    "db:seed:journal:local": "node --experimental-strip-types scripts/journal-seed-build.ts && wrangler d1 execute varo-family-brain --local --file=sql/journal_seed.sql",
+    "db:apply:traversata": "wrangler d1 execute varo-family-brain --remote --file=sql/traversata_schema.sql",
+    "db:seed:traversata": "node --experimental-strip-types scripts/traversata-seed-build.ts && wrangler d1 execute varo-family-brain --remote --file=sql/traversata_seed.sql"
   },
   "dependencies": {
     "hono": "^4.7.0"

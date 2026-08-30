@@ -25,7 +25,13 @@ export default {
         url.pathname = url.pathname === '/' ? '/journal' : `/journal${url.pathname}`;
         request = new Request(url.toString(), request);
       }
-      const ssr = url.pathname === '/' || url.pathname === '/andes' || url.pathname === '/north' || url.pathname === '/north/plan' || url.pathname === '/north/weather' || url.pathname === '/north/aurora' || url.pathname === '/journal' || url.pathname.startsWith('/journal/');
+      // traversata.varo.au — the gift's address: /<token> maps onto the /t family
+      if (url.hostname === 'traversata.varo.au' && !url.pathname.startsWith('/t')) {
+        url = new URL(url);
+        url.pathname = url.pathname === '/' ? '/t' : `/t${url.pathname}`;
+        request = new Request(url.toString(), request);
+      }
+      const ssr = url.pathname === '/' || url.pathname === '/andes' || url.pathname === '/north' || url.pathname === '/north/plan' || url.pathname === '/north/weather' || url.pathname === '/north/aurora' || url.pathname === '/journal' || url.pathname.startsWith('/journal/') || url.pathname === '/t' || url.pathname.startsWith('/t/');
       if (ssr || url.pathname === '/health' || url.pathname.startsWith('/api/')) {
         return await app.fetch(request, env, ctx);
       }

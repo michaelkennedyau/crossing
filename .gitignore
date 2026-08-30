@@ -17,3 +17,6 @@ dist/
 
 # curated image sources (optimised outputs in web/public/img are committed)
 web/.img-src/
+
+# generated traversata seed — live share tokens inside
+sql/traversata_seed.sql

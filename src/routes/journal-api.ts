@@ -3,6 +3,7 @@ import type { Env } from '../env';
 import { journalHeaders, resolveAuth, rigged, type JournalAuth } from '../journal/auth';
 import { parseBody, parseGrammar, isBlockLike, type Block } from '../journal/blocks';
 import { bumpStreak, chapterStats, diffBlocks, journalProgress, romeDate as progressRomeDate, streakLine, type ChapterInput, type Streak } from '../journal/progress';
+import { TRAVERSATA_HOST } from '../journal/traversata-app';
 
 /**
  * /api/journal/* — the journal's write surface. Unlike the rest of the site's open APIs,
@@ -254,6 +255,78 @@ journalApiApp.delete('/chapters/:slug', async (c) => {
   const slug = c.req.param('slug');
   if (!SLUG_RE.test(slug)) return c.json({ error: 'bad slug' }, 400);
   await c.env.DB.prepare('UPDATE journal_chapters SET enabled=0 WHERE id=?').bind(slug).run();
+  return c.json({ ok: true });
+});
+
+// ── la traversata: the gift's rooms, editable without a redeploy ──
+
+const TMODE_RE = /^[a-z]{2,16}$/;
+const mintHex = (): string => [...crypto.getRandomValues(new Uint8Array(12))].map((b) => b.toString(16).padStart(2, '0')).join('');
+const isGlossEntry = (g: unknown): g is { term: string; def: string } =>
+  typeof g === 'object' && g !== null
+  && typeof (g as Record<string, unknown>).term === 'string'
+  && typeof (g as Record<string, unknown>).def === 'string';
+
+journalApiApp.put('/traversata/:key', async (c) => {
+  const key = c.req.param('key');
+  if (!TMODE_RE.test(key)) return c.json({ error: 'bad key' }, 400);
+  let body: Record<string, unknown>;
+  try { body = await c.req.json(); } catch { return c.json({ error: 'bad json' }, 400); }
+  const row = await c.env.DB.prepare('SELECT json FROM traversata_modes WHERE key=? AND enabled=1')
+    .bind(key).first<{ json: string }>().catch(() => null);
+  if (!row) return c.json({ error: 'unknown mode' }, 404);
+  let doc: Record<string, unknown>;
+  try { doc = JSON.parse(row.json) as Record<string, unknown>; } catch { doc = {}; }
+  const take = (k: string, max: number): void => {
+    if (typeof body[k] === 'string') doc[k] = (body[k] as string).slice(0, max);
+  };
+  take('label', 200); take('star', 60); take('dedication', 400);
+  take('summary', 20_000); take('long', 40_000); take('programme', 4_000);
+  if (Array.isArray(body.glossary)) {
+    doc.glossary = (body.glossary as unknown[]).filter(isGlossEntry).slice(0, 12)
+      .map((g) => ({ term: g.term.slice(0, 200), def: g.def.slice(0, 600) }));
+  }
+  await c.env.DB.prepare("UPDATE traversata_modes SET json=?, updated_at=datetime('now') WHERE key=?")
+    .bind(JSON.stringify(doc), key).run();
+  return c.json({ ok: true, mode: doc });
+});
+
+// rotation is revocation: the old link dies the moment the new token lands
+journalApiApp.post('/traversata/:key/rotate', async (c) => {
+  const key = c.req.param('key');
+  if (!TMODE_RE.test(key)) return c.json({ error: 'bad key' }, 400);
+  const row = await c.env.DB.prepare('SELECT key FROM traversata_modes WHERE key=? AND enabled=1')
+    .bind(key).first<{ key: string }>().catch(() => null);
+  if (!row) return c.json({ error: 'unknown mode' }, 404);
+  const token = mintHex();
+  await c.env.DB.prepare("UPDATE traversata_modes SET token=?, updated_at=datetime('now') WHERE key=?")
+    .bind(token, key).run();
+  return c.json({ ok: true, token, url: `https://${TRAVERSATA_HOST}/${token}` });
+});
+
+// guest links — one minted per SEND from the dispatch desk's dropdown. Softly counted
+// (a tally and a timestamp, never the viewer), individually cancellable.
+journalApiApp.post('/traversata/grants', async (c) => {
+  if (c.get('tier') !== 'admin') return c.json({ error: 'the desk is admin-only' }, 403);
+  let body: { mode?: string; note?: string };
+  try { body = await c.req.json(); } catch { return c.json({ error: 'bad json' }, 400); }
+  const mode = typeof body.mode === 'string' ? body.mode : '';
+  if (!TMODE_RE.test(mode)) return c.json({ error: 'bad mode' }, 400);
+  const row = await c.env.DB.prepare('SELECT key FROM traversata_modes WHERE key=? AND enabled=1')
+    .bind(mode).first<{ key: string }>().catch(() => null);
+  if (!row) return c.json({ error: 'unknown mode' }, 404);
+  const note = (typeof body.note === 'string' ? body.note : '').slice(0, 80);
+  const token = mintHex();
+  await c.env.DB.prepare('INSERT INTO traversata_grants (token, mode_key, note, created_by) VALUES (?, ?, ?, ?)')
+    .bind(token, mode, note, c.get('auth').author ?? '').run();
+  return c.json({ ok: true, token, url: `https://${TRAVERSATA_HOST}/${token}` });
+});
+
+journalApiApp.post('/traversata/grants/:token/cancel', async (c) => {
+  if (c.get('tier') !== 'admin') return c.json({ error: 'the desk is admin-only' }, 403);
+  const token = c.req.param('token');
+  if (!/^[a-f0-9]{16,64}$/.test(token)) return c.json({ error: 'bad token' }, 400);
+  await c.env.DB.prepare('UPDATE traversata_grants SET enabled=0 WHERE token=?').bind(token).run();
   return c.json({ ok: true });
 });
 

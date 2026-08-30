@@ -16,6 +16,9 @@ interface ChapterRow {
   [k: string]: unknown;
 }
 
+interface TModeRow { key: string; token: string; json: string; enabled: number; [k: string]: unknown }
+interface TGrantRow { token: string; mode_key: string; note: string; opened_count: number; first_opened: string; last_opened: string; enabled: number; created_by: string; created_at: string; [k: string]: unknown }
+
 const CH_DEFAULTS: Omit<ChapterRow, 'id' | 'title'> = {
   day_date: '', voice: '', body: '[]', threads: '[]', closer: '', public: 0, sort: 0, enabled: 1,
 };
@@ -26,11 +29,13 @@ export function journalEnv(opts: {
   meta?: unknown;                       // journal_meta id='v1'
   metaDocs?: Record<string, unknown>;   // other journal_meta rows (prompts, streak, …)
   intel?: unknown;
+  traversata?: { key: string; token: string; json: string; enabled?: number }[];
+  grants?: { token: string; mode_key: string; note?: string; opened_count?: number; first_opened?: string; last_opened?: string; enabled?: number; created_by?: string; created_at?: string }[];
   readKey?: string | null;
   adminKey?: string | null;
   claireKey?: string | null;            // defaults present
   kv?: Record<string, unknown>;
-} = {}): { env: Env; r2: Map<string, R2Stored>; sql: SqlCall[]; chapters: Map<string, ChapterRow>; metaDocs: Map<string, string> } {
+} = {}): { env: Env; r2: Map<string, R2Stored>; sql: SqlCall[]; chapters: Map<string, ChapterRow>; metaDocs: Map<string, string>; tModes: Map<string, TModeRow>; tGrants: Map<string, TGrantRow> } {
   const r2 = new Map<string, R2Stored>();
   const sql: SqlCall[] = [];
   const chapters = new Map<string, ChapterRow>(
@@ -39,6 +44,12 @@ export function journalEnv(opts: {
   const metaDocs = new Map<string, string>();
   if (opts.meta !== undefined) metaDocs.set('v1', JSON.stringify(opts.meta));
   for (const [k, v] of Object.entries(opts.metaDocs ?? {})) metaDocs.set(k, JSON.stringify(v));
+  const tModes = new Map<string, TModeRow>(
+    (opts.traversata ?? []).map((m) => [m.key, { enabled: 1, ...m } as TModeRow]),
+  );
+  const tGrants = new Map<string, TGrantRow>(
+    (opts.grants ?? []).map((g) => [g.token, { note: '', opened_count: 0, first_opened: '', last_opened: '', enabled: 1, created_by: '', created_at: '2026-08-30 12:00:00', ...g } as TGrantRow]),
+  );
 
   const chapterRows = (q: string, args: unknown[]): ChapterRow[] => {
     let rows = [...chapters.values()].filter((r) => r.enabled === 1);
@@ -48,6 +59,30 @@ export function journalEnv(opts: {
   };
 
   const apply = (q: string, args: unknown[]): void => {
+    if (/INSERT INTO traversata_grants/.test(q)) {
+      tGrants.set(args[0] as string, { token: args[0] as string, mode_key: args[1] as string, note: (args[2] as string) ?? '', created_by: (args[3] as string) ?? '', opened_count: 0, first_opened: '', last_opened: '', enabled: 1, created_at: '2026-08-30 12:00:00' });
+      return;
+    }
+    if (/UPDATE traversata_grants SET opened_count=opened_count\+1/.test(q)) {
+      const g = tGrants.get(args[0] as string);
+      if (g) { g.opened_count += 1; g.last_opened = '2026-08-30 19:00:00'; if (!g.first_opened) g.first_opened = '2026-08-30 19:00:00'; }
+      return;
+    }
+    if (/UPDATE traversata_grants SET enabled=0/.test(q)) {
+      const g = tGrants.get(args[0] as string);
+      if (g) g.enabled = 0;
+      return;
+    }
+    if (/UPDATE traversata_modes SET json=\?/.test(q)) {
+      const m = tModes.get(args[1] as string);
+      if (m) m.json = args[0] as string;
+      return;
+    }
+    if (/UPDATE traversata_modes SET token=\?/.test(q)) {
+      const m = tModes.get(args[1] as string);
+      if (m) m.token = args[0] as string;
+      return;
+    }
     if (/UPDATE journal_chapters SET/.test(q)) {
       const id = args[args.length - 1] as string;
       const row = chapters.get(id);
@@ -71,6 +106,19 @@ export function journalEnv(opts: {
   };
 
   const results = (q: string, args: unknown[]): unknown[] => {
+    if (/traversata_grants g JOIN traversata_modes/.test(q)) {
+      const g = [...tGrants.values()].find((r) => r.token === args[0] && r.enabled === 1);
+      if (!g) return [];
+      const m = [...tModes.values()].find((r) => r.key === g.mode_key && r.enabled === 1);
+      return m ? [{ json: m.json }] : [];
+    }
+    if (/FROM traversata_grants/.test(q)) return [...tGrants.values()].map((r) => ({ ...r }));
+    if (/FROM traversata_modes/.test(q)) {
+      let rows = [...tModes.values()].filter((r) => r.enabled === 1);
+      if (/WHERE token=\?/.test(q)) rows = rows.filter((r) => r.token === args[0]);
+      if (/WHERE key=\?/.test(q)) rows = rows.filter((r) => r.key === args[0]);
+      return rows.map((r) => ({ ...r }));
+    }
     if (/FROM journal_assets/i.test(q)) {
       const all = (opts.assets ?? []) as Record<string, unknown>[];
       if (/GROUP BY chapter_id/.test(q)) {
@@ -125,5 +173,5 @@ export function journalEnv(opts: {
       put: async (key: string, body: unknown, o?: Record<string, unknown>) => { r2.set(key, { body, opts: o }); },
     },
   } as unknown as Env;
-  return { env, r2, sql, chapters, metaDocs };
+  return { env, r2, sql, chapters, metaDocs, tModes, tGrants };
 }
