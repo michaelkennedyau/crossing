@@ -7,6 +7,7 @@ import { completeJson } from './lib/anthropic';
 import { EU_NODES } from './lib/north-weather';
 import { EVENTS_SCHEMA, EVENTS_TTL_SECONDS, buildEventsPrompt, eventsKvKey, sanitizeEvents } from './lib/north-events';
 import { checkPasses } from './routes/south-passes';
+import { getMode, producersOff } from './lib/windup';
 
 /**
  * Worker entry (mirrors travel/app/src/worker/index.ts). The Worker owns the SSR shell ("/") and
@@ -39,6 +40,8 @@ export default {
   async scheduled(_controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
     const apiKey = env.ANTHROPIC_API_KEY;
     if (!apiKey) return;
+    // windup insurance: even if the cron trigger is ever restored, producers only run in 'live'
+    if (producersOff(await getMode(env.KV))) return;
     // one slow web search must never starve the rest of the cycle — race, log, move on
     const bounded = async (label: string, work: () => Promise<unknown>, ms = 240_000): Promise<void> => {
       try {

@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import type { Env } from './env';
+import { getMode } from './lib/windup';
 import { renderThreshold } from './threshold';
 import { renderAndes } from './shell';
 import { renderNorth } from './north-shell';
@@ -28,8 +29,8 @@ import { southIntelRouter } from './routes/south-intel';
 
 export const app = new Hono<{ Bindings: Env }>();
 
-app.get('/health', (c) =>
-  c.json({ ok: true, service: 'crossing', depart: c.env.DEPART_ISO, north: c.env.NORTH_DEPART_ISO, ts: Date.now() }),
+app.get('/health', async (c) =>
+  c.json({ ok: true, service: 'crossing', mode: await getMode(c.env.KV), depart: c.env.DEPART_ISO, north: c.env.NORTH_DEPART_ISO, ts: Date.now() }),
 );
 
 // Live-data + persistence + concierge API for the Andes voyage. KV-cached; never blocks paint.

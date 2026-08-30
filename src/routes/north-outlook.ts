@@ -8,6 +8,7 @@ import {
   buildOutlookPrompt, sanitizeOutlook, type Outlook,
 } from '../lib/north-outlook';
 import { CFG, mergeCfg, isArcLike, type Arc } from '../../web/src/north/planner/cfg';
+import { getMode, producersOff } from '../lib/windup';
 
 /**
  * The state of the fortnight — the live board + the arcs, re-processed through Claude into a
@@ -29,7 +30,7 @@ export interface OutlookPayloadStored {
   trend?: Record<string, number>;
 }
 
-async function mergedCfg(env: Env) {
+export async function mergedCfg(env: Env) {
   // Same composition as the client: D1 arc rows replace TS defaults by id.
   const rows = await env.DB.prepare('SELECT id, json FROM north_arcs WHERE enabled=1 ORDER BY sort, id')
     .all<{ id: string; json: string }>()
@@ -115,6 +116,7 @@ northOutlookRouter.get('/', async (c) => {
 // ~45 s). A KV lock keeps two impatient travellers from double-spending the call.
 northOutlookRouter.post('/refresh', async (c) => {
   if (!c.env.ANTHROPIC_API_KEY) return c.json({ ok: false, reason: 'offline' }, 503);
+  if (producersOff(await getMode(c.env.KV))) return c.json({ ok: false, reason: 'wound down' }, 503);
   const held = await c.env.KV.get(LOCK_KEY).catch(() => null);
   if (held) return c.json({ ok: true, running: true });
   await c.env.KV.put(LOCK_KEY, '1', { expirationTtl: 120 }).catch(() => {});

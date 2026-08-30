@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import type { Env } from '../env';
+import { getMode, producersOff } from '../lib/windup';
 import { cached } from '../lib/kv-cache';
 import { completeJson } from '../lib/anthropic';
 import { EU_NODES } from '../lib/north-weather';
@@ -49,11 +50,17 @@ northEventsRouter.get('/', async (c) => {
   if (!c.env.ANTHROPIC_API_KEY) return c.json({ events: real, reason: real.length ? undefined : 'offline' });
   const apiKey = c.env.ANTHROPIC_API_KEY;
   try {
-    const { value } = await cached<AreaEvent[]>(c.env.KV, eventsKvKey(node.id), EVENTS_TTL_SECONDS, async () => {
-      const { system, user } = buildEventsPrompt(node.name, node.country);
-      const raw = await completeJson<unknown>(apiKey, { system, user, schema: EVENTS_SCHEMA });
-      return sanitizeEvents(raw);
-    });
+    let value: AreaEvent[];
+    if (producersOff(await getMode(c.env.KV))) {
+      // wound/frozen: cached model knowledge if the key is still alive, whatson regardless — never spend
+      value = (await c.env.KV.get<AreaEvent[]>(eventsKvKey(node.id), 'json').catch(() => null)) ?? [];
+    } else {
+      ({ value } = await cached<AreaEvent[]>(c.env.KV, eventsKvKey(node.id), EVENTS_TTL_SECONDS, async () => {
+        const { system, user } = buildEventsPrompt(node.name, node.country);
+        const raw = await completeJson<unknown>(apiKey, { system, user, schema: EVENTS_SCHEMA });
+        return sanitizeEvents(raw);
+      }));
+    }
     // whatson rows lead; model rows that duplicate a real event fall away — matched by
     // token overlap, since the model names the same festival with different word order
     const tokens = (s: string): Set<string> =>

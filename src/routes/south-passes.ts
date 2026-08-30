@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import type { Env } from '../env';
+import { getMode, producersOff } from '../lib/windup';
 import { cached } from '../lib/kv-cache';
 import { completeJson, searchBrief } from '../lib/anthropic';
 import { SNOW_KV_KEY, fetchSouthSnow, type SouthForecast } from '../lib/south-forecast';
@@ -70,6 +71,7 @@ southPassesRouter.get('/', async (c) => {
 // on-demand check — explicit action, allowed to wait (~30-60s of search + structure)
 southPassesRouter.post('/refresh', async (c) => {
   if (!c.env.ANTHROPIC_API_KEY) return c.json({ ok: false, reason: 'offline' }, 503);
+  if (producersOff(await getMode(c.env.KV))) return c.json({ ok: false, reason: 'wound down' }, 503);
   try {
     const payload = await checkPasses(c.env, c.env.ANTHROPIC_API_KEY);
     return c.json({ ok: true, asOf: payload.asOf });

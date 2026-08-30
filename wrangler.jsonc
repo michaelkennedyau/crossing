@@ -40,10 +40,10 @@
   // via the ANTHROPIC_API_KEY secret (set with `wrangler secret put ANTHROPIC_API_KEY`).
   "ai": { "binding": "AI" },
 
-  // The outlook's heartbeat. GETs are serve-stored-instantly; ALL regeneration happens here
-  // (scheduled handlers get 15 min — a waitUntil after a response gets ~30s and was being
-  // cancelled mid-Claude-call). Every 3 h ⇒ ≤8 calls/day, same ceiling as the old lazy TTL.
-  "triggers": { "crons": ["0 */3 * * *"] },
+  // The cron is retired (16 Aug windup — the trip is locked, the outlook's job is done).
+  // The scheduled() handler survives behind a windup-mode gate as insurance; to revive the
+  // heartbeat restore: "triggers": { "crons": ["0 */3 * * *"] } and set windup:mode=live in KV.
+  "triggers": { "crons": [] },
 
   "vars": {
     "DEPART_ISO": "2026-08-16T12:20:00+10:00",
