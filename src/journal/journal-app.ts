@@ -5,6 +5,7 @@ import { renderGate, renderJournalHome } from './render-home';
 import { renderAdminShell } from './render-admin';
 import { renderChapterPage, renderMissing } from './render-chapter';
 import { googleRigged, handleCallback, loginRedirect } from './google-auth';
+import { TRAVERSATA_HTML } from './traversata-doc';
 import { serveJournalImage } from './render-img';
 
 /**
@@ -97,6 +98,12 @@ journalApp.get('/ch/:slug', async (c) => {
       : c.html(renderMissing(), 404, journalHeaders(true));
   }
   return c.html(html, 200, journalHeaders(tier !== 'public'));
+});
+
+// the gift document — family eyes; shipped onward by Michael through the connectors
+journalApp.get('/traversata', async (c) => {
+  if (c.get('tier') === 'public') return c.html(renderGate(), 200, journalHeaders(true));
+  return c.html(TRAVERSATA_HTML, 200, journalHeaders(true));
 });
 
 journalApp.get('/admin', async (c) => {

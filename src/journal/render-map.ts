@@ -34,13 +34,13 @@ const MODE_DASH: Record<Leg['mode'], string> = { sea: 'none', rail: '6 3 1.5 3',
 
 function legsPath(legs: Leg[], v: MapView): string {
   return legs.map((l) =>
-    `<path d="${pathD(legPoints(l, v))}" fill="none" stroke="var(--ink-dim)" stroke-width="1.4"${
+    `<path d="${pathD(legPoints(l, v))}" fill="none" stroke="var(--marine)" stroke-width="1.4" opacity=".75"${
       MODE_DASH[l.mode] === 'none' ? '' : ` stroke-dasharray="${MODE_DASH[l.mode]}"`}/>`).join('');
 }
 
 function fullRoutePath(v: MapView): string {
   const pts = ROUTE.flatMap((l) => legPoints(l, v));
-  return `<path d="${pathD(pts)}" fill="none" stroke="var(--schist)" stroke-width="1" stroke-dasharray="3 5" opacity=".45"/>`;
+  return `<path d="${pathD(pts)}" fill="none" stroke="var(--marine)" stroke-width="1" stroke-dasharray="3 5" opacity=".4"/>`;
 }
 
 const coastLayer = (width: number, opacity: number): string =>
@@ -85,7 +85,7 @@ function renderRailStrip(focus: Focus | null): string {
 
   const base = `<line x1="${PAD}" y1="${Y}" x2="${W - PAD}" y2="${Y}" stroke="var(--line)" stroke-width="2"/>`;
   const lived = livedUpto > 0
-    ? `<line x1="${PAD}" y1="${Y}" x2="${xs.get(stations[livedUpto])!.toFixed(1)}" y2="${Y}" stroke="var(--ink-dim)" stroke-width="2"/>` : '';
+    ? `<line x1="${PAD}" y1="${Y}" x2="${xs.get(stations[livedUpto])!.toFixed(1)}" y2="${Y}" stroke="var(--marine)" stroke-width="2"/>` : '';
   const draw = current
     ? `<line class="m-draw" pathLength="1" x1="${xs.get(current.from)!.toFixed(1)}" y1="${Y}" x2="${xs.get(current.to)!.toFixed(1)}" y2="${Y}" stroke="var(--live)" stroke-width="2.5"/>` : '';
   const ticks = stations.map((id, i) => {
@@ -157,8 +157,8 @@ function renderOverview(progressPortId?: string): string {
   }).join('');
   return `<figure class="jmap spine-map"><svg viewBox="${box.x.toFixed(0)} ${box.y.toFixed(0)} ${box.w.toFixed(0)} ${box.h.toFixed(0)}" aria-hidden="true" role="img">
 ${coastLayer(1.6, 0.35)}
-<path d="${pathD(ROUTE.flatMap((l) => legPoints(l, v)))}" fill="none" stroke="var(--schist)" stroke-width="2.5" stroke-dasharray="4 7" opacity=".5"/>
-${doneLegs.map((l) => `<path d="${pathD(legPoints(l, v))}" fill="none" stroke="var(--ink-dim)" stroke-width="3"/>`).join('')}
+<path d="${pathD(ROUTE.flatMap((l) => legPoints(l, v)))}" fill="none" stroke="var(--marine)" stroke-width="2.5" stroke-dasharray="4 7" opacity=".45"/>
+${doneLegs.map((l) => `<path d="${pathD(legPoints(l, v))}" fill="none" stroke="var(--marine)" stroke-width="3"/>`).join('')}
 ${dots}${anchors}
 </svg><figcaption>the route · london by rail · nice → valletta by sea</figcaption></figure>`;
 }

@@ -125,6 +125,7 @@ export async function renderChapterPage(env: Env, tier: Tier, slug: string, base
     <h1>${esc(row.title)}</h1>
     ${row.voice ? `<p class="sub">${esc(row.voice)}</p>` : ''}
     ${chipRow(row.threads)}
+    <div class="dbl" aria-hidden="true"></div>
   </header>
   <article class="chbody">
 ${bodyHtml}

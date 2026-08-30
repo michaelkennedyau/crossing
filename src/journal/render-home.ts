@@ -33,7 +33,7 @@ export const THREAD_TINT: Record<string, string> = {
 
 export const JOURNAL_CSS = `
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--paper:#FBFCFD;--ink:#14212C;--ink-dim:#43586C;--schist:#526579;--live:#0E7C6B;--line:rgba(70,88,106,.18);
+:root{--paper:#FBFCFD;--ink:#14212C;--ink-dim:#43586C;--schist:#526579;--live:#0E7C6B;--marine:#00304D;--gold:#B8912B;--line:rgba(70,88,106,.18);
 --font-display:'Fraunces',Georgia,serif;--font-mono:'IBM Plex Mono',ui-monospace,monospace;
 --font-hand:'Instrument Serif',Georgia,serif;--font-body:'Outfit',system-ui,-apple-system,sans-serif;}
 html{overflow-x:clip;}
@@ -42,10 +42,11 @@ body{background:var(--paper);color:var(--ink);font-family:var(--font-body);line-
 .over{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--live);}
 h1{font-family:var(--font-display);font-weight:360;font-size:clamp(30px,8vw,42px);line-height:1.1;margin:14px 0 0;text-wrap:balance;}
 .sub{font-family:var(--font-hand);font-style:italic;font-size:17px;color:var(--ink-dim);margin-top:10px;}
+.dbl{height:5px;border-top:1px solid var(--marine);border-bottom:1px solid var(--line);margin-top:20px;opacity:.55;}
 .lead{font-size:16.5px;color:var(--ink-dim);margin-top:20px;text-wrap:pretty;}
 .spine{margin-top:40px;position:relative;padding-left:26px;}
 .spine::before{content:'';position:absolute;left:6px;top:8px;bottom:8px;width:2px;background:var(--line);border-radius:1px;}
-.mov{font-family:var(--font-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--schist);margin:30px 0 6px;position:relative;}
+.mov{font-family:var(--font-display);font-variant-caps:all-small-caps;font-size:14px;letter-spacing:.18em;color:var(--marine);margin:32px 0 6px;position:relative;}
 .mov:first-child{margin-top:0;}
 .chp{display:block;text-decoration:none;color:inherit;padding:12px 0;position:relative;}
 .chp .knot{position:absolute;left:-25px;top:19px;width:12px;height:12px;border-radius:50%;background:var(--paper);border:2px solid var(--schist);box-sizing:border-box;}
@@ -82,6 +83,7 @@ footer a{color:var(--live);text-decoration:none;}
 .card{border:1px solid var(--line);border-radius:10px;padding:14px;margin:26px 0;display:flex;flex-direction:column;gap:4px;}
 .card .c-eye{font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--schist);}
 .card .c-star{font-family:var(--font-display);font-size:16px;}
+.card .c-star .star{color:var(--gold);}
 .card .cl{font-family:var(--font-mono);font-size:11.5px;color:var(--schist);}
 .card .c-un{font-style:italic;}
 .card .c-rule{font-family:var(--font-hand);font-style:italic;font-size:14px;color:var(--ink-dim);margin-top:4px;}
@@ -96,7 +98,7 @@ footer a{color:var(--live);text-decoration:none;}
 .jmap{margin:30px 0;}
 .jmap svg{width:100%;height:auto;display:block;}
 .jmap .ml{font-family:var(--font-mono);font-size:15px;letter-spacing:.04em;fill:var(--schist);}
-.jmap .mf{fill:var(--ink);}
+.jmap .mf{fill:var(--marine);}
 .jmap .ma{font-family:var(--font-mono);font-size:30px;letter-spacing:.1em;fill:var(--schist);}
 .jmap figcaption{font-family:var(--font-hand);font-style:italic;font-size:14px;color:var(--ink-dim);text-align:center;margin-top:6px;}
 .m-draw{stroke-dasharray:1;stroke-dashoffset:1;animation:jdraw 1.6s cubic-bezier(.4,0,.2,1) .3s forwards;}
@@ -107,7 +109,7 @@ footer a{color:var(--live);text-decoration:none;}
 .dots i{width:5px;height:5px;border-radius:50%;display:inline-block;}
 .dots .dm{background:var(--tint-m);}
 .dots .dc{background:var(--tint-c);}
-.star{color:var(--live);}
+.star{color:var(--gold);}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}
 .prompt + .prompt{margin-top:-16px;}
 .pn a{font-family:var(--font-hand);font-style:italic;font-size:14px;}
@@ -238,6 +240,7 @@ export async function renderJournalHome(env: Env, tier: Tier, now: Date = new Da
     <h1>${esc(meta.title ?? 'The Crossing')}</h1>
     <p class="sub">${esc(meta.sub ?? 'conditions remain grim')}</p>
     ${meta.hero ? `<p class="lead">${esc(meta.hero)}</p>` : ''}
+    <div class="dbl" aria-hidden="true"></div>
     ${rows.length ? renderChapterMap(null, undefined, 'overview', progressPort) : ''}
   </header>
   ${spine}
