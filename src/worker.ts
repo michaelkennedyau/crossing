@@ -18,7 +18,7 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     try {
       const url = new URL(request.url);
-      const ssr = url.pathname === '/' || url.pathname === '/andes' || url.pathname === '/north' || url.pathname === '/north/plan' || url.pathname === '/north/weather' || url.pathname === '/north/aurora';
+      const ssr = url.pathname === '/' || url.pathname === '/andes' || url.pathname === '/north' || url.pathname === '/north/plan' || url.pathname === '/north/weather' || url.pathname === '/north/aurora' || url.pathname === '/journal' || url.pathname.startsWith('/journal/');
       if (ssr || url.pathname === '/health' || url.pathname.startsWith('/api/')) {
         return await app.fetch(request, env, ctx);
       }

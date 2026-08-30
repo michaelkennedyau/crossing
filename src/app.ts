@@ -26,6 +26,7 @@ import { northItineraryRouter } from './routes/north-itinerary';
 import { northPivotsRouter } from './routes/north-pivots';
 import { southPassesRouter } from './routes/south-passes';
 import { southIntelRouter } from './routes/south-intel';
+import { journalApp } from './journal/journal-app';
 
 export const app = new Hono<{ Bindings: Env }>();
 
@@ -63,5 +64,6 @@ app.get('/north', (c) => c.html(renderNorth(c.env)));
 app.get('/north/plan', async (c) => c.html(await renderPlan(c.env)));
 app.get('/north/weather', async (c) => c.html(await renderWeatherGuide(c.env)));
 app.get('/north/aurora', (c) => c.html(renderAurora()));
+app.route('/journal', journalApp);
 
 export default app;

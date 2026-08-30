@@ -14,6 +14,10 @@ export interface Env {
   AI?: Ai;
   // Secret (wrangler secret put ANTHROPIC_API_KEY) — only needed for the concierge.
   ANTHROPIC_API_KEY?: string;
+  // The journal's gate (wrangler secret put JOURNAL_READ_KEY / JOURNAL_ADMIN_KEY).
+  // Both unset ⇒ the journal answers 503 — fail closed, never open.
+  JOURNAL_READ_KEY?: string;
+  JOURNAL_ADMIN_KEY?: string;
   // var — QF27 launch instant, used by the countdown.
   DEPART_ISO: string;
   // var — the north launch instant (QF BNE→SYD, Sat 8 Aug), used by the north countdown.
