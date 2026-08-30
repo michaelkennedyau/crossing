@@ -31,6 +31,13 @@ describe('journal · block grammar', () => {
     expect(rt).toEqual(blocks);
   });
 
+  it('stacked directive lines in one segment each become their own block', () => {
+    const blocks = parseGrammar('::ledger 981 GBP — Eurostar\n::ledger 148 EUR — the 19:00 to Lyon\n::ledger 0 EUR — the pré-plainte');
+    expect(blocks).toHaveLength(3);
+    expect(blocks.every((b) => b.t === 'ledger')).toBe(true);
+    expect((blocks[1] as { amount: string }).amount).toBe('148 EUR');
+  });
+
   it('joins multi-line paragraphs, drops empties and unknown directives', () => {
     const blocks = parseGrammar('line one\nline two\n\n\n::wat nope\n\n> quoted');
     expect(blocks).toHaveLength(2);

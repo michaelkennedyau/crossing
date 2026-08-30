@@ -20,7 +20,9 @@
     "db:apply:south": "wrangler d1 execute varo-family-brain --remote --file=sql/south_schema.sql",
     "db:seed:south-intel": "wrangler d1 execute varo-family-brain --remote --file=sql/south_intel_seed.sql",
     "db:apply:journal": "wrangler d1 execute varo-family-brain --remote --file=sql/journal_schema.sql",
-    "db:apply:journal:local": "wrangler d1 execute varo-family-brain --local --file=sql/journal_schema.sql"
+    "db:apply:journal:local": "wrangler d1 execute varo-family-brain --local --file=sql/journal_schema.sql",
+    "db:seed:journal": "node --experimental-strip-types scripts/journal-seed-build.ts && wrangler d1 execute varo-family-brain --remote --file=sql/journal_seed.sql",
+    "db:seed:journal:local": "node --experimental-strip-types scripts/journal-seed-build.ts && wrangler d1 execute varo-family-brain --local --file=sql/journal_seed.sql"
   },
   "dependencies": {
     "hono": "^4.7.0"

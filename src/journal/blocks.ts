@@ -39,7 +39,21 @@ const CARD_MAX_LINES = 16;
 /** parse the line grammar into blocks; everything stamped `by` (default 'seed') */
 export function parseGrammar(text: string, by: Author = 'seed'): Block[] {
   const out: Block[] = [];
-  const segments = text.replace(/\r\n/g, '\n').split(/\n\s*\n/);
+  const rawSegments = text.replace(/\r\n/g, '\n').split(/\n\s*\n/);
+  // consecutive `::` directive lines inside one segment are each their own block
+  // (stacked ::ledger lines are natural writing); indented lines attach to the
+  // directive above them.
+  const segments: string[] = [];
+  for (const seg of rawSegments) {
+    const lines = seg.split('\n');
+    if (!lines[0].trim().startsWith('::')) { segments.push(seg); continue; }
+    let cur: string[] = [];
+    for (const line of lines) {
+      if (line.trim().startsWith('::') && cur.length) { segments.push(cur.join('\n')); cur = []; }
+      cur.push(line);
+    }
+    if (cur.length) segments.push(cur.join('\n'));
+  }
   for (const seg of segments) {
     const s = seg.replace(/\s+$/, '');
     if (!s.trim()) continue;
