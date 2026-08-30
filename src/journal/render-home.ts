@@ -3,7 +3,7 @@ import type { Tier } from './auth';
 import { parseBody } from './blocks';
 import { chapterStats, romeDate } from './progress';
 import { renderChapterMap } from './render-map';
-import { ROUTE_ORDER, resolveFocus } from './map-geo';
+import { ROUTE_ORDER, fmtDay, resolveFocus } from './map-geo';
 
 /**
  * /journal — the hybrid spine: days as chapters down the page, threads woven across as
@@ -42,11 +42,21 @@ body{background:var(--paper);color:var(--ink);font-family:var(--font-body);line-
 h1{font-family:var(--font-display);font-weight:360;font-size:clamp(30px,8vw,42px);line-height:1.1;margin:14px 0 0;text-wrap:balance;}
 .sub{font-family:var(--font-hand);font-style:italic;font-size:17px;color:var(--ink-dim);margin-top:10px;}
 .lead{font-size:16.5px;color:var(--ink-dim);margin-top:20px;text-wrap:pretty;}
-.spine{margin-top:44px;}
-.chp{display:block;text-decoration:none;color:inherit;border-top:1px solid var(--line);padding:18px 0;}
-.chp .d{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--schist);}
-.chp h2{font-family:var(--font-display);font-weight:400;font-size:22px;margin-top:4px;}
+.spine{margin-top:40px;position:relative;padding-left:26px;}
+.spine::before{content:'';position:absolute;left:6px;top:8px;bottom:8px;width:2px;background:var(--line);border-radius:1px;}
+.mov{font-family:var(--font-mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--schist);margin:30px 0 6px;position:relative;}
+.mov:first-child{margin-top:0;}
+.chp{display:block;text-decoration:none;color:inherit;padding:12px 0;position:relative;}
+.chp .knot{position:absolute;left:-25px;top:19px;width:12px;height:12px;border-radius:50%;background:var(--paper);border:2px solid var(--schist);box-sizing:border-box;}
+.chp .knot.told{background:var(--live);border-color:var(--live);}
+.chp .knot.part{background:linear-gradient(var(--paper) 50%, var(--schist) 50%);}
+.chp:hover .knot{border-color:var(--ink);}
+.chp:focus-visible{outline:2px solid var(--live);outline-offset:4px;border-radius:6px;}
+.chp .d{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--schist);}
+.chp h2{font-family:var(--font-display);font-weight:400;font-size:21px;margin-top:2px;line-height:1.25;}
 .chp .v{font-family:var(--font-hand);font-style:italic;font-size:15px;color:var(--ink-dim);}
+.chp .sc{position:absolute;right:0;top:16px;font-family:var(--font-mono);font-size:11px;color:var(--schist);font-variant-numeric:tabular-nums;}
+.chp .sc.told{color:var(--live);}
 .chips{margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;}
 .chip{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:lowercase;color:var(--schist);
 border-left:2px solid var(--tint,var(--line));padding-left:6px;}
@@ -91,18 +101,14 @@ footer a{color:var(--live);text-decoration:none;}
 .m-draw{stroke-dasharray:1;stroke-dashoffset:1;animation:jdraw 1.6s cubic-bezier(.4,0,.2,1) .3s forwards;}
 @keyframes jdraw{to{stroke-dashoffset:0}}
 .spine-map svg{height:210px;width:auto;margin:28px auto 0;}
-.ring{width:20px;height:20px;flex:0 0 20px;transform:rotate(-90deg);}
-.ring circle{fill:none;stroke-width:2.5;}
-.ring .rg-bg{stroke:var(--line);}
-.ring .rg-fg{stroke:var(--schist);stroke-dasharray:1;}
-.ring.told .rg-fg{stroke:var(--live);}
-.chp{display:flex;gap:12px;align-items:baseline;}
-.chp .chmain{flex:1;}
-.chp .told-stamp{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--live);}
-.dots{display:inline-flex;gap:4px;margin-left:8px;}
+.chp .told-stamp{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--live);margin-left:8px;}
+.dots{display:inline-flex;gap:4px;margin-left:8px;vertical-align:1px;}
 .dots i{width:5px;height:5px;border-radius:50%;display:inline-block;}
 .dots .dm{background:var(--tint-m);}
 .dots .dc{background:var(--tint-c);}
+.star{color:var(--live);}
+.prompt + .prompt{margin-top:-16px;}
+.pn a{font-family:var(--font-hand);font-style:italic;font-size:14px;}
 @media (prefers-reduced-motion: reduce){.m-draw{animation:none;stroke-dashoffset:0;}}
 @media print{
   body{background:#fff}.page{padding:0;max-width:none}
@@ -145,6 +151,16 @@ export function chipRow(threadsJson: string): string {
     `<span class="chip" style="--tint:${THREAD_TINT[t] ?? 'var(--line)'}">${esc(t)}</span>`).join('')}</div>`;
 }
 
+// the five movements of the crossing — sort ranges to part-eyebrows on the cord
+const MOVEMENTS: { upTo: number; label: string }[] = [
+  { upTo: 50, label: 'I · LONDON & FRANCE' },
+  { upTo: 150, label: 'II · THE SHIP' },
+  { upTo: 170, label: 'III · MALTA' },
+  { upTo: 200, label: 'IV · SICILY' },
+  { upTo: 9999, label: 'V · HOME' },
+];
+const movementOf = (sort: number): string => MOVEMENTS.find((m) => sort <= m.upTo)!.label;
+
 export async function renderJournalHome(env: Env, tier: Tier, now: Date = new Date()): Promise<string> {
   const fam = tier !== 'public';
   const where = fam ? 'WHERE enabled=1' : 'WHERE enabled=1 AND public=1';
@@ -181,31 +197,35 @@ export async function renderJournalHome(env: Env, tier: Tier, now: Date = new Da
   }
 
   const rowHtml = (r: ChapterRow & { body?: string }): string => {
-    let game = '';
+    const day = r.day_date ? fmtDay(r.day_date) : '—';
     if (fam && r.body !== undefined) {
       const st = chapterStats(parseBody(r.body), photoMap.get(r.id) ?? 0, (promptsMap[r.id] ?? []).length);
       const dots = `${st.words.m > 0 ? '<i class="dm"></i>' : ''}${st.words.c > 0 ? '<i class="dc"></i>' : ''}`;
-      game = `<svg class="ring${st.told ? ' told' : ''}" viewBox="0 0 20 20" aria-hidden="true">
-        <circle class="rg-bg" cx="10" cy="10" r="8"></circle>
-        <circle class="rg-fg" cx="10" cy="10" r="8" pathLength="1" style="stroke-dashoffset:${(1 - st.score / 100).toFixed(2)}"></circle></svg>`;
-      const stamp = st.told ? '<span class="told-stamp">told</span>' : '';
-      return `<a class="chp" href="/journal/ch/${esc(r.id)}">${game}<span class="chmain">
-        <span class="d">${esc(r.day_date || '—')} ${stamp}${dots ? `<span class="dots">${dots}</span>` : ''}</span>
+      const knot = st.told ? 'knot told' : st.score > 0 ? 'knot part' : 'knot';
+      return `<a class="chp" href="/journal/ch/${esc(r.id)}"><span class="${knot}" aria-hidden="true"></span>
+        <span class="d">${esc(day)}${st.told ? '<span class="told-stamp">told</span>' : ''}${dots ? `<span class="dots">${dots}</span>` : ''}</span>
+        <span class="sc${st.told ? ' told' : ''}">${st.told ? 'told' : st.score || ''}</span>
         <h2>${esc(r.title)}</h2>
         ${r.voice ? `<p class="v">${esc(r.voice)}</p>` : ''}
-        ${chipRow(r.threads)}
-      </span></a>`;
+      </a>`;
     }
-    return `<a class="chp" href="/journal/ch/${esc(r.id)}"><span class="chmain">
-        <span class="d">${esc(r.day_date || '—')}</span>
+    return `<a class="chp" href="/journal/ch/${esc(r.id)}"><span class="knot" aria-hidden="true"></span>
+        <span class="d">${esc(day)}</span>
         <h2>${esc(r.title)}</h2>
         ${r.voice ? `<p class="v">${esc(r.voice)}</p>` : ''}
-        ${chipRow(r.threads)}
-      </span></a>`;
+      </a>`;
   };
 
+  let lastMovement = '';
+  const spineRows = rows.map((r) => {
+    const mov = movementOf(r.sort);
+    const eyebrow = mov !== lastMovement ? `<p class="mov">${esc(mov)}</p>` : '';
+    lastMovement = mov;
+    return eyebrow + rowHtml(r);
+  }).join('');
+
   const spine = rows.length
-    ? `<nav class="spine">${rows.map(rowHtml).join('')}</nav>`
+    ? `<nav class="spine">${spineRows}</nav>`
     : `<p class="gate">${tier === 'public' ? 'Nothing has been made public yet.' : 'Nothing lived yet — the first chapter lands when it lands.'}</p>`;
 
   return journalShell(meta.title ?? 'The Crossing', `

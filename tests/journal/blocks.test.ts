@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { parseGrammar, serializeBlock, parseBody, blockKey, type Block } from '../../src/journal/blocks';
 import { chapterStats, diffBlocks, bumpStreak, streakLine, journalProgress, romeDate, prevDay } from '../../src/journal/progress';
-import { MED_VIEW, LAND_VIEW, PORTS, ROUTE, ROUTE_ORDER, project, portById, resolveFocus, routeSplit, fmtAmount } from '../../src/journal/map-geo';
+import { MED_VIEW, LAND_VIEW, PORTS, ROUTE, ROUTE_ORDER, project, portById, resolveFocus, routeSplit, fmtAmount, fmtDay, seaRouteBbox } from '../../src/journal/map-geo';
 
 describe('journal · block grammar', () => {
   it('parses every block type and round-trips through serialize', () => {
@@ -180,6 +180,19 @@ describe('journal · map geometry', () => {
     expect(s.current?.to).toBe('portofino');
     const l = routeSplit({ portId: 'london' });
     expect(l.current).toBeNull();
+  });
+
+  it('fmtDay reads as memory, not logs', () => {
+    expect(fmtDay('2026-08-14')).toBe('Fri 14 Aug');
+    expect(fmtDay('2026-09-01')).toBe('Tue 1 Sep');
+    expect(fmtDay('nonsense')).toBe('nonsense');
+  });
+
+  it('seaRouteBbox excludes the land cities and stays inside a sane frame', () => {
+    const b = seaRouteBbox(MED_VIEW, 34);
+    expect(b.y).toBeGreaterThan(0);                 // cropped below the empty north
+    expect(b.h).toBeLessThan(MED_VIEW.h);
+    expect(b.w).toBeGreaterThan(200);
   });
 
   it('fmtAmount is deterministic', () => {

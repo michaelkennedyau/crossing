@@ -1,7 +1,7 @@
 import type { Env } from '../env';
 import type { Tier } from './auth';
 import { parseBody, type Block } from './blocks';
-import { fmtAmount } from './map-geo';
+import { fmtAmount, fmtDay } from './map-geo';
 import { renderChapterMap } from './render-map';
 import { chipRow, esc, journalShell } from './render-home';
 
@@ -56,7 +56,7 @@ function renderBlock(b: Block, ctx: { tier: Tier; slug: string; assets: AssetRow
     case 'prompt': return ctx.tier === 'public' ? '' : `<p class="prompt"${mark}>${esc(b.q)}</p>`;
     case 'card': {
       const unwritten = !b.lines.length && !b.rule;
-      return `<div class="card"${mark}><span class="c-eye">claire</span><span class="c-star">⭐ ${esc(b.star)}</span>${
+      return `<div class="card"${mark}><span class="c-eye">claire</span><span class="c-star"><span class="star">★</span> ${esc(b.star)}</span>${
         unwritten && ctx.tier !== 'public'
           ? `<span class="cl c-un">card unwritten</span>`
           : b.lines.map((l) => `<span class="cl">${esc(l)}</span>`).join('')
@@ -93,8 +93,18 @@ export async function renderChapterPage(env: Env, tier: Tier, slug: string): Pro
   const next = i >= 0 && i < spine.length - 1 ? spine[i + 1] : null;
 
   const blocks = parseBody(row.body);
+  // mobile-first layout law: the voice opens the page — a map that leads the doc floats
+  // to just after the first prose block (data untouched; this is a layout decision)
+  const firstP = blocks.findIndex((b) => b.t === 'p');
+  const mapIdx = blocks.findIndex((b) => b.t === 'map');
+  const ordered = [...blocks];
+  if (mapIdx >= 0 && firstP > mapIdx) {
+    const [mapBlock] = ordered.splice(mapIdx, 1);
+    const at = ordered.findIndex((b) => b.t === 'p');
+    ordered.splice(at + 1, 0, mapBlock);
+  }
   const ctx = { tier, slug, assets, used: new Set<number>(), firstImg: { done: false } };
-  const bodyHtml = blocks.map((b) => renderBlock(b, ctx)).join('\n');
+  const bodyHtml = ordered.map((b) => renderBlock(b, ctx)).join('\n');
 
   const unplaced = assets
     .map((a, idx) => ({ a, idx }))
@@ -104,7 +114,7 @@ export async function renderChapterPage(env: Env, tier: Tier, slug: string): Pro
 
   return journalShell(row.title, `
   <header>
-    <p class="over">${esc(row.day_date || 'il varo')} · the journal</p>
+    <p class="over">${esc(row.day_date ? fmtDay(row.day_date) : 'il varo')} · the journal</p>
     <h1>${esc(row.title)}</h1>
     ${row.voice ? `<p class="sub">${esc(row.voice)}</p>` : ''}
     ${chipRow(row.threads)}

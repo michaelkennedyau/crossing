@@ -104,6 +104,28 @@ export function routeSplit(focus: Focus | null): RouteSplit {
   return { before: ROUTE.slice(0, idx), current: ROUTE[idx], after: ROUTE.slice(idx + 1) };
 }
 
+/** the sea route's own bbox (land cities excluded) — the overview crops to this */
+export function seaRouteBbox(v: MapView, pad = 30): { x: number; y: number; w: number; h: number } {
+  const land = new Set(['london', 'paris', 'lyon']);
+  const pts: { x: number; y: number }[] = [];
+  for (const p of PORTS) if (!land.has(p.id)) pts.push(project(p.lat, p.lon, v));
+  for (const l of ROUTE) for (const [lat, lon] of l.via ?? []) pts.push(project(lat, lon, v));
+  const xs = pts.map((p) => p.x), ys = pts.map((p) => p.y);
+  const x = Math.min(...xs) - pad, y = Math.min(...ys) - pad;
+  return { x, y, w: Math.max(...xs) + pad - x, h: Math.max(...ys) + pad - y };
+}
+
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/** '2026-08-14' → 'Thu 14 Aug' — dates as memory, not logs. Bad input returns itself. */
+export function fmtDay(iso: string): string {
+  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return iso;
+  const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], 12));
+  return `${DAYS[d.getUTCDay()]} ${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]}`;
+}
+
 /** deterministic money formatting for ledger blocks — no Intl surprises */
 export function fmtAmount(amount: string): string {
   const m = amount.match(/^([€£$]?)\s*([\d,.]+)\s*([A-Z]{3})?$/);

@@ -53,6 +53,18 @@ describe('journal · chapter page', () => {
     expect(html).toContain('back to');
   });
 
+  it('a leading map floats to after the first paragraph — the voice opens the page', async () => {
+    const leadMap = [{ t: 'map', by: 'seed' }, { t: 'p', text: 'The voice goes first.', by: 'seed' }, { t: 'p', text: 'Second.', by: 'seed' }];
+    const ch = { ...CH, id: 'ch06-calvi', body: JSON.stringify(leadMap) };
+    const { env } = journalEnv({ chapters: [ch] });
+    const html = await (await fetchCh(env, 'ch06-calvi', R)).text();
+    const voiceAt = html.indexOf('The voice goes first.');
+    const mapAt = html.indexOf('class="jmap"');
+    expect(voiceAt).toBeGreaterThan(-1);
+    expect(mapAt).toBeGreaterThan(voiceAt);                     // map after the first p
+    expect(html).toContain('Thu 20 Aug · the journal');         // humanised overline
+  });
+
   it('unplaced photos append after a hairline; overflow img is invisible to readers, a debt for admin', async () => {
     const { env } = journalEnv({ chapters: [CH], assets: ASSETS });
     const reader = await (await fetchCh(env, 'ch06-calvi', R)).text();
@@ -120,12 +132,16 @@ describe('journal · home spine dynamics', () => {
     ];
     const { env } = journalEnv({ chapters, assets: ASSETS });
     const fam = await (await app.fetch(new Request('http://x/journal', { headers: R }), env)).text();
-    expect(fam).toContain('class="ring');
+    expect(fam).toContain('knot told');                         // Claire's chapter crossed told
     expect(fam).toContain('dc');                                // Claire's dot
     expect(fam).toContain('spine-map');
+    expect(fam).toContain('class="mov"');                       // the movements on the cord
+    expect(fam).toContain('Thu 20 Aug');                        // humanised dates
+    expect(fam).not.toContain('2026-08-20');                    // ISO gone from the page
     const pub = await (await app.fetch(new Request('http://x/journal'), env)).text();
     expect(pub).toContain('spine-map');                         // the silhouette is public
-    expect(pub).not.toContain('class="ring');
+    expect(pub).toContain('class="knot"');                      // neutral knots only
+    expect(pub).not.toContain('knot told');
     expect(pub).not.toContain('told-stamp">told');
     expect(pub).not.toContain('Around Cap Corse');
   });
