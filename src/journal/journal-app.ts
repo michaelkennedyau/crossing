@@ -3,6 +3,7 @@ import type { Env } from '../env';
 import { cookieFor, journalHeaders, resolveAuth, rigged, tokenEquals, type JournalAuth } from './auth';
 import { renderGate, renderJournalHome } from './render-home';
 import { renderAdminShell } from './render-admin';
+import { renderChapterPage, renderMissing } from './render-chapter';
 import { serveJournalImage } from './render-img';
 
 /**
@@ -48,6 +49,19 @@ journalApp.get('/a/:token', async (c) => {
 journalApp.get('/', async (c) => {
   const tier = c.get('tier');
   return c.html(await renderJournalHome(c.env, tier), 200, journalHeaders(tier !== 'public'));
+});
+
+journalApp.get('/ch/:slug', async (c) => {
+  const tier = c.get('tier');
+  const slug = c.req.param('slug');
+  const html = /^[a-z0-9-]{1,64}$/.test(slug) ? await renderChapterPage(c.env, tier, slug) : null;
+  if (html === null) {
+    // public misses of ANY kind are byte-identical — no existence oracle
+    return tier === 'public'
+      ? c.html(renderGate(), 200, journalHeaders(true))
+      : c.html(renderMissing(), 404, journalHeaders(true));
+  }
+  return c.html(html, 200, journalHeaders(tier !== 'public'));
 });
 
 journalApp.get('/admin', async (c) => {

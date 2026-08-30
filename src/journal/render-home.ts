@@ -1,5 +1,9 @@
 import type { Env } from '../env';
 import type { Tier } from './auth';
+import { parseBody } from './blocks';
+import { chapterStats, romeDate } from './progress';
+import { renderChapterMap } from './render-map';
+import { ROUTE_ORDER, resolveFocus } from './map-geo';
 
 /**
  * /journal — the hybrid spine: days as chapters down the page, threads woven across as
@@ -49,7 +53,65 @@ border-left:2px solid var(--tint,var(--line));padding-left:6px;}
 .gate{margin-top:60px;font-size:15.5px;color:var(--ink-dim);}
 footer{margin-top:64px;border-top:1px solid var(--line);padding-top:16px;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--schist);line-height:2;}
 footer a{color:var(--live);text-decoration:none;}
-@media print{body{background:#fff}.page{padding:0;max-width:none}}
+:root{--tint-m:#4A6B8A;--tint-c:#A05E6E;}
+.chbody{margin-top:36px;}
+.prose{font-size:16.5px;margin-top:18px;text-wrap:pretty;}
+.quiet{font-family:var(--font-hand);font-style:italic;font-size:16px;color:var(--ink-dim);margin-top:18px;}
+.aside{font-family:var(--font-mono);font-size:12px;color:var(--schist);margin-top:16px;letter-spacing:.02em;}
+[data-by=m]{box-shadow:inset 2px 0 0 rgba(74,107,138,.5);padding-left:12px;}
+[data-by=c]{box-shadow:inset 2px 0 0 rgba(160,94,110,.5);padding-left:12px;}
+.drop{font-family:var(--font-hand);font-style:italic;font-size:15px;color:var(--schist);border-left:2px solid #8A5A83;padding-left:12px;margin:22px 0;}
+.ledger{font-family:var(--font-mono);font-size:12px;color:var(--schist);border-left:2px solid #A96D14;padding-left:12px;margin:10px 0;display:flex;gap:12px;}
+.ledger .amt{font-variant-numeric:tabular-nums;min-width:5.5ch;text-align:right;}
+.doct{border-left:2px solid var(--live);padding-left:12px;margin:24px 0;}
+.doct .d-eye{font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--live);}
+.doct p{font-family:var(--font-display);font-weight:400;font-size:18px;margin-top:2px;}
+.prompt{font-family:var(--font-hand);font-style:italic;font-size:18px;color:var(--ink-dim);text-align:center;margin:36px 0;}
+.prompt::before{content:'— ';color:var(--schist);}
+.card{border:1px solid var(--line);border-radius:10px;padding:14px;margin:26px 0;display:flex;flex-direction:column;gap:4px;}
+.card .c-eye{font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--schist);}
+.card .c-star{font-family:var(--font-display);font-size:16px;}
+.card .cl{font-family:var(--font-mono);font-size:11.5px;color:var(--schist);}
+.card .c-un{font-style:italic;}
+.card .c-rule{font-family:var(--font-hand);font-style:italic;font-size:14px;color:var(--ink-dim);margin-top:4px;}
+.closer{font-family:var(--font-hand);font-style:italic;font-size:16px;color:var(--ink-dim);text-align:right;margin-top:44px;}
+.pn{border-top:1px solid var(--line);margin-top:40px;padding-top:14px;display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:11px;}
+.pn a{color:var(--live);text-decoration:none;max-width:45%;}
+.shot{width:100vw;margin-inline:calc(50% - 50vw);margin-block:28px;}
+.shot img{display:block;margin-inline:auto;max-width:100%;max-height:82vh;width:auto;height:auto;}
+.shot figcaption{font-family:var(--font-hand);font-style:italic;font-size:15px;color:var(--ink-dim);max-width:560px;margin:8px auto 0;padding-inline:22px;}
+.ph-miss{border:1px dashed var(--line);border-radius:8px;aspect-ratio:3/2;display:grid;place-items:center;font-family:var(--font-mono);font-size:11px;color:var(--schist);margin:24px 0;}
+.strip-rule{border:0;border-top:1px solid var(--line);margin:40px 0 8px;}
+.jmap{margin:30px 0;}
+.jmap svg{width:100%;height:auto;display:block;}
+.jmap .ml{font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;fill:var(--schist);}
+.jmap .mf{fill:var(--ink);}
+.jmap .ma{font-family:var(--font-mono);font-size:30px;letter-spacing:.1em;fill:var(--schist);}
+.jmap figcaption{font-family:var(--font-hand);font-style:italic;font-size:14px;color:var(--ink-dim);text-align:center;margin-top:6px;}
+.m-draw{stroke-dasharray:1;stroke-dashoffset:1;animation:jdraw 1.6s cubic-bezier(.4,0,.2,1) .3s forwards;}
+@keyframes jdraw{to{stroke-dashoffset:0}}
+.spine-map svg{height:210px;width:auto;margin:28px auto 0;}
+.ring{width:20px;height:20px;flex:0 0 20px;transform:rotate(-90deg);}
+.ring circle{fill:none;stroke-width:2.5;}
+.ring .rg-bg{stroke:var(--line);}
+.ring .rg-fg{stroke:var(--schist);stroke-dasharray:1;}
+.ring.told .rg-fg{stroke:var(--live);}
+.chp{display:flex;gap:12px;align-items:baseline;}
+.chp .chmain{flex:1;}
+.chp .told-stamp{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--live);}
+.dots{display:inline-flex;gap:4px;margin-left:8px;}
+.dots i{width:5px;height:5px;border-radius:50%;display:inline-block;}
+.dots .dm{background:var(--tint-m);}
+.dots .dc{background:var(--tint-c);}
+@media (prefers-reduced-motion: reduce){.m-draw{animation:none;stroke-dashoffset:0;}}
+@media print{
+  body{background:#fff}.page{padding:0;max-width:none}
+  .shot{width:100%;margin-inline:0}
+  .shot img{max-height:95vh}
+  .shot,.jmap,.card,.doct{break-inside:avoid}
+  .pn{display:none}
+  .m-draw{animation:none;stroke-dashoffset:0}
+}
 `;
 
 export const FONT_LINKS = `<link rel="preconnect" href="https://fonts.googleapis.com">
@@ -83,24 +145,67 @@ export function chipRow(threadsJson: string): string {
     `<span class="chip" style="--tint:${THREAD_TINT[t] ?? 'var(--line)'}">${esc(t)}</span>`).join('')}</div>`;
 }
 
-export async function renderJournalHome(env: Env, tier: Tier): Promise<string> {
-  const where = tier === 'public' ? 'WHERE enabled=1 AND public=1' : 'WHERE enabled=1';
+export async function renderJournalHome(env: Env, tier: Tier, now: Date = new Date()): Promise<string> {
+  const fam = tier !== 'public';
+  const where = fam ? 'WHERE enabled=1' : 'WHERE enabled=1 AND public=1';
+  const cols = fam ? 'id, day_date, title, voice, body, threads, closer, public, sort' : 'id, day_date, title, voice, threads, closer, public, sort';
   const rows = await env.DB.prepare(
-    `SELECT id, day_date, title, voice, threads, closer, public, sort FROM journal_chapters ${where} ORDER BY sort, day_date, id`,
-  ).all<ChapterRow>().then((r) => r.results ?? []).catch(() => [] as ChapterRow[]);
+    `SELECT ${cols} FROM journal_chapters ${where} ORDER BY sort, day_date, id`,
+  ).all<ChapterRow & { body?: string }>().then((r) => r.results ?? []).catch(() => [] as (ChapterRow & { body?: string })[]);
 
-  const metaRow = await env.DB.prepare(`SELECT json FROM journal_meta WHERE id='v1'`)
+  const metaRow = await env.DB.prepare(`SELECT json FROM journal_meta WHERE id=?`).bind('v1')
     .first<{ json: string }>().catch(() => null);
   let meta: JournalMeta = {};
   try { meta = metaRow ? (JSON.parse(metaRow.json) as JournalMeta) : {}; } catch { /* defaults */ }
 
-  const spine = rows.length
-    ? `<nav class="spine">${rows.map((r) => `<a class="chp" href="/journal/ch/${esc(r.id)}">
+  // family only: the game's rings and dots (photo counts + seed prompts in two cheap reads)
+  let photoMap = new Map<string, number>();
+  let promptsMap: Record<string, string[]> = {};
+  if (fam && rows.length) {
+    const pr = await env.DB.prepare(
+      'SELECT chapter_id, COUNT(*) AS n FROM journal_assets WHERE enabled=1 GROUP BY chapter_id',
+    ).all<{ chapter_id: string; n: number }>().then((r) => r.results ?? []).catch(() => []);
+    photoMap = new Map(pr.map((r) => [r.chapter_id, r.n]));
+    const pm = await env.DB.prepare('SELECT json FROM journal_meta WHERE id=?').bind('prompts')
+      .first<{ json: string }>().catch(() => null);
+    try { promptsMap = pm ? JSON.parse(pm.json) as Record<string, string[]> : {}; } catch { /* none */ }
+  }
+
+  // the overview map's honest progress: the last day-chapter lived (Rome) with a resolvable port
+  const today = romeDate(now);
+  let progressPort: string | undefined;
+  for (const r of rows) {
+    if (!r.day_date || r.day_date > today) continue;
+    const f = resolveFocus(r.id);
+    if (f?.portId && ROUTE_ORDER.includes(f.portId)) progressPort = f.portId;
+  }
+
+  const rowHtml = (r: ChapterRow & { body?: string }): string => {
+    let game = '';
+    if (fam && r.body !== undefined) {
+      const st = chapterStats(parseBody(r.body), photoMap.get(r.id) ?? 0, (promptsMap[r.id] ?? []).length);
+      const dots = `${st.words.m > 0 ? '<i class="dm"></i>' : ''}${st.words.c > 0 ? '<i class="dc"></i>' : ''}`;
+      game = `<svg class="ring${st.told ? ' told' : ''}" viewBox="0 0 20 20" aria-hidden="true">
+        <circle class="rg-bg" cx="10" cy="10" r="8"></circle>
+        <circle class="rg-fg" cx="10" cy="10" r="8" pathLength="1" style="stroke-dashoffset:${(1 - st.score / 100).toFixed(2)}"></circle></svg>`;
+      const stamp = st.told ? '<span class="told-stamp">told</span>' : '';
+      return `<a class="chp" href="/journal/ch/${esc(r.id)}">${game}<span class="chmain">
+        <span class="d">${esc(r.day_date || '—')} ${stamp}${dots ? `<span class="dots">${dots}</span>` : ''}</span>
+        <h2>${esc(r.title)}</h2>
+        ${r.voice ? `<p class="v">${esc(r.voice)}</p>` : ''}
+        ${chipRow(r.threads)}
+      </span></a>`;
+    }
+    return `<a class="chp" href="/journal/ch/${esc(r.id)}"><span class="chmain">
         <span class="d">${esc(r.day_date || '—')}</span>
         <h2>${esc(r.title)}</h2>
         ${r.voice ? `<p class="v">${esc(r.voice)}</p>` : ''}
         ${chipRow(r.threads)}
-      </a>`).join('')}</nav>`
+      </span></a>`;
+  };
+
+  const spine = rows.length
+    ? `<nav class="spine">${rows.map(rowHtml).join('')}</nav>`
     : `<p class="gate">${tier === 'public' ? 'Nothing has been made public yet.' : 'Nothing lived yet — the first chapter lands when it lands.'}</p>`;
 
   return journalShell(meta.title ?? 'The Crossing', `
@@ -109,6 +214,7 @@ export async function renderJournalHome(env: Env, tier: Tier): Promise<string> {
     <h1>${esc(meta.title ?? 'The Crossing')}</h1>
     <p class="sub">${esc(meta.sub ?? 'conditions remain grim')}</p>
     ${meta.hero ? `<p class="lead">${esc(meta.hero)}</p>` : ''}
+    ${rows.length ? renderChapterMap(null, undefined, 'overview', progressPort) : ''}
   </header>
   ${spine}
   <footer>a journal of the august crossing${tier !== 'public' ? ' · <a href="/journal/doctrine">the doctrine</a> · <a href="/journal/cast">the cast</a>' : ''}</footer>`);
