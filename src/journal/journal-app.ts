@@ -2,6 +2,8 @@ import { Hono } from 'hono';
 import type { Env } from '../env';
 import { cookieFor, journalHeaders, resolveTier, rigged, tokenEquals, type Tier } from './auth';
 import { renderGate, renderJournalHome } from './render-home';
+import { renderAdminShell } from './render-admin';
+import { serveJournalImage } from './render-img';
 
 /**
  * The journal's page family. Every request resolves a tier (admin | reader | public) from
@@ -41,6 +43,9 @@ journalApp.get('/', async (c) => {
 
 journalApp.get('/admin', async (c) => {
   if (c.get('tier') !== 'admin') return c.html(renderGate(), 200, journalHeaders(true));
-  // PR2 replaces this with the upload island shell
-  return c.html(await renderJournalHome(c.env, 'admin'), 200, journalHeaders(true));
+  return c.html(renderAdminShell(), 200, journalHeaders(true));
 });
+
+// the Worker's first R2 read path — authorization rides the photo's chapter
+journalApp.get('/img/:id/:variant', async (c) =>
+  serveJournalImage(c.env, c.get('tier'), c.req.param('id'), c.req.param('variant')));

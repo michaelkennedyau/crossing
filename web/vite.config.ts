@@ -22,6 +22,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         engine: resolve(__dirname, 'src/entries/engine.ts'),
+        'journal-admin': resolve(__dirname, 'src/entries/journal-admin.ts'),
         bridge: resolve(__dirname, 'src/entries/bridge.tsx'),
         'north-engine': resolve(__dirname, 'src/entries/north-engine.ts'),
         'north-bridge': resolve(__dirname, 'src/entries/north-bridge.tsx'),

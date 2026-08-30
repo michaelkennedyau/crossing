@@ -21,12 +21,12 @@ export function journalEnv(opts: {
   const r2 = new Map<string, R2Stored>();
   const sql: string[] = [];
   const rowsFor = (q: string): unknown[] => {
+    if (/FROM journal_assets/i.test(q) || /INSERT INTO journal_assets|UPDATE journal_assets/i.test(q)) return opts.assets ?? [];
     if (/journal_chapters/.test(q)) {
       const all = (opts.chapters ?? []) as { public?: number; enabled?: number }[];
       const pubOnly = /public=1/.test(q);
       return all.filter((r) => (r.enabled ?? 1) === 1 && (!pubOnly || r.public === 1));
     }
-    if (/journal_assets/.test(q)) return opts.assets ?? [];
     return [];
   };
   const docFor = (q: string): { json: string } | null => {
