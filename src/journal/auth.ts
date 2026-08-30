@@ -1,4 +1,5 @@
 import type { Env } from '../env';
+import { sessionAuth } from './google-auth';
 
 /**
  * The journal's gate — the first authenticated surface on this Worker, deliberately NOT
@@ -49,6 +50,8 @@ export const cookieFor = (name: string, token: string): string =>
  * one phone somehow holds both writer cookies).
  */
 export async function resolveAuth(env: Env, cookieHeader: string | null): Promise<JournalAuth> {
+  const viaGoogle = await sessionAuth(env, cookieHeader);
+  if (viaGoogle) return viaGoogle;
   const c = parseCookies(cookieHeader);
   if (env.JOURNAL_ADMIN_KEY && c.ja && (await tokenEquals(c.ja, env.JOURNAL_ADMIN_KEY))) return { tier: 'admin', author: 'm' };
   if (env.JOURNAL_CLAIRE_KEY && c.jc && (await tokenEquals(c.jc, env.JOURNAL_CLAIRE_KEY))) return { tier: 'admin', author: 'c' };

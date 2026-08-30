@@ -20,6 +20,13 @@ export interface Env {
   JOURNAL_ADMIN_KEY?: string;
   // Claire's writer key — optional; without it she reads via the family link but can't write.
   JOURNAL_CLAIRE_KEY?: string;
+  // Google sign-in for journal.varo.au (all four required before the flow arms):
+  // client id/secret from Michael's Google OAuth client; session key minted once;
+  // JOURNAL_EMAILS = JSON { "email": {"tier":"admin"|"reader","author":"m"|"c"} }.
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
+  JOURNAL_SESSION_KEY?: string;
+  JOURNAL_EMAILS?: string;
   // var — QF27 launch instant, used by the countdown.
   DEPART_ISO: string;
   // var — the north launch instant (QF BNE→SYD, Sat 8 Aug), used by the north countdown.

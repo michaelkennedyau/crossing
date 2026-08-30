@@ -7,7 +7,7 @@
   "observability": { "enabled": true },
 
   // Provisions crossing.varo.au on deploy (zone varo.au, same Cloudflare account as brain/parish).
-  "routes": [{ "pattern": "crossing.varo.au", "custom_domain": true }],
+  "routes": [{ "pattern": "crossing.varo.au", "custom_domain": true }, { "pattern": "journal.varo.au", "custom_domain": true }],
   "workers_dev": false,
 
   // The Vite-built client islands (web/ → web/dist). The Worker owns "/" (SSR shell) and "/api/*";

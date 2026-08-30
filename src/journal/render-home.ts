@@ -164,7 +164,7 @@ const MOVEMENTS: { upTo: number; label: string }[] = [
 ];
 const movementOf = (sort: number): string => MOVEMENTS.find((m) => sort <= m.upTo)!.label;
 
-export async function renderJournalHome(env: Env, tier: Tier, now: Date = new Date()): Promise<string> {
+export async function renderJournalHome(env: Env, tier: Tier, now: Date = new Date(), base = '/journal'): Promise<string> {
   const fam = tier !== 'public';
   const where = fam ? 'WHERE enabled=1' : 'WHERE enabled=1 AND public=1';
   const cols = fam ? 'id, day_date, title, voice, body, threads, closer, public, sort' : 'id, day_date, title, voice, threads, closer, public, sort';
@@ -206,14 +206,14 @@ export async function renderJournalHome(env: Env, tier: Tier, now: Date = new Da
       const dots = `${st.words.m > 0 ? '<i class="dm" aria-hidden="true"></i>' : ''}${st.words.c > 0 ? '<i class="dc" aria-hidden="true"></i>' : ''}${
         st.words.m > 0 || st.words.c > 0 ? `<span class="vh">${st.words.m > 0 && st.words.c > 0 ? 'both their words' : st.words.m > 0 ? 'his words' : 'her words'}</span>` : ''}`;
       const knot = st.told ? 'knot told' : st.score > 0 ? 'knot part' : 'knot';
-      return `<a class="chp" href="/journal/ch/${esc(r.id)}"><span class="${knot}" aria-hidden="true"></span>
+      return `<a class="chp" href="${base}/ch/${esc(r.id)}"><span class="${knot}" aria-hidden="true"></span>
         <span class="d">${esc(day)}${st.told ? '<span class="told-stamp">told</span>' : ''}${dots ? `<span class="dots">${dots}</span>` : ''}</span>
         <span class="sc${st.told ? ' told' : ''}">${st.told ? 'told' : st.score || ''}</span>
         <h2>${esc(r.title)}</h2>
         ${r.voice ? `<p class="v">${esc(r.voice)}</p>` : ''}
       </a>`;
     }
-    return `<a class="chp" href="/journal/ch/${esc(r.id)}"><span class="knot" aria-hidden="true"></span>
+    return `<a class="chp" href="${base}/ch/${esc(r.id)}"><span class="knot" aria-hidden="true"></span>
         <span class="d">${esc(day)}</span>
         <h2>${esc(r.title)}</h2>
         ${r.voice ? `<p class="v">${esc(r.voice)}</p>` : ''}
@@ -241,7 +241,7 @@ export async function renderJournalHome(env: Env, tier: Tier, now: Date = new Da
     ${rows.length ? renderChapterMap(null, undefined, 'overview', progressPort) : ''}
   </header>
   ${spine}
-  <footer>a journal of the august crossing${tier !== 'public' ? ' · <a href="/journal/doctrine">the doctrine</a> · <a href="/journal/cast">the cast</a>' : ''}</footer>`);
+  <footer>a journal of the august crossing${tier !== 'public' ? ` · <a href="${base}/doctrine">the doctrine</a> · <a href="${base}/cast">the cast</a>` : ''}</footer>`);
 }
 
 /** the quiet gate — no existence hints */

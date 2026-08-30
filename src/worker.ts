@@ -17,7 +17,14 @@ import { getMode, producersOff } from './lib/windup';
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     try {
-      const url = new URL(request.url);
+      let url = new URL(request.url);
+      // journal.varo.au — the family door: clean URLs map onto the /journal family
+      // (/assets and /api pass through untouched; everything else gains the prefix)
+      if (url.hostname === 'journal.varo.au' && !url.pathname.startsWith('/api/') && !url.pathname.startsWith('/assets/') && !url.pathname.startsWith('/journal')) {
+        url = new URL(url);
+        url.pathname = url.pathname === '/' ? '/journal' : `/journal${url.pathname}`;
+        request = new Request(url.toString(), request);
+      }
       const ssr = url.pathname === '/' || url.pathname === '/andes' || url.pathname === '/north' || url.pathname === '/north/plan' || url.pathname === '/north/weather' || url.pathname === '/north/aurora' || url.pathname === '/journal' || url.pathname.startsWith('/journal/');
       if (ssr || url.pathname === '/health' || url.pathname.startsWith('/api/')) {
         return await app.fetch(request, env, ctx);

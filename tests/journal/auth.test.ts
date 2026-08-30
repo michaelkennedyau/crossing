@@ -41,7 +41,7 @@ describe('journal · the gate', () => {
     const { env } = journalEnv();
     const res = await app.fetch(new Request('http://x/journal/k/read-secret-token'), env);
     expect(res.status).toBe(302);
-    expect(res.headers.get('location')).toBe('/journal');
+    expect(res.headers.get('location')).toBe('/journal/');
     const cookie = res.headers.get('set-cookie') ?? '';
     expect(cookie).toContain('jr=read-secret-token');
     for (const attr of ['HttpOnly', 'Secure', 'SameSite=Lax', 'Path=/']) expect(cookie).toContain(attr);
