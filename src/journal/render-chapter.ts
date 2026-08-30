@@ -26,7 +26,9 @@ function figure(a: AssetRow, eager: boolean, missingNote?: string): string {
       : '';
   }
   const dims = a.w > 0 && a.h > 0 ? ` width="${a.w}" height="${a.h}"` : '';
-  const bg = a.lqip && a.lqip.startsWith('data:image/') ? ` style="background:url('${a.lqip}') center/cover"` : '';
+  // strict whole-string validation — no attribute breakout; esc() as defence-in-depth
+  const lqipOk = a.lqip && /^data:image\/[a-z+.-]+;base64,[A-Za-z0-9+/=]+$/.test(a.lqip);
+  const bg = lqipOk ? ` style="background:url('${esc(a.lqip)}') center/cover"` : '';
   return `<figure class="shot"><img src="/journal/img/${esc(a.id)}/1280"
  srcset="/journal/img/${esc(a.id)}/1280 1280w, /journal/img/${esc(a.id)}/1920 1920w"
  sizes="100vw"${dims} loading="${eager ? 'eager' : 'lazy'}"${eager ? ' fetchpriority="high"' : ''} decoding="async" alt="${esc(a.caption)}"${bg}>${

@@ -50,7 +50,8 @@ journalApiApp.post('/assets', async (c) => {
   let body: { fmt?: string; w?: number; h?: number; lqip?: string; taken_at?: string; chapter_id?: string };
   try { body = await c.req.json(); } catch { return c.json({ error: 'bad json' }, 400); }
   const fmt = FMTS.has(body.fmt ?? '') ? (body.fmt as string) : 'webp';
-  const lqip = typeof body.lqip === 'string' && body.lqip.length <= MAX_LQIP && (body.lqip === '' || body.lqip.startsWith('data:image/')) ? body.lqip : '';
+  const lqip = typeof body.lqip === 'string' && body.lqip.length <= MAX_LQIP
+    && (body.lqip === '' || /^data:image\/[a-z+.-]+;base64,[A-Za-z0-9+/=]+$/.test(body.lqip)) ? body.lqip : '';
   const takenAt = typeof body.taken_at === 'string' ? body.taken_at.slice(0, 32) : '';
   const w = Number.isFinite(body.w) ? Math.min(Math.max(0, Math.round(body.w as number)), 20000) : 0;
   const h = Number.isFinite(body.h) ? Math.min(Math.max(0, Math.round(body.h as number)), 20000) : 0;
