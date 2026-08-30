@@ -12,7 +12,9 @@
     "img:push": "node scripts/img-r2.mjs push",
     "img:pull": "node scripts/img-r2.mjs pull",
     "img:check": "node scripts/img-r2.mjs check",
-    "img:build": "node scripts/img-r2.mjs pull && node scripts/optimise-images.mjs && node scripts/img-r2.mjs push"
+    "img:build": "node scripts/img-r2.mjs pull && node scripts/optimise-images.mjs && node scripts/img-r2.mjs push",
+    "coast:med": "node scripts/gen-coast.mjs med",
+    "coast:board": "node scripts/gen-coast.mjs board"
   },
   "dependencies": {
     "react": "^18.3.1",
