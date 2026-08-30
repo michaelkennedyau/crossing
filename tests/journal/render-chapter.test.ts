@@ -40,6 +40,8 @@ describe('journal · chapter page', () => {
     expect(html).toContain('The Citadel from the Water');
     expect(html).toContain('first tender, first walking tour');
     expect(html).toContain('data-by="c"');                      // Claire's margin mark
+    expect(html).toContain('class="hook"');                     // the hook drop leads the entry
+    expect(html).toContain('class="et"');                       // entry-title voice, 28/31
     expect(html).not.toContain('data-by="seed"');               // seed unmarked
     expect(html).toContain('class="drop"');
     expect(html).toContain('€150');                             // fmtAmount
@@ -170,8 +172,8 @@ describe('journal · self-instruction', () => {
     expect(fam).toContain("tonight's chapter");
     expect(fam).toContain('how this works');
     expect(fam).toContain('obligatory not to smile');
-    expect(fam).toContain('% told');                            // the live game strip
-    expect(fam).toContain('score →');
+    expect(fam).toContain('the cord holds the ink');            // the barometer line (plate 6.1)
+    expect(fam).toContain('--told-depth');
     expect(fam).toContain('A smile voids the sentence');
   });
 
@@ -183,7 +185,7 @@ describe('journal · self-instruction', () => {
     expect(html).not.toContain('how this works');
     expect(html).not.toContain("tonight's chapter");
     expect(html).not.toContain('the house phrases');
-    expect(html).not.toContain('% told');
+    expect(html).not.toContain('the cord holds the ink');
   });
 
   it('the first prompt on a chapter carries the pen affordance, family only', async () => {

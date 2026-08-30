@@ -14,7 +14,7 @@ import { chipRow, esc, journalShell } from './render-home';
 
 interface AssetRow { id: string; w: number; h: number; lqip: string; caption: string; fmt: string }
 
-type RenderCtx = { tier: Tier; slug: string; assets: AssetRow[]; used: Set<number>; firstImg: { done: boolean }; firstPrompt: { done: boolean }; base: string };
+type RenderCtx = { tier: Tier; slug: string; assets: AssetRow[]; used: Set<number>; firstImg: { done: boolean }; firstPrompt: { done: boolean }; hookDone: boolean; base: string };
 
 interface ChapterRow {
   id: string; day_date: string; title: string; voice: string; body: string;
@@ -44,6 +44,9 @@ function renderBlock(b: Block, ctx: RenderCtx): string {
   switch (b.t) {
     case 'p': {
       const vh = mark ? `<span class="vh"> — ${b.by === 'm' ? 'his' : 'hers'}</span>` : '';
+      // the hook drop (design board, plate 6.2): the entry's first line is promoted,
+      // Instrument italic, led by the gold house asterisk
+      if (!ctx.hookDone) { ctx.hookDone = true; return `<p class="hook"${mark}>${esc(b.text)}${vh}</p>`; }
       return `<p class="prose"${mark}>${esc(b.text)}${vh}</p>`;
     }
     case 'q': return `<p class="quiet"${mark}>${esc(b.text)}</p>`;
@@ -115,7 +118,7 @@ export async function renderChapterPage(env: Env, tier: Tier, slug: string, base
     const at = ordered.findIndex((b) => b.t === 'p');
     ordered.splice(at + 1, 0, mapBlock);
   }
-  const ctx: RenderCtx = { tier, slug, assets, used: new Set<number>(), firstImg: { done: false }, firstPrompt: { done: false }, base };
+  const ctx: RenderCtx = { tier, slug, assets, used: new Set<number>(), firstImg: { done: false }, firstPrompt: { done: false }, hookDone: false, base };
   // the dinkus law (design board, plate 02): a reader who bounced can land at any
   // asterisk and resume without shame — one every three consecutive paragraphs
   let run = 0;
@@ -137,7 +140,7 @@ export async function renderChapterPage(env: Env, tier: Tier, slug: string, base
   return journalShell(row.title, `
   <header>
     <p class="over">${esc(row.day_date ? fmtDay(row.day_date) : 'il varo')} · the journal</p>
-    <h1>${esc(row.title)}</h1>
+    <h1 class="et">${esc(row.title)}</h1>
     ${row.voice ? `<p class="sub">${esc(row.voice)}</p>` : ''}
     ${chipRow(row.threads)}
     ${tier !== 'public' ? `<a class="editday" href="${base}/admin#ch/${esc(slug)}">✎ edit this day</a>` : ''}
