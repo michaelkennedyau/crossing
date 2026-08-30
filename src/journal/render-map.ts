@@ -15,7 +15,7 @@ const esc = (s: unknown): string =>
   String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 const LAND_IDS = new Set(['london', 'paris', 'lyon']);
-const LABEL_CH = 6.4; // ~px per mono char at font-size 10 — edge-overflow estimate
+const LABEL_CH = 9.6; // ~px per mono char at font-size 15 — edge-overflow estimate
 
 function legPoints(leg: Leg, v: MapView): { x: number; y: number }[] {
   const from = portById(leg.from)!;
@@ -57,7 +57,7 @@ function portsLayer(v: MapView, ports: Port[], visited: Set<string>, focusedId: 
   const inView = projected
     .filter(({ x, y }) => x >= 0 && y >= 0 && x <= v.w && y <= v.h)
     .map(({ p, x, y }) => ({ p, x, y, side: labelSide(p, x, frameRight) }));
-  const dyOf = nudgeLabels(inView.map(({ p, x, y, side }) => ({ id: p.id, x, y, side })));
+  const dyOf = nudgeLabels(inView.map(({ p, x, y, side }) => ({ id: p.id, x, y, side })), 17); // 15px labels need headroom
   return inView.map(({ p, x, y, side }) => {
     const focused = p.id === focusedId;
     const past = visited.has(p.id);

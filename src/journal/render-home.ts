@@ -36,7 +36,8 @@ export const JOURNAL_CSS = `
 :root{--paper:#FBFCFD;--ink:#14212C;--ink-dim:#43586C;--schist:#526579;--live:#0E7C6B;--line:rgba(70,88,106,.18);
 --font-display:'Fraunces',Georgia,serif;--font-mono:'IBM Plex Mono',ui-monospace,monospace;
 --font-hand:'Instrument Serif',Georgia,serif;--font-body:'Outfit',system-ui,-apple-system,sans-serif;}
-body{background:var(--paper);color:var(--ink);font-family:var(--font-body);line-height:1.7;-webkit-font-smoothing:antialiased;}
+html{overflow-x:clip;}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:clip;}
 .page{max-width:560px;margin:0 auto;padding:48px 22px 80px;}
 .over{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--live);}
 h1{font-family:var(--font-display);font-weight:360;font-size:clamp(30px,8vw,42px);line-height:1.1;margin:14px 0 0;text-wrap:balance;}
@@ -49,7 +50,7 @@ h1{font-family:var(--font-display);font-weight:360;font-size:clamp(30px,8vw,42px
 .chp{display:block;text-decoration:none;color:inherit;padding:12px 0;position:relative;}
 .chp .knot{position:absolute;left:-25px;top:19px;width:12px;height:12px;border-radius:50%;background:var(--paper);border:2px solid var(--schist);box-sizing:border-box;}
 .chp .knot.told{background:var(--live);border-color:var(--live);}
-.chp .knot.part{background:linear-gradient(var(--paper) 50%, var(--schist) 50%);}
+.chp .knot.part{background:linear-gradient(var(--paper) 50%, var(--schist) 50%);border-color:var(--ink-dim);}
 .chp:hover .knot{border-color:var(--ink);}
 .chp:focus-visible{outline:2px solid var(--live);outline-offset:4px;border-radius:6px;}
 .chp .d{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--schist);}
@@ -94,7 +95,7 @@ footer a{color:var(--live);text-decoration:none;}
 .strip-rule{border:0;border-top:1px solid var(--line);margin:40px 0 8px;}
 .jmap{margin:30px 0;}
 .jmap svg{width:100%;height:auto;display:block;}
-.jmap .ml{font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;fill:var(--schist);}
+.jmap .ml{font-family:var(--font-mono);font-size:15px;letter-spacing:.04em;fill:var(--schist);}
 .jmap .mf{fill:var(--ink);}
 .jmap .ma{font-family:var(--font-mono);font-size:30px;letter-spacing:.1em;fill:var(--schist);}
 .jmap figcaption{font-family:var(--font-hand);font-style:italic;font-size:14px;color:var(--ink-dim);text-align:center;margin-top:6px;}
@@ -107,10 +108,12 @@ footer a{color:var(--live);text-decoration:none;}
 .dots .dm{background:var(--tint-m);}
 .dots .dc{background:var(--tint-c);}
 .star{color:var(--live);}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}
 .prompt + .prompt{margin-top:-16px;}
 .pn a{font-family:var(--font-hand);font-style:italic;font-size:14px;}
 @media (prefers-reduced-motion: reduce){.m-draw{animation:none;stroke-dashoffset:0;}}
 @media print{
+  *{print-color-adjust:exact;-webkit-print-color-adjust:exact;}
   body{background:#fff}.page{padding:0;max-width:none}
   .shot{width:100%;margin-inline:0}
   .shot img{max-height:95vh}
@@ -157,7 +160,7 @@ const MOVEMENTS: { upTo: number; label: string }[] = [
   { upTo: 150, label: 'II · THE SHIP' },
   { upTo: 170, label: 'III · MALTA' },
   { upTo: 200, label: 'IV · SICILY' },
-  { upTo: 9999, label: 'V · HOME' },
+  { upTo: Infinity, label: 'V · HOME' },
 ];
 const movementOf = (sort: number): string => MOVEMENTS.find((m) => sort <= m.upTo)!.label;
 
@@ -200,7 +203,8 @@ export async function renderJournalHome(env: Env, tier: Tier, now: Date = new Da
     const day = r.day_date ? fmtDay(r.day_date) : '—';
     if (fam && r.body !== undefined) {
       const st = chapterStats(parseBody(r.body), photoMap.get(r.id) ?? 0, (promptsMap[r.id] ?? []).length);
-      const dots = `${st.words.m > 0 ? '<i class="dm"></i>' : ''}${st.words.c > 0 ? '<i class="dc"></i>' : ''}`;
+      const dots = `${st.words.m > 0 ? '<i class="dm" aria-hidden="true"></i>' : ''}${st.words.c > 0 ? '<i class="dc" aria-hidden="true"></i>' : ''}${
+        st.words.m > 0 || st.words.c > 0 ? `<span class="vh">${st.words.m > 0 && st.words.c > 0 ? 'both their words' : st.words.m > 0 ? 'his words' : 'her words'}</span>` : ''}`;
       const knot = st.told ? 'knot told' : st.score > 0 ? 'knot part' : 'knot';
       return `<a class="chp" href="/journal/ch/${esc(r.id)}"><span class="${knot}" aria-hidden="true"></span>
         <span class="d">${esc(day)}${st.told ? '<span class="told-stamp">told</span>' : ''}${dots ? `<span class="dots">${dots}</span>` : ''}</span>

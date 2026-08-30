@@ -29,16 +29,21 @@ function figure(a: AssetRow, eager: boolean, missingNote?: string): string {
   // strict whole-string validation — no attribute breakout; esc() as defence-in-depth
   const lqipOk = a.lqip && /^data:image\/[a-z+.-]+;base64,[A-Za-z0-9+/=]+$/.test(a.lqip);
   const bg = lqipOk ? ` style="background:url('${esc(a.lqip)}') center/cover"` : '';
+  // alt stays empty: the figcaption is the text alternative when a caption exists,
+  // and no other description exists when it doesn't — duplicating either would double-announce
   return `<figure class="shot"><img src="/journal/img/${esc(a.id)}/1280"
  srcset="/journal/img/${esc(a.id)}/1280 1280w, /journal/img/${esc(a.id)}/1920 1920w"
- sizes="100vw"${dims} loading="${eager ? 'eager' : 'lazy'}"${eager ? ' fetchpriority="high"' : ''} decoding="async" alt="${esc(a.caption)}"${bg}>${
+ sizes="100vw"${dims} loading="${eager ? 'eager' : 'lazy'}"${eager ? ' fetchpriority="high"' : ''} decoding="async" alt=${bg}>${
     a.caption ? `<figcaption>${esc(a.caption)}</figcaption>` : ''}</figure>`;
 }
 
 function renderBlock(b: Block, ctx: { tier: Tier; slug: string; assets: AssetRow[]; used: Set<number>; firstImg: { done: boolean } }): string {
   const mark = ctx.tier !== 'public' && (b.by === 'm' || b.by === 'c') ? ` data-by="${b.by}"` : '';
   switch (b.t) {
-    case 'p': return `<p class="prose"${mark}>${esc(b.text)}</p>`;
+    case 'p': {
+      const vh = mark ? `<span class="vh"> — ${b.by === 'm' ? 'his' : 'hers'}</span>` : '';
+      return `<p class="prose"${mark}>${esc(b.text)}${vh}</p>`;
+    }
     case 'q': return `<p class="quiet"${mark}>${esc(b.text)}</p>`;
     case 'mono': return `<p class="aside"${mark}>${esc(b.text)}</p>`;
     case 'img': {
